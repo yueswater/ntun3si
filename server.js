@@ -98,7 +98,8 @@ app.get("/api/hello", (req, res) => {
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "src/client/dist")));
 
-  app.get("*", (req, res) => {
+  // Catch-all route for React Router - use middleware instead of app.get("*")
+  app.use((req, res) => {
     res.sendFile(path.join(__dirname, "src/client/dist/index.html"));
   });
 }
