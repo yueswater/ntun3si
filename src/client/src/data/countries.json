@@ -1,0 +1,1082 @@
+[
+  {
+    "countryCode": "AD",
+    "countryName_en": "Andorra",
+    "countryName_zh": "安道爾"
+  },
+  {
+    "countryCode": "AE",
+    "countryName_en": "United Arab Emirates",
+    "countryName_zh": "阿拉伯聯合酋長國"
+  },
+  {
+    "countryCode": "AF",
+    "countryName_en": "Afghanistan",
+    "countryName_zh": "阿富汗"
+  },
+  {
+    "countryCode": "AG",
+    "countryName_en": "Antigua and Barbuda",
+    "countryName_zh": "安提瓜和巴布達"
+  },
+  {
+    "countryCode": "AI",
+    "countryName_en": "Anguilla",
+    "countryName_zh": "安圭拉"
+  },
+  {
+    "countryCode": "AM",
+    "countryName_en": "Armenia",
+    "countryName_zh": "亞美尼亞"
+  },
+  {
+    "countryCode": "AO",
+    "countryName_en": "Angola",
+    "countryName_zh": "安哥拉"
+  },
+  {
+    "countryCode": "AS",
+    "countryName_en": "American Samoa",
+    "countryName_zh": "美屬薩摩亞"
+  },
+  {
+    "countryCode": "AT",
+    "countryName_en": "Austria",
+    "countryName_zh": "奧地利"
+  },
+  {
+    "countryCode": "AU",
+    "countryName_en": "Australia",
+    "countryName_zh": "澳大利亞"
+  },
+  {
+    "countryCode": "AW",
+    "countryName_en": "Aruba",
+    "countryName_zh": "阿魯巴"
+  },
+  {
+    "countryCode": "AX",
+    "countryName_en": "Åland Islands",
+    "countryName_zh": "奧蘭群島"
+  },
+  {
+    "countryCode": "AZ",
+    "countryName_en": "Azerbaijan",
+    "countryName_zh": "阿塞拜疆"
+  },
+  {
+    "countryCode": "BA",
+    "countryName_en": "Bosnia and Herzegovina",
+    "countryName_zh": "波斯尼亞和黑塞哥維那"
+  },
+  {
+    "countryCode": "BB",
+    "countryName_en": "Barbados",
+    "countryName_zh": "巴巴多斯"
+  },
+  {
+    "countryCode": "BD",
+    "countryName_en": "Bangladesh",
+    "countryName_zh": "孟加拉國"
+  },
+  {
+    "countryCode": "BE",
+    "countryName_en": "Belgium",
+    "countryName_zh": "比利時"
+  },
+  {
+    "countryCode": "BF",
+    "countryName_en": "Burkina Faso",
+    "countryName_zh": "布基納法索"
+  },
+  {
+    "countryCode": "BH",
+    "countryName_en": "Bahrain",
+    "countryName_zh": "巴林"
+  },
+  {
+    "countryCode": "BI",
+    "countryName_en": "Burundi",
+    "countryName_zh": "布隆迪"
+  },
+  {
+    "countryCode": "BJ",
+    "countryName_en": "Benin",
+    "countryName_zh": "貝寧"
+  },
+  {
+    "countryCode": "BM",
+    "countryName_en": "Bermuda",
+    "countryName_zh": "百慕大"
+  },
+  {
+    "countryCode": "BN",
+    "countryName_en": "Brunei",
+    "countryName_zh": "文萊"
+  },
+  {
+    "countryCode": "BO",
+    "countryName_en": "Bolivia",
+    "countryName_zh": "玻利維亞"
+  },
+  {
+    "countryCode": "BS",
+    "countryName_en": "Bahamas",
+    "countryName_zh": "巴哈馬"
+  },
+  {
+    "countryCode": "BT",
+    "countryName_en": "Bhutan",
+    "countryName_zh": "不丹"
+  },
+  {
+    "countryCode": "BW",
+    "countryName_en": "Botswana",
+    "countryName_zh": "博茨瓦納"
+  },
+  {
+    "countryCode": "BY",
+    "countryName_en": "Belarus",
+    "countryName_zh": "白俄羅斯"
+  },
+  {
+    "countryCode": "BZ",
+    "countryName_en": "Belize",
+    "countryName_zh": "伯利茲"
+  },
+  {
+    "countryCode": "CA",
+    "countryName_en": "Canada",
+    "countryName_zh": "加拿大"
+  },
+  {
+    "countryCode": "CC",
+    "countryName_en": "Cocos Keeling Islands",
+    "countryName_zh": "科科斯群島"
+  },
+  {
+    "countryCode": "CD",
+    "countryName_en": "Congo DRC",
+    "countryName_zh": "剛果民主共和國"
+  },
+  {
+    "countryCode": "CF",
+    "countryName_en": "Central African Republic",
+    "countryName_zh": "中非共和國"
+  },
+  {
+    "countryCode": "CG",
+    "countryName_en": "Congo Republic",
+    "countryName_zh": "剛果共和國"
+  },
+  {
+    "countryCode": "CH",
+    "countryName_en": "Switzerland",
+    "countryName_zh": "瑞士"
+  },
+  {
+    "countryCode": "CM",
+    "countryName_en": "Cameroon",
+    "countryName_zh": "喀麥隆"
+  },
+  {
+    "countryCode": "CN",
+    "countryName_en": "China",
+    "countryName_zh": "中國"
+  },
+  {
+    "countryCode": "CO",
+    "countryName_en": "Colombia",
+    "countryName_zh": "哥倫比亞"
+  },
+  {
+    "countryCode": "CR",
+    "countryName_en": "Costa Rica",
+    "countryName_zh": "哥斯達黎加"
+  },
+  {
+    "countryCode": "CU",
+    "countryName_en": "Cuba",
+    "countryName_zh": "古巴"
+  },
+  {
+    "countryCode": "CV",
+    "countryName_en": "Cape Verde",
+    "countryName_zh": "佛得角"
+  },
+  {
+    "countryCode": "CZ",
+    "countryName_en": "Czech Republic",
+    "countryName_zh": "捷克共和國"
+  },
+  {
+    "countryCode": "DE",
+    "countryName_en": "Germany",
+    "countryName_zh": "德國"
+  },
+  {
+    "countryCode": "DJ",
+    "countryName_en": "Djibouti",
+    "countryName_zh": "吉布提"
+  },
+  {
+    "countryCode": "DK",
+    "countryName_en": "Denmark",
+    "countryName_zh": "丹麥"
+  },
+  {
+    "countryCode": "DM",
+    "countryName_en": "Dominica",
+    "countryName_zh": "多米尼加"
+  },
+  {
+    "countryCode": "DO",
+    "countryName_en": "Dominican Republic",
+    "countryName_zh": "多米尼加共和國"
+  },
+  {
+    "countryCode": "DZ",
+    "countryName_en": "Algeria",
+    "countryName_zh": "阿爾及利亞"
+  },
+  {
+    "countryCode": "EC",
+    "countryName_en": "Ecuador",
+    "countryName_zh": "厄瓜多爾"
+  },
+  {
+    "countryCode": "EE",
+    "countryName_en": "Estonia",
+    "countryName_zh": "愛沙尼亞"
+  },
+  {
+    "countryCode": "EG",
+    "countryName_en": "Egypt",
+    "countryName_zh": "埃及"
+  },
+  {
+    "countryCode": "EH",
+    "countryName_en": "Western Sahara",
+    "countryName_zh": "西撒哈拉"
+  },
+  {
+    "countryCode": "ER",
+    "countryName_en": "Eritrea",
+    "countryName_zh": "厄立特裡亞"
+  },
+  {
+    "countryCode": "ES",
+    "countryName_en": "Spain",
+    "countryName_zh": "西班牙"
+  },
+  {
+    "countryCode": "ET",
+    "countryName_en": "Ethiopia",
+    "countryName_zh": "埃塞俄比亞"
+  },
+  {
+    "countryCode": "FI",
+    "countryName_en": "Finland",
+    "countryName_zh": "芬蘭"
+  },
+  {
+    "countryCode": "FJ",
+    "countryName_en": "Fiji",
+    "countryName_zh": "斐濟"
+  },
+  {
+    "countryCode": "FM",
+    "countryName_en": "Micronesia",
+    "countryName_zh": "密克羅尼西亞聯邦"
+  },
+  {
+    "countryCode": "FO",
+    "countryName_en": "Faroe Islands",
+    "countryName_zh": "法羅群島"
+  },
+  {
+    "countryCode": "FR",
+    "countryName_en": "France",
+    "countryName_zh": "法國"
+  },
+  {
+    "countryCode": "GA",
+    "countryName_en": "Gabon",
+    "countryName_zh": "加彭"
+  },
+  {
+    "countryCode": "GB",
+    "countryName_en": "United Kingdom",
+    "countryName_zh": "英國"
+  },
+  {
+    "countryCode": "GD",
+    "countryName_en": "Grenada",
+    "countryName_zh": "格瑞那達"
+  },
+  {
+    "countryCode": "GE",
+    "countryName_en": "Georgia",
+    "countryName_zh": "格魯吉亞"
+  },
+  {
+    "countryCode": "GF",
+    "countryName_en": "French Guiana",
+    "countryName_zh": "法屬圭亞那"
+  },
+  {
+    "countryCode": "GG",
+    "countryName_en": "Guernsey",
+    "countryName_zh": "耿西"
+  },
+  {
+    "countryCode": "GH",
+    "countryName_en": "Ghana",
+    "countryName_zh": "迦納"
+  },
+  {
+    "countryCode": "GI",
+    "countryName_en": "Gibraltar",
+    "countryName_zh": "直布羅陀"
+  },
+  {
+    "countryCode": "GL",
+    "countryName_en": "Greenland",
+    "countryName_zh": "格陵蘭"
+  },
+  {
+    "countryCode": "GM",
+    "countryName_en": "Gambia",
+    "countryName_zh": "甘比亞"
+  },
+  {
+    "countryCode": "GN",
+    "countryName_en": "Guinea",
+    "countryName_zh": "幾內亞"
+  },
+  {
+    "countryCode": "GP",
+    "countryName_en": "Guadeloupe",
+    "countryName_zh": "瓜德羅普"
+  },
+  {
+    "countryCode": "GQ",
+    "countryName_en": "Equatorial Guinea",
+    "countryName_zh": "赤道幾內亞"
+  },
+  {
+    "countryCode": "GR",
+    "countryName_en": "Greece",
+    "countryName_zh": "希臘"
+  },
+  {
+    "countryCode": "GT",
+    "countryName_en": "Guatemala",
+    "countryName_zh": "瓜地馬拉"
+  },
+  {
+    "countryCode": "GU",
+    "countryName_en": "Guam",
+    "countryName_zh": "關島"
+  },
+  {
+    "countryCode": "GW",
+    "countryName_en": "Guinea-Bissau",
+    "countryName_zh": "幾內亞比索"
+  },
+  {
+    "countryCode": "GY",
+    "countryName_en": "Guyana",
+    "countryName_zh": "蓋亞那"
+  },
+  {
+    "countryCode": "HK",
+    "countryName_en": "Hong Kong",
+    "countryName_zh": "香港"
+  },
+  {
+    "countryCode": "HN",
+    "countryName_en": "Honduras",
+    "countryName_zh": "洪都拉斯"
+  },
+  {
+    "countryCode": "HR",
+    "countryName_en": "Croatia",
+    "countryName_zh": "克羅地亞"
+  },
+  {
+    "countryCode": "HT",
+    "countryName_en": "Haiti",
+    "countryName_zh": "海地"
+  },
+  {
+    "countryCode": "HU",
+    "countryName_en": "Hungary",
+    "countryName_zh": "匈牙利"
+  },
+  {
+    "countryCode": "ID",
+    "countryName_en": "Indonesia",
+    "countryName_zh": "印度尼西亞"
+  },
+  {
+    "countryCode": "IE",
+    "countryName_en": "Ireland",
+    "countryName_zh": "愛爾蘭"
+  },
+  {
+    "countryCode": "IL",
+    "countryName_en": "Israel",
+    "countryName_zh": "以色列"
+  },
+  {
+    "countryCode": "IN",
+    "countryName_en": "India",
+    "countryName_zh": "印度"
+  },
+  {
+    "countryCode": "IQ",
+    "countryName_en": "Iraq",
+    "countryName_zh": "伊拉克"
+  },
+  {
+    "countryCode": "IR",
+    "countryName_en": "Iran",
+    "countryName_zh": "伊朗"
+  },
+  {
+    "countryCode": "IS",
+    "countryName_en": "Iceland",
+    "countryName_zh": "冰島"
+  },
+  {
+    "countryCode": "IT",
+    "countryName_en": "Italy",
+    "countryName_zh": "義大利"
+  },
+  {
+    "countryCode": "JE",
+    "countryName_en": "Jersey",
+    "countryName_zh": "澤西"
+  },
+  {
+    "countryCode": "JM",
+    "countryName_en": "Jamaica",
+    "countryName_zh": "牙買加"
+  },
+  {
+    "countryCode": "JO",
+    "countryName_en": "Jordan",
+    "countryName_zh": "約旦"
+  },
+  {
+    "countryCode": "JP",
+    "countryName_en": "Japan",
+    "countryName_zh": "日本"
+  },
+  {
+    "countryCode": "KE",
+    "countryName_en": "Kenya",
+    "countryName_zh": "肯亞"
+  },
+  {
+    "countryCode": "KG",
+    "countryName_en": "Kyrgyzstan",
+    "countryName_zh": "吉爾吉斯"
+  },
+  {
+    "countryCode": "KH",
+    "countryName_en": "Cambodia",
+    "countryName_zh": "柬埔寨"
+  },
+  {
+    "countryCode": "KI",
+    "countryName_en": "Kiribati",
+    "countryName_zh": "吉里巴斯"
+  },
+  {
+    "countryCode": "KM",
+    "countryName_en": "Comoros",
+    "countryName_zh": "葛摩"
+  },
+  {
+    "countryCode": "KN",
+    "countryName_en": "Saint Kitts and Nevis",
+    "countryName_zh": "聖基茨和尼維斯"
+  },
+  {
+    "countryCode": "KP",
+    "countryName_en": "North Korea",
+    "countryName_zh": "朝鮮"
+  },
+  {
+    "countryCode": "KR",
+    "countryName_en": "South Korea",
+    "countryName_zh": "韓國"
+  },
+  {
+    "countryCode": "KW",
+    "countryName_en": "Kuwait",
+    "countryName_zh": "科威特"
+  },
+  {
+    "countryCode": "KY",
+    "countryName_en": "Cayman Islands",
+    "countryName_zh": "開曼群島"
+  },
+  {
+    "countryCode": "KZ",
+    "countryName_en": "Kazakhstan",
+    "countryName_zh": "哈薩克"
+  },
+  {
+    "countryCode": "LA",
+    "countryName_en": "Laos",
+    "countryName_zh": "寮國"
+  },
+  {
+    "countryCode": "LB",
+    "countryName_en": "Lebanon",
+    "countryName_zh": "黎巴嫩"
+  },
+  {
+    "countryCode": "LC",
+    "countryName_en": "Saint Lucia",
+    "countryName_zh": "聖盧西亞"
+  },
+  {
+    "countryCode": "LI",
+    "countryName_en": "Liechtenstein",
+    "countryName_zh": "列支敦斯登"
+  },
+  {
+    "countryCode": "LK",
+    "countryName_en": "Sri Lanka",
+    "countryName_zh": "斯裡蘭卡"
+  },
+  {
+    "countryCode": "LS",
+    "countryName_en": "Lesotho",
+    "countryName_zh": "賴索托"
+  },
+  {
+    "countryCode": "LT",
+    "countryName_en": "Lithuania",
+    "countryName_zh": "立陶宛"
+  },
+  {
+    "countryCode": "LU",
+    "countryName_en": "Luxembourg",
+    "countryName_zh": "盧森堡"
+  },
+  {
+    "countryCode": "LV",
+    "countryName_en": "Latvia",
+    "countryName_zh": "拉脫維亞"
+  },
+  {
+    "countryCode": "LY",
+    "countryName_en": "Libya",
+    "countryName_zh": "利比亞"
+  },
+  {
+    "countryCode": "MA",
+    "countryName_en": "Morocco",
+    "countryName_zh": "摩洛哥"
+  },
+  {
+    "countryCode": "MC",
+    "countryName_en": "Monaco",
+    "countryName_zh": "摩納哥"
+  },
+  {
+    "countryCode": "MG",
+    "countryName_en": "Madagascar",
+    "countryName_zh": "馬達加斯加"
+  },
+  {
+    "countryCode": "MH",
+    "countryName_en": "Marshall Islands",
+    "countryName_zh": "馬紹爾群島"
+  },
+  {
+    "countryCode": "ML",
+    "countryName_en": "Mali",
+    "countryName_zh": "馬利"
+  },
+  {
+    "countryCode": "MM",
+    "countryName_en": "Myanmar Burma",
+    "countryName_zh": "緬甸"
+  },
+  {
+    "countryCode": "MN",
+    "countryName_en": "Mongolia",
+    "countryName_zh": "蒙古"
+  },
+  {
+    "countryCode": "MO",
+    "countryName_en": "Macau",
+    "countryName_zh": "澳門"
+  },
+  {
+    "countryCode": "MP",
+    "countryName_en": "Northern Mariana Islands",
+    "countryName_zh": "北馬裡亞納群島"
+  },
+  {
+    "countryCode": "MQ",
+    "countryName_en": "Martinique",
+    "countryName_zh": "馬丁尼克"
+  },
+  {
+    "countryCode": "MR",
+    "countryName_en": "Mauritania",
+    "countryName_zh": "茅利塔尼亞"
+  },
+  {
+    "countryCode": "MS",
+    "countryName_en": "Montserrat",
+    "countryName_zh": "蒙塞拉特"
+  },
+  {
+    "countryCode": "MU",
+    "countryName_en": "Mauritius",
+    "countryName_zh": "模里西斯"
+  },
+  {
+    "countryCode": "MV",
+    "countryName_en": "Maldives",
+    "countryName_zh": "馬爾地夫"
+  },
+  {
+    "countryCode": "MW",
+    "countryName_en": "Malawi",
+    "countryName_zh": "馬拉威"
+  },
+  {
+    "countryCode": "MX",
+    "countryName_en": "Mexico",
+    "countryName_zh": "墨西哥"
+  },
+  {
+    "countryCode": "MY",
+    "countryName_en": "Malaysia",
+    "countryName_zh": "馬來西亞"
+  },
+  {
+    "countryCode": "MZ",
+    "countryName_en": "Mozambique",
+    "countryName_zh": "莫桑比克"
+  },
+  {
+    "countryCode": "NA",
+    "countryName_en": "Namibia",
+    "countryName_zh": "納米比亞"
+  },
+  {
+    "countryCode": "NC",
+    "countryName_en": "New Caledonia",
+    "countryName_zh": "新喀裡多尼亞"
+  },
+  {
+    "countryCode": "NE",
+    "countryName_en": "Niger",
+    "countryName_zh": "尼日爾"
+  },
+  {
+    "countryCode": "NG",
+    "countryName_en": "Nigeria",
+    "countryName_zh": "尼日利亞"
+  },
+  {
+    "countryCode": "NI",
+    "countryName_en": "Nicaragua",
+    "countryName_zh": "尼加拉瓜"
+  },
+  {
+    "countryCode": "NL",
+    "countryName_en": "Netherlands",
+    "countryName_zh": "荷蘭"
+  },
+  {
+    "countryCode": "NO",
+    "countryName_en": "Norway",
+    "countryName_zh": "挪威"
+  },
+  {
+    "countryCode": "NP",
+    "countryName_en": "Nepal",
+    "countryName_zh": "尼泊爾"
+  },
+  {
+    "countryCode": "NR",
+    "countryName_en": "Nauru",
+    "countryName_zh": "諾魯"
+  },
+  {
+    "countryCode": "NU",
+    "countryName_en": "Niue",
+    "countryName_zh": "紐埃"
+  },
+  {
+    "countryCode": "NZ",
+    "countryName_en": "New Zealand",
+    "countryName_zh": "新西蘭"
+  },
+  {
+    "countryCode": "OM",
+    "countryName_en": "Oman",
+    "countryName_zh": "阿曼"
+  },
+  {
+    "countryCode": "PA",
+    "countryName_en": "Panama",
+    "countryName_zh": "巴拿馬"
+  },
+  {
+    "countryCode": "PE",
+    "countryName_en": "Peru",
+    "countryName_zh": "秘魯"
+  },
+  {
+    "countryCode": "PF",
+    "countryName_en": "French Polynesia",
+    "countryName_zh": "法屬玻里尼西亞"
+  },
+  {
+    "countryCode": "PG",
+    "countryName_en": "Papua New Guinea",
+    "countryName_zh": "巴布亞新幾內亞"
+  },
+  {
+    "countryCode": "PH",
+    "countryName_en": "Philippines",
+    "countryName_zh": "菲律賓"
+  },
+  {
+    "countryCode": "PK",
+    "countryName_en": "Pakistan",
+    "countryName_zh": "巴基斯坦"
+  },
+  {
+    "countryCode": "PL",
+    "countryName_en": "Poland",
+    "countryName_zh": "波蘭"
+  },
+  {
+    "countryCode": "PM",
+    "countryName_en": "Saint Pierre and Miquelon",
+    "countryName_zh": "聖皮埃爾和密克隆群島"
+  },
+  {
+    "countryCode": "PN",
+    "countryName_en": "Pitcairn Islands",
+    "countryName_zh": "皮特凱恩群島"
+  },
+  {
+    "countryCode": "PR",
+    "countryName_en": "Puerto Rico",
+    "countryName_zh": "波多黎各"
+  },
+  {
+    "countryCode": "PS",
+    "countryName_en": "Palestinian Territories",
+    "countryName_zh": "巴勒斯坦領土"
+  },
+  {
+    "countryCode": "PT",
+    "countryName_en": "Portugal",
+    "countryName_zh": "葡萄牙"
+  },
+  {
+    "countryCode": "PW",
+    "countryName_en": "Palau",
+    "countryName_zh": "帛琉"
+  },
+  {
+    "countryCode": "QA",
+    "countryName_en": "Qatar",
+    "countryName_zh": "卡塔爾"
+  },
+  {
+    "countryCode": "RE",
+    "countryName_en": "Réunion",
+    "countryName_zh": "留尼汪"
+  },
+  {
+    "countryCode": "RS",
+    "countryName_en": "Serbia",
+    "countryName_zh": "塞爾維亞"
+  },
+  {
+    "countryCode": "RU",
+    "countryName_en": "Russia",
+    "countryName_zh": "俄羅斯"
+  },
+  {
+    "countryCode": "RW",
+    "countryName_en": "Rwanda",
+    "countryName_zh": "盧旺達"
+  },
+  {
+    "countryCode": "SA",
+    "countryName_en": "Saudi Arabia",
+    "countryName_zh": "沙特阿拉伯"
+  },
+  {
+    "countryCode": "SB",
+    "countryName_en": "Solomon Islands",
+    "countryName_zh": "所羅門群島"
+  },
+  {
+    "countryCode": "SC",
+    "countryName_en": "Seychelles",
+    "countryName_zh": "塞舌爾"
+  },
+  {
+    "countryCode": "SD",
+    "countryName_en": "Sudan",
+    "countryName_zh": "蘇丹"
+  },
+  {
+    "countryCode": "SE",
+    "countryName_en": "Sweden",
+    "countryName_zh": "瑞典"
+  },
+  {
+    "countryCode": "SG",
+    "countryName_en": "Singapore",
+    "countryName_zh": "新加坡"
+  },
+  {
+    "countryCode": "SH",
+    "countryName_en": "Saint Helena",
+    "countryName_zh": "聖赫勒拿"
+  },
+  {
+    "countryCode": "SI",
+    "countryName_en": "Slovenia",
+    "countryName_zh": "斯洛文尼亞"
+  },
+  {
+    "countryCode": "SJ",
+    "countryName_en": "Svalbard and Jan Mayen",
+    "countryName_zh": "斯瓦爾巴特和揚馬延"
+  },
+  {
+    "countryCode": "SK",
+    "countryName_en": "Slovakia",
+    "countryName_zh": "斯洛伐克"
+  },
+  {
+    "countryCode": "SM",
+    "countryName_en": "San Marino",
+    "countryName_zh": "聖馬力諾"
+  },
+  {
+    "countryCode": "SN",
+    "countryName_en": "Senegal",
+    "countryName_zh": "塞內加爾"
+  },
+  {
+    "countryCode": "SO",
+    "countryName_en": "Somalia",
+    "countryName_zh": "索馬裡"
+  },
+  {
+    "countryCode": "SR",
+    "countryName_en": "Suriname",
+    "countryName_zh": "蘇裡南"
+  },
+  {
+    "countryCode": "ST",
+    "countryName_en": "São Tomé and Príncipe",
+    "countryName_zh": "聖多美和普林西比"
+  },
+  {
+    "countryCode": "SV",
+    "countryName_en": "El Salvador",
+    "countryName_zh": "薩爾瓦多"
+  },
+  {
+    "countryCode": "SY",
+    "countryName_en": "Syria",
+    "countryName_zh": "敘利亞"
+  },
+  {
+    "countryCode": "SZ",
+    "countryName_en": "Swaziland",
+    "countryName_zh": "斯威士蘭"
+  },
+  {
+    "countryCode": "TC",
+    "countryName_en": "Turks and Caicos Islands",
+    "countryName_zh": "特克斯和凱科斯群島"
+  },
+  {
+    "countryCode": "TD",
+    "countryName_en": "Chad",
+    "countryName_zh": "查德"
+  },
+  {
+    "countryCode": "TG",
+    "countryName_en": "Togo",
+    "countryName_zh": "多哥"
+  },
+  {
+    "countryCode": "TH",
+    "countryName_en": "Thailand",
+    "countryName_zh": "泰國"
+  },
+  {
+    "countryCode": "TJ",
+    "countryName_en": "Tajikistan",
+    "countryName_zh": "塔吉克斯坦"
+  },
+  {
+    "countryCode": "TK",
+    "countryName_en": "Tokelau",
+    "countryName_zh": "托克勞"
+  },
+  {
+    "countryCode": "TL",
+    "countryName_en": "East Timor",
+    "countryName_zh": "東帝汶"
+  },
+  {
+    "countryCode": "TM",
+    "countryName_en": "Turkmenistan",
+    "countryName_zh": "土庫曼斯坦"
+  },
+  {
+    "countryCode": "TN",
+    "countryName_en": "Tunisia",
+    "countryName_zh": "突尼斯"
+  },
+  {
+    "countryCode": "TO",
+    "countryName_en": "Tonga",
+    "countryName_zh": "東加"
+  },
+  {
+    "countryCode": "TR",
+    "countryName_en": "Turkey",
+    "countryName_zh": "土耳其"
+  },
+  {
+    "countryCode": "TT",
+    "countryName_en": "Trinidad and Tobago",
+    "countryName_zh": "特立尼達和多巴哥"
+  },
+  {
+    "countryCode": "TV",
+    "countryName_en": "Tuvalu",
+    "countryName_zh": "圖瓦盧"
+  },
+  {
+    "countryCode": "TW",
+    "countryName_en": "Taiwan",
+    "countryName_zh": "台灣"
+  },
+  {
+    "countryCode": "TZ",
+    "countryName_en": "Tanzania",
+    "countryName_zh": "坦桑尼亞"
+  },
+  {
+    "countryCode": "UA",
+    "countryName_en": "Ukraine",
+    "countryName_zh": "烏克蘭"
+  },
+  {
+    "countryCode": "UG",
+    "countryName_en": "Uganda",
+    "countryName_zh": "烏干達"
+  },
+  {
+    "countryCode": "UM",
+    "countryName_en": "U.S. Outlying Islands",
+    "countryName_zh": "美國邊遠小島"
+  },
+  {
+    "countryCode": "US",
+    "countryName_en": "United States",
+    "countryName_zh": "美國"
+  },
+  {
+    "countryCode": "UZ",
+    "countryName_en": "Uzbekistan",
+    "countryName_zh": "烏茲別克斯坦"
+  },
+  {
+    "countryCode": "VA",
+    "countryName_en": "Vatican City",
+    "countryName_zh": "梵蒂岡"
+  },
+  {
+    "countryCode": "VC",
+    "countryName_en": "Saint Vincent and the Grenadines",
+    "countryName_zh": "聖文森特和格林納丁斯"
+  },
+  {
+    "countryCode": "VE",
+    "countryName_en": "Venezuela",
+    "countryName_zh": "委內瑞拉"
+  },
+  {
+    "countryCode": "VG",
+    "countryName_en": "British Virgin Islands",
+    "countryName_zh": "英屬維京群島"
+  },
+  {
+    "countryCode": "VI",
+    "countryName_en": "U.S. Virgin Islands",
+    "countryName_zh": "美屬維京群島"
+  },
+  {
+    "countryCode": "VN",
+    "countryName_en": "Vietnam",
+    "countryName_zh": "越南"
+  },
+  {
+    "countryCode": "VU",
+    "countryName_en": "Vanuatu",
+    "countryName_zh": "瓦努阿圖"
+  },
+  {
+    "countryCode": "WF",
+    "countryName_en": "Wallis and Futuna",
+    "countryName_zh": "瓦利斯和富圖納"
+  },
+  {
+    "countryCode": "WS",
+    "countryName_en": "Samoa",
+    "countryName_zh": "薩摩亞"
+  },
+  {
+    "countryCode": "YE",
+    "countryName_en": "Yemen",
+    "countryName_zh": "葉門"
+  },
+  {
+    "countryCode": "YT",
+    "countryName_en": "Mayotte",
+    "countryName_zh": "馬約特"
+  },
+  {
+    "countryCode": "ZA",
+    "countryName_en": "South Africa",
+    "countryName_zh": "南非"
+  },
+  {
+    "countryCode": "ZM",
+    "countryName_en": "Zambia",
+    "countryName_zh": "贊比亞"
+  },
+  {
+    "countryCode": "ZW",
+    "countryName_en": "Zimbabwe",
+    "countryName_zh": "津巴布韋"
+  }
+]
