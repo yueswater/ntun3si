@@ -14,10 +14,7 @@ export async function connectDB() {
       throw new Error("MONGODB_URI is not defined in .env");
     }
 
-    await mongoose.connect(MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(MONGODB_URI);
 
     console.log("MongoDB connected successfully");
   } catch (error) {
