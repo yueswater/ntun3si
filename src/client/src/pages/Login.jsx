@@ -17,12 +17,10 @@ export default function Login() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // Handle input field changes
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Handle login/register form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -60,9 +58,12 @@ export default function Login() {
     }
   };
 
-  // Handle Google OAuth redirect
   const handleGoogleAuth = () => {
-    window.location.href = "http://localhost:5050/api/auth/google";
+    const baseURL = import.meta.env.VITE_BASE_URL || "/api";
+    const apiBaseURL = baseURL.startsWith("http")
+      ? baseURL
+      : window.location.origin + baseURL;
+    window.location.href = `${apiBaseURL}/auth/google`;
   };
 
   return (

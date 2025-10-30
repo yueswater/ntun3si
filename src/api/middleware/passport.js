@@ -52,7 +52,7 @@ passport.use(
     {
       clientID: process.env.FACEBOOK_CLIENT_ID,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-      callbackURL: "http://localhost:5050/api/auth/facebook/callback",
+      callbackURL: FACEBOOK_CALLBACK_URL,
       profileFields: ["id", "emails", "name", "picture.type(large)"],
     },
     async (accessToken, refreshToken, profile, done) => {
@@ -60,23 +60,29 @@ passport.use(
         const email = profile.emails?.[0]?.value;
         const name = `${profile.name.givenName || ""} ${
           profile.name.familyName || ""
-        }`;
+        }`.trim();
         const avatar = profile.photos?.[0]?.value;
 
-        // Find or create user
         let user = await User.findOne({ email });
         if (!user) {
           user = await User.create({
-            username: profile.id,
+            username: `facebook_${profile.id}`,
             name,
             email,
             avatar,
-            password: "", // Not required for OAuth users
-            isVerified: true,
+            password: null,
+            role: "member",
+            emailVerified: true,
+            provider: "facebook",
           });
         }
 
-        const token = generateToken(user);
+        const token = jwt.sign(
+          { uid: user.uid, email: user.email, role: user.role },
+          process.env.JWT_SECRET,
+          { expiresIn: "7d" }
+        );
+
         done(null, { user, token });
       } catch (error) {
         done(error, null);
