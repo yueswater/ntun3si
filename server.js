@@ -17,7 +17,7 @@ import {
 } from "./src/api/utils/emailService.js";
 import passport from "./src/api/middleware/passport.js";
 import authRoutes from "./src/api/routes/authRoutes.js";
-import uploadRoutes from "./src/api/routes/uploadRoutes.js"; // use uploadRoutes
+import uploadRoutes from "./src/api/routes/uploadRoutes.js";
 import formRoutes from "./src/api/routes/formRoutes.js";
 import registrationRoutes from "./src/api/routes/registrationRoutes.js";
 
@@ -94,16 +94,22 @@ app.get("/api/hello", (req, res) => {
   res.json({ message: "Hello from Express backend" });
 });
 
-// Static file serving (disabled for dev mode)
-// app.use(express.static(path.join(__dirname, "src/client/dist")));
-// app.use((req, res) => {
-//   res.sendFile(path.join(__dirname, "src/client/dist/index.html"));
-// });
+// Serve static files from React app in production
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "src/client/dist")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "src/client/dist/index.html"));
+  });
+}
 
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
+  if (process.env.NODE_ENV === "production") {
+    console.log("Serving frontend from src/client/dist");
+  }
 });
 
 // Scheduled task: delete unverified users daily at 3 AM

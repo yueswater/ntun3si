@@ -7,9 +7,9 @@ echo "Installing dependencies..."
 npm install
 
 echo "Building frontend..."
-cd client
+cd src/client
 npm install
 npm run build
-cd ..
+cd ../..
 
 echo "Build completed successfully!"
