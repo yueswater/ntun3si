@@ -59,19 +59,19 @@ export default function Login() {
   };
 
   const handleGoogleAuth = () => {
-    const baseURL = import.meta.env.VITE_BASE_URL || "/api";
-    const apiBaseURL = baseURL.startsWith("http")
-      ? baseURL
-      : window.location.origin + baseURL;
-    window.location.href = `${apiBaseURL}/auth/google`;
+    const backendBase = import.meta.env.VITE_BASE_URL
+      ? import.meta.env.VITE_BASE_URL.replace("/api", "")
+      : "http://localhost:5050";
+
+    window.location.href = `${backendBase}/api/auth/google`;
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-transparent">
       <div className="card w-full max-w-md bg-base-100 shadow-2xl border border-base-300 rounded-2xl p-6">
         <div className="card-body">
-          <h2 className="text-2xl font-bold text-center text-neutral mb-6">
-            {isRegistering ? "註冊 NTUN3SI 帳號" : "登入 NTUN3SI 帳號"}
+          <h2 className="text-2xl font-bold text-center text-[#03045E] mb-6">
+            {isRegistering ? "註冊帳號" : "登入帳號"}
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -141,12 +141,16 @@ export default function Login() {
 
             {error && <p className="text-error text-sm text-center">{error}</p>}
 
+            {/* Custom animated submit button */}
             <button
               type="submit"
-              className="btn btn-primary w-full rounded-xl mt-4"
               disabled={loading}
+              className="relative overflow-hidden w-full rounded-full border border-[#03045E] text-[#03045E] font-semibold py-3 text-base transition-all duration-300 hover:text-white group"
             >
-              {loading ? "處理中..." : isRegistering ? "註冊" : "登入"}
+              <span className="absolute inset-0 bg-[#03045E] scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100 rounded-full"></span>
+              <span className="relative z-10">
+                {loading ? "處理中..." : isRegistering ? "註冊" : "登入"}
+              </span>
             </button>
           </form>
 
@@ -179,13 +183,20 @@ export default function Login() {
           <div className="divider my-5 text-sm text-gray-500">
             {isRegistering ? "或使用 Google 註冊" : "或使用 Google 登入"}
           </div>
+
           <button
             onClick={handleGoogleAuth}
-            className="btn btn-outline w-full rounded-full flex items-center justify-center gap-2 hover:bg-gray-50"
+            className="relative overflow-hidden w-full rounded-full border border-gray-400 text-gray-800 font-medium flex items-center justify-center gap-2 py-3 transition-all duration-300 hover:text-white group"
           >
-            <FcGoogle className="text-xl" />
-            <span>
-              {isRegistering ? "使用 Google 註冊" : "使用 Google 登入"}
+            {/* Animated background layer */}
+            <span className="absolute inset-0 bg-black scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100 rounded-full"></span>
+
+            {/* Icon + Text */}
+            <span className="relative z-10 flex items-center gap-2">
+              <FcGoogle className="text-xl" />
+              <span>
+                {isRegistering ? "使用 Google 註冊" : "使用 Google 登入"}
+              </span>
             </span>
           </button>
         </div>

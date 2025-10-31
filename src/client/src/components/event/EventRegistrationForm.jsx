@@ -120,6 +120,7 @@ export default function EventRegistrationForm({ event, form }) {
     setSubmitting(true);
 
     try {
+      // 1. Submit registration to backend
       const response = await post(
         `/registrations/event/${event.uid}`,
         formData
@@ -127,7 +128,34 @@ export default function EventRegistrationForm({ event, form }) {
       setConfirmationMsg(response.confirmationMessage || "報名成功！");
       setSuccess(true);
 
-      // Reset form
+      // 2. Send confirmation email via existing newsletter endpoint
+      const apiBase =
+        import.meta.env.VITE_BASE_URL?.replace(/\/$/, "") ||
+        "http://localhost:5050/api";
+
+      await fetch(`${apiBase}/test/newsletter`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          recipients: [formData.email],
+          subject: `【NTUN3SI 國安社】${event.title} 報名成功通知`,
+          content: `
+          您好 ${formData.name}：
+          感謝您報名「${event.title}」活動，我們已成功收到您的報名資訊。
+          
+          活動資訊：
+          - 日期：${new Date(event.date).toLocaleString("zh-TW")}
+          - 地點：${event.location || "待通知"}
+          - 聯絡信箱：sungpinyue@gmail.com
+
+          若非本人操作，請忽略此信。
+          感謝您的支持！
+        `,
+        }),
+      });
+
+      // 3. Reset form after submission
       setFormData({
         name: user?.name || "",
         email: user?.email || "",

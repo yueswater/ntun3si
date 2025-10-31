@@ -16,6 +16,15 @@ export default function Navbar() {
   const avatarRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const isAdmin = location.pathname.startsWith("/admin");
+  // Build header classes based on whether sidebar (admin) is present
+  const headerClass =
+    "bg-white shadow-sm fixed top-0 z-50 " +
+    (isAdmin
+      ? // On admin pages: on large screens, offset by sidebar width (w-64 = 16rem)
+        "left-0 w-full lg:left-64 lg:w-[calc(100%-16rem)]"
+      : // On public pages: occupy full width from the very left
+        "left-0 w-full");
 
   // Load user session from local storage
   useEffect(() => {
@@ -65,7 +74,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="bg-white shadow-sm fixed top-0 left-0 w-full z-50">
+    <header className={headerClass}>
       <div className="navbar container mx-auto px-4 py-3 flex justify-between items-center">
         {/* Left: Hamburger (mobile only) + Logo + Desktop Links */}
         <div className="flex items-center gap-6">
@@ -161,10 +170,14 @@ export default function Navbar() {
             </div>
           ) : (
             <button
-              className="btn btn-outline rounded-full px-5 text-sm text-[#262626] border-gray-300 hover:border-[#03045E] hover:text-[#03045E]"
               onClick={() => navigate("/login")}
+              className="relative overflow-hidden border border-gray-300 text-[#03045E] font-semibold rounded-full px-6 py-3 text-base transition-all duration-300 hover:text-white hover:border-[#03045E] group"
             >
-              登入
+              {/* animated background layer */}
+              <span className="absolute inset-0 bg-[#03045E] scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100 rounded-full"></span>
+
+              {/* text layer */}
+              <span className="relative z-10">註冊／登入</span>
             </button>
           )}
         </div>

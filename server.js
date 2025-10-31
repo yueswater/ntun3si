@@ -29,7 +29,12 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 // Middleware setup
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://ntun3si.onrender.com"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(passport.initialize());
 

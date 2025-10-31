@@ -41,7 +41,7 @@ export default function AdminLayout() {
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       <div className="flex-1 flex flex-col">
         <Navbar />
-        <div className="p-6">
+        <div className="p-6 mt-[72px]">
           {isNestedRoute ? <Outlet /> : renderContent()}
         </div>
       </div>

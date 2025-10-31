@@ -21,24 +21,39 @@ export default function DataTable({ columns, data }) {
         </tbody>
       </table>
 
-      {/* 手機版 */}
-      <div className="block md:hidden space-y-3">
+      {/* 手機版卡片 */}
+      <div className="block md:hidden space-y-4">
         {data.map((row, index) => (
           <div
             key={index}
-            className="border border-base-200 rounded-lg p-3 shadow-sm bg-base-100"
+            className="card bg-base-100 border border-base-200 shadow-sm rounded-xl"
           >
-            {columns.map((col, i) => (
-              <div
-                key={i}
-                className="flex justify-between py-1 border-b last:border-0"
-              >
-                <span className="text-sm text-gray-500">{col}</span>
-                <span className="text-sm font-medium text-gray-800">
-                  {Object.values(row)[i]}
-                </span>
+            <div className="card-body p-4">
+              <h2 className="card-title text-base font-semibold mb-2">
+                #{index + 1}
+              </h2>
+
+              <div className="divide-y divide-base-200 space-y-2">
+                {columns.map((col, i) => (
+                  <div
+                    key={i}
+                    className="flex justify-between items-center pt-2"
+                  >
+                    <span className="text-sm text-gray-500">{col}</span>
+                    <span className="text-sm font-medium text-gray-800 text-right max-w-[60%] truncate">
+                      {Object.values(row)[i]}
+                    </span>
+                  </div>
+                ))}
               </div>
-            ))}
+
+              {/* Action area (if actions exist) */}
+              {row.actions && (
+                <div className="card-actions justify-end mt-3">
+                  {row.actions}
+                </div>
+              )}
+            </div>
           </div>
         ))}
       </div>
