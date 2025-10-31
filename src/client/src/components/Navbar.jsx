@@ -86,7 +86,7 @@ export default function Navbar() {
               setShowSearch(false);
             }}
           >
-            NTUN3SI 國安社
+            臺大國安社
           </Link>
 
           {/* Desktop navigation links (next to logo) */}
