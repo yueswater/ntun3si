@@ -99,8 +99,9 @@ export default function useArticleData(slug) {
         setArticle(data);
 
         // Convert markdown to HTML (async)
-        const rawHtml =
-          data.content_html || (await markdownToHtml(data.content_md || ""));
+        const rawHtml = await markdownToHtml(
+          data.content_md || data.content_html || ""
+        );
 
         // Add IDs to headings
         const htmlWithIds = addHeadingIds(rawHtml);

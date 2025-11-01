@@ -5,6 +5,9 @@ import remarkRehype from "remark-rehype";
 import rehypeRaw from "rehype-raw";
 import rehypeStringify from "rehype-stringify";
 import { visit } from "unist-util-visit";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
 
 /**
  * Rehype plugin to wrap images in figure with figcaption
@@ -55,8 +58,10 @@ export async function markdownToHtml(md) {
   const file = await unified()
     .use(remarkParse)
     .use(remarkGfm)
+    .use(remarkMath)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeRaw)
+    .use(rehypeKatex)
     .use(rehypeFigure)
     .use(rehypeStringify)
     .process(md);
