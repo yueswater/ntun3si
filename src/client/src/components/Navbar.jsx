@@ -5,6 +5,7 @@ import {
   faBars,
   faXmark,
   faMagnifyingGlass,
+  faRightToBracket,
 } from "@fortawesome/free-solid-svg-icons";
 import SearchBar from "./SearchBar";
 
@@ -17,6 +18,8 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const isAdmin = location.pathname.startsWith("/admin");
+  const isLoginPage = location.pathname.startsWith("/login");
+  const isHomePage = location.pathname === "/";
   // Build header classes based on whether sidebar (admin) is present
   const headerClass =
     "bg-white shadow-sm fixed top-0 z-50 " +
@@ -75,7 +78,7 @@ export default function Navbar() {
 
   return (
     <header className={headerClass}>
-      <div className="navbar container mx-auto px-4 py-3 flex justify-between items-center">
+      <div className="navbar container mx-auto px-4 py-3 flex items-center justify-between lg:justify-between relative">
         {/* Left: Hamburger (mobile only) + Logo + Desktop Links */}
         <div className="flex items-center gap-6">
           {/* Hamburger (visible only on mobile) */}
@@ -89,7 +92,9 @@ export default function Navbar() {
           {/* Shared Logo */}
           <Link
             to="/"
-            className="btn btn-ghost text-2xl font-bold text-[#03045E]"
+            className={`btn btn-ghost text-2xl font-bold text-[#03045E] absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0 transition-all duration-200 ${
+              isHomePage ? "-ml-2" : ""
+            }`}
             onClick={() => {
               setIsOpen(false);
               setShowSearch(false);
@@ -125,18 +130,22 @@ export default function Navbar() {
 
         {/* Right: Search + Avatar (shared for both desktop & mobile) */}
         <div className="flex items-center gap-4">
-          {/* Search button (mobile only) */}
-          <button
-            className="btn btn-ghost btn-circle text-[#03045E] lg:hidden"
-            onClick={toggleSearch}
-          >
-            <FontAwesomeIcon icon={faMagnifyingGlass} size="lg" />
-          </button>
+          {/* Search button (mobile only, hide on login page) */}
+          {!isLoginPage && (
+            <button
+              className="btn btn-ghost btn-circle text-[#03045E] lg:hidden mr-1"
+              onClick={toggleSearch}
+            >
+              <FontAwesomeIcon icon={faMagnifyingGlass} size="lg" />
+            </button>
+          )}
 
-          {/* Desktop search bar */}
-          <div className="hidden lg:block">
-            <SearchBar />
-          </div>
+          {/* Desktop search bar (hide on login page) */}
+          {!isLoginPage && (
+            <div className="hidden lg:block">
+              <SearchBar />
+            </div>
+          )}
 
           {/* Avatar / Login button */}
           {user ? (
@@ -177,14 +186,17 @@ export default function Navbar() {
               <span className="absolute inset-0 bg-[#03045E] scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100 rounded-full"></span>
 
               {/* text layer */}
-              <span className="relative z-10">註冊／登入</span>
+              <span className="relative z-10 hidden sm:inline">註冊／登入</span>
+              <span className="relative z-10 sm:hidden">
+                <FontAwesomeIcon icon={faRightToBracket} size="lg" />
+              </span>
             </button>
           )}
         </div>
       </div>
 
       {/* Mobile search bar (expanded below navbar) */}
-      {showSearch && (
+      {showSearch && !isLoginPage && (
         <div className="lg:hidden bg-white shadow-inner border-t p-3">
           <div className="w-[95%] mx-auto">
             <SearchBar />
