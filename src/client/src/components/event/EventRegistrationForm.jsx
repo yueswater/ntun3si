@@ -133,7 +133,7 @@ export default function EventRegistrationForm({ event, form }) {
         import.meta.env.VITE_BASE_URL?.replace(/\/$/, "") ||
         "http://localhost:5050/api";
 
-      await fetch(`${apiBase}/test/newsletter`, {
+      await fetch(`${apiBase}/mail/newsletter`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
