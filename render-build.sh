@@ -1,15 +1,13 @@
 #!/usr/bin/env bash
 # Render build script for full-stack deployment
 
-set -e
+set -o errexit
 
-echo "Installing dependencies..."
-npm install
+echo "Installing root dependencies (including devDependencies)..."
+npm install --include=dev
 
-echo "Building frontend..."
-cd src/client
-npm install
-npm run build
-cd ../..
+echo "Installing and building client..."
+npm install --include=dev --prefix src/client
+npm run build --prefix src/client
 
 echo "Build completed successfully!"
