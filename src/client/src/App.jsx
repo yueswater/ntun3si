@@ -1,3 +1,4 @@
+// src/App.jsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 
@@ -23,22 +24,24 @@ import MemberManagement from "./pages/admin/MemberManagement";
 import FormManagement from "./pages/admin/FormManagement";
 import RegistrationManagement from "./pages/admin/RegistrationManagement";
 
-// Permission page
-import NoPermission from "./pages/NoPermission";
+// Error pages
+import Error404 from "./pages/Error404";
+import Error500 from "./pages/Error500";
 
 /* ----------------------------------------------------------
    Helper component: AdminRoute
    This wrapper ensures that only admin users can access admin routes.
-   Non-admin users will be redirected to the "你壞壞" page.
+   Non-admin users will be redirected to the "404" page.
 ----------------------------------------------------------- */
 function AdminRoute({ children }) {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
-  return isAdmin ? children : <NoPermission />;
+  return isAdmin ? children : <Error404 />;
 }
 
 /* ----------------------------------------------------------
-   Main Application
+   Main Application Component
+   Wraps all routes with AuthProvider and BrowserRouter.
 ----------------------------------------------------------- */
 export default function App() {
   return (
@@ -79,6 +82,10 @@ export default function App() {
               element={<RegistrationManagement />}
             />
           </Route>
+
+          {/* Error Routes */}
+          <Route path="/error/500" element={<Error500 />} />
+          <Route path="*" element={<Error404 />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
