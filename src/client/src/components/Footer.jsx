@@ -1,4 +1,10 @@
 import { useState } from "react";
+import {
+  faInstagram,
+  faFacebookF,
+  faLine,
+} from "@fortawesome/free-brands-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
@@ -11,7 +17,6 @@ export default function Footer() {
 
     try {
       setLoading(true);
-      // Explicitly set backend base URL
       const apiBase =
         import.meta.env.VITE_BASE_URL?.replace(/\/$/, "") ||
         "http://localhost:5050/api";
@@ -28,7 +33,6 @@ export default function Footer() {
         }),
       });
 
-      // Handle non-JSON responses safely
       let data;
       try {
         data = await res.json();
@@ -48,10 +52,10 @@ export default function Footer() {
 
   return (
     <footer className="bg-base-200 text-base-content px-6 md:px-16 py-10">
-      {/* Main section container */}
-      <div className="flex flex-nowrap overflow-x-auto justify-start md:justify-center gap-x-10 md:gap-x-16 px-2 scrollbar-none">
-        {/* Service section */}
-        <nav className="flex-shrink-0 space-y-2">
+      {/* ====== Main navigation area ====== */}
+      <div className="flex flex-wrap justify-center text-center md:justify-center md:text-left md:flex-nowrap md:gap-x-16 gap-x-10 gap-y-8 px-2">
+        {/* Services section */}
+        <nav className="space-y-2">
           <h6 className="footer-title">社團服務</h6>
           <a className="link link-hover block">活動公告</a>
           <a className="link link-hover block">投稿專區</a>
@@ -59,7 +63,7 @@ export default function Footer() {
         </nav>
 
         {/* About section */}
-        <nav className="flex-shrink-0 space-y-2">
+        <nav className="space-y-2">
           <h6 className="footer-title">關於我們</h6>
           <a className="link link-hover block">社團介紹</a>
           <a className="link link-hover block">聯絡我們</a>
@@ -67,17 +71,14 @@ export default function Footer() {
         </nav>
 
         {/* Policy section */}
-        <nav className="flex-shrink-0 space-y-2">
+        <nav className="space-y-2">
           <h6 className="footer-title">政策與條款</h6>
           <a className="link link-hover block">使用條款</a>
           <a className="link link-hover block">隱私政策</a>
         </nav>
 
-        {/* Newsletter subscription section */}
-        <form
-          className="flex-shrink-0 sm:ml-8 space-y-2"
-          onSubmit={handleSubscribe}
-        >
+        {/* Newsletter subscription (desktop only) */}
+        <form className="hidden md:block space-y-2" onSubmit={handleSubscribe}>
           <h6 className="footer-title">電子報</h6>
           <label className="label">
             <span className="label-text">訂閱我們的電子報</span>
@@ -103,8 +104,68 @@ export default function Footer() {
         </form>
       </div>
 
-      {/* Footer copyright */}
-      <div className="mt-10 text-center text-sm opacity-70">
+      {/* ====== Newsletter (mobile only) ====== */}
+      <form
+        className="mt-8 block md:hidden text-center space-y-2"
+        onSubmit={handleSubscribe}
+      >
+        <h6 className="footer-title">電子報</h6>
+        <label className="label justify-center">
+          <span className="label-text">訂閱我們的電子報</span>
+        </label>
+        <fieldset className="join justify-center">
+          <input
+            type="email"
+            placeholder="your@email.com"
+            className="input input-bordered join-item rounded-xl w-64"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            disabled={loading}
+          />
+          <button
+            type="submit"
+            className="btn btn-primary join-item rounded-xl"
+            disabled={loading}
+          >
+            {loading ? "處理中..." : "訂閱"}
+          </button>
+        </fieldset>
+      </form>
+
+      {/* ====== Social media icons ====== */}
+      <div className="mt-8 flex justify-center gap-6">
+        <a
+          href="https://www.instagram.com/ntu_n3si/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-gray-500 hover:text-primary transition-transform duration-300 hover:scale-110"
+          aria-label="Instagram"
+        >
+          <FontAwesomeIcon icon={faInstagram} size="lg" />
+        </a>
+        <a
+          href="https://www.facebook.com/profile.php?id=61551782162253"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-gray-500 hover:text-primary transition-transform duration-300 hover:scale-110"
+          aria-label="Facebook"
+        >
+          <FontAwesomeIcon icon={faFacebookF} size="lg" />
+        </a>
+        <a
+          href="https://line.me/ti/g/NBzVNC2dN-"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-gray-500 hover:text-primary transition-transform duration-300 hover:scale-110"
+          aria-label="Line"
+        >
+          <FontAwesomeIcon icon={faLine} size="lg" />
+        </a>
+      </div>
+
+      {/* ====== Copyright text ====== */}
+      <div className="mt-6 text-center text-sm opacity-70">
         © {new Date().getFullYear()} NTUN3SI 國安社. All rights reserved.
       </div>
     </footer>
