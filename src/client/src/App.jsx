@@ -1,6 +1,6 @@
-// src/App.jsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import PageTransition from "./components/PageTransition";
 
 // Public layout and pages
 import Layout from "./layout/Layout";
@@ -47,46 +47,48 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="about" element={<About />} />
-            <Route path="login" element={<Login />} />
-            <Route path="auth/success" element={<AuthSuccess />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="articles" element={<ArticlesList />} />
-            <Route path="events" element={<EventsList />} />
-            <Route path="isearch" element={<ISearch />} />
-            <Route path="articles/:slug" element={<ArticlePage />} />
-            <Route path="events/:slug" element={<EventPage />} />
-          </Route>
+        <PageTransition>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Home />} />
+              <Route path="about" element={<About />} />
+              <Route path="login" element={<Login />} />
+              <Route path="auth/success" element={<AuthSuccess />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="articles" element={<ArticlesList />} />
+              <Route path="events" element={<EventsList />} />
+              <Route path="isearch" element={<ISearch />} />
+              <Route path="articles/:slug" element={<ArticlePage />} />
+              <Route path="events/:slug" element={<EventPage />} />
+            </Route>
 
-          {/* Admin Routes (protected by AdminRoute) */}
-          <Route
-            path="/admin"
-            element={
-              <AdminRoute>
-                <AdminLayout />
-              </AdminRoute>
-            }
-          >
-            <Route index element={<Dashboard />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="members" element={<MemberManagement />} />
-            <Route path="articles" element={<ArticleManagement />} />
-            <Route path="events" element={<EventManagement />} />
-            <Route path="forms" element={<FormManagement />} />
+            {/* Admin Routes (protected by AdminRoute) */}
             <Route
-              path="registrations/:eventUid"
-              element={<RegistrationManagement />}
-            />
-          </Route>
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <AdminLayout />
+                </AdminRoute>
+              }
+            >
+              <Route index element={<Dashboard />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="members" element={<MemberManagement />} />
+              <Route path="articles" element={<ArticleManagement />} />
+              <Route path="events" element={<EventManagement />} />
+              <Route path="forms" element={<FormManagement />} />
+              <Route
+                path="registrations/:eventUid"
+                element={<RegistrationManagement />}
+              />
+            </Route>
 
-          {/* Error Routes */}
-          <Route path="/error/500" element={<Error500 />} />
-          <Route path="*" element={<Error404 />} />
-        </Routes>
+            {/* Error Routes */}
+            <Route path="/error/500" element={<Error500 />} />
+            <Route path="*" element={<Error404 />} />
+          </Routes>
+        </PageTransition>
       </BrowserRouter>
     </AuthProvider>
   );
