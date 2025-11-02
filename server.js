@@ -23,7 +23,9 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// ------------------------------------------------------------
 // Middleware setup
+// ------------------------------------------------------------
 app.use(
   cors({
     origin: ["http://localhost:5173", "https://ntun3si.onrender.com"],
@@ -33,10 +35,14 @@ app.use(
 app.use(express.json());
 app.use(passport.initialize());
 
-// Connect to MongoDB before starting the server
+// ------------------------------------------------------------
+// Connect to MongoDB
+// ------------------------------------------------------------
 await connectDB();
 
+// ------------------------------------------------------------
 // API routes
+// ------------------------------------------------------------
 app.use("/api/articles", articleRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/events", eventRoutes);
@@ -46,7 +52,24 @@ app.use("/api/forms", formRoutes);
 app.use("/api/registrations", registrationRoutes);
 app.use("/api/mail", mailRoutes);
 
+// ------------------------------------------------------------
+// Serve frontend in production
+// ------------------------------------------------------------
+if (process.env.NODE_ENV === "production") {
+  const distPath = path.join(__dirname, "src/client/dist");
+
+  // Serve static frontend assets (CSS, JS, images)
+  app.use(express.static(distPath));
+
+  // Fallback route: send index.html for all non-API requests
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(distPath, "index.html"));
+  });
+}
+
+// ------------------------------------------------------------
 // Start server
+// ------------------------------------------------------------
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
@@ -55,7 +78,9 @@ app.listen(PORT, () => {
   }
 });
 
+// ------------------------------------------------------------
 // Scheduled task: delete unverified users daily at 3 AM
+// ------------------------------------------------------------
 cron.schedule("0 3 * * *", async () => {
   const result = await User.deleteMany({
     emailVerified: false,
