@@ -32,11 +32,18 @@ export default function ArticleContent({ article, html }) {
 
         {/* 預覽圖片 */}
         {article.previewImg && (
-          <img
-            src={article.previewImg}
-            alt={article.title}
-            className="rounded-lg mb-6 w-full"
-          />
+          <figure className="my-8 flex justify-center">
+            <img
+              src={article.previewImg}
+              alt={article.title}
+              className="max-w-[400px] w-full rounded-lg shadow-sm object-contain"
+            />
+            {article.caption && (
+              <figcaption className="text-sm text-gray-500 mt-2 text-center">
+                {article.caption}
+              </figcaption>
+            )}
+          </figure>
         )}
 
         {/* 文章內容 */}

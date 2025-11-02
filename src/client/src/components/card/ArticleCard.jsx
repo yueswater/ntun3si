@@ -28,7 +28,7 @@ export default function ArticleCard({ article, variant = "default" }) {
         className="card card-side bg-base-100 hover:bg-base-200 transition-colors cursor-pointer group overflow-hidden rounded-lg"
         onClick={() => navigate(`/articles/${article.slug}`)}
       >
-        <figure className="w-[45%] shrink-0">
+        <figure className="w-[45%] max-w-[240px] shrink-0 aspect-square overflow-hidden rounded-lg">
           <img
             src={article.previewImg || defaultImg}
             alt={article.title}
