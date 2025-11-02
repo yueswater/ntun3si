@@ -98,6 +98,8 @@ export default function EventManagement() {
   const handleManualSave = async () => {
     if (!selected) return;
 
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
     if (isNew) {
       if (!form.title?.trim() || form.title === "新活動") {
         alert("請輸入活動名稱");
@@ -204,7 +206,7 @@ export default function EventManagement() {
         >
           <div className="p-4 border-b border-base-300 space-y-3">
             <TitleSlugHeader
-              mode={isNew ? "new" : "edit"}
+              mode={selected?.uid === "new" ? "new" : "edit"}
               title={form.title}
               slug={selected.slug || ""}
               onTitle={(v) => {

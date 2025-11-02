@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { normalizeSlugFromTitle } from "../utils/slugValidators";
 
 export default function TitleSlugHeader({
   mode,
@@ -25,7 +26,8 @@ export default function TitleSlugHeader({
   }, [isEditingSlug]);
 
   const handleSlugSave = () => {
-    onSlug(tempSlug);
+    const cleaned = normalizeSlugFromTitle(tempSlug);
+    onSlug(cleaned);
     setIsEditingSlug(false);
   };
 

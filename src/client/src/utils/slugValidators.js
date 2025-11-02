@@ -32,5 +32,5 @@ export function isValidSlug(slug) {
   if (!slug) return false;
   const decoded = decodeURIComponent(slug);
   if (decoded.includes("new-event-")) return false;
-  return /^[a-z0-9\u4e00-\u9fa5-]+$/i.test(decoded);
+  return /^[a-z0-9\u4e00-\u9fa5-_]+$/i.test(decoded);
 }
