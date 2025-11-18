@@ -1,53 +1,31 @@
-// generate-sitemap.js
-import { SitemapStream, streamToPromise } from 'sitemap';
-import { createWriteStream } from 'fs';
-import fetch from 'node-fetch';
-import { resolve } from 'path';
+import { SitemapStream, streamToPromise } from "sitemap";
+import { createWriteStream } from "fs";
+import { resolve } from "path";
 
-const SITE_URL = 'https://ntun3si.space';
-
-// 你的靜態頁面
-const staticPages = [
-  '/',
-  '/articles',
-  '/events',
-  '/about',
-  '/join'
-];
+const BASE_URL = "https://ntun3si.space";
 
 async function generateSitemap() {
-  let articles = [];
+  // 要輸出的 URL 列表
+  const urls = [
+    { url: "/", changefreq: "weekly", priority: 1.0 },
+    { url: "/about", changefreq: "monthly" },
+    { url: "/events", changefreq: "weekly" },
+    { url: "/articles", changefreq: "weekly" },
+  ];
 
-  try {
-    const res = await fetch(`${SITE_URL}/api/articles`);
-    articles = await res.json();
-  } catch (err) {
-    console.error('❌ 無法取得文章 API：', err);
-  }
+  const sitemap = new SitemapStream({ hostname: BASE_URL });
 
-  // 寫入 React build 輸出的 dist/ 裡面
-  const writePath = resolve('./src/client/dist/sitemap.xml');
-  const sitemap = new SitemapStream({ hostname: SITE_URL });
+  const writePath = resolve("src/client/dist/sitemap.xml");
   const writeStream = createWriteStream(writePath);
 
-  // 加入靜態路由
-  staticPages.forEach((page) => {
-    sitemap.write({ url: page, changefreq: 'weekly', priority: 1.0 });
-  });
+  sitemap.pipe(writeStream);
 
-  // 加入文章路由
-  articles.forEach((a) => {
-    sitemap.write({
-      url: `/article/${a.slug}`,
-      changefreq: 'weekly',
-      priority: 0.8,
-    });
-  });
-
+  urls.forEach((u) => sitemap.write(u));
   sitemap.end();
+
   await streamToPromise(sitemap);
 
-  console.log('✔ sitemap.xml 產生成功：', writePath);
+  console.log("✔ sitemap.xml 產生成功：", writePath);
 }
 
 generateSitemap();
