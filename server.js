@@ -61,6 +61,11 @@ if (process.env.NODE_ENV === "production") {
   // Serve static frontend assets (CSS, JS, images)
   app.use(express.static(distPath));
 
+  // Get sitemap
+  app.get("/sitemap.xml", (req, res) => {
+    res.sendFile(path.join(distPath, "sitemap.xml"));
+  });
+
   // Fallback route: send index.html for all non-API requests
   app.get(/.*/, (req, res) => {
     res.sendFile(path.join(distPath, "index.html"));
