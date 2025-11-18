@@ -3,11 +3,16 @@
 
 set -o errexit
 
-echo "Installing root dependencies (including devDependencies)..."
+echo "=== Step 1: Installing root dependencies... ==="
 npm install --include=dev
 
-echo "Installing and building client..."
+echo "=== Step 2: Installing client dependencies... ==="
 npm install --include=dev --prefix src/client
+
+echo "=== Step 3: Building client app... ==="
 npm run build --prefix src/client
 
-echo "Build completed successfully!"
+echo "=== Step 4: Generating Sitemap... ==="
+node generate-sitemap.js
+
+echo "=== Build completed successfully! ==="
