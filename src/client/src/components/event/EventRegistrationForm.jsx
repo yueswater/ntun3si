@@ -147,7 +147,7 @@ export default function EventRegistrationForm({ event, form }) {
           活動資訊：
           - 日期：${new Date(event.date).toLocaleString("zh-TW")}
           - 地點：${event.location || "待通知"}
-          - 聯絡信箱：sungpinyue@gmail.com
+          - 聯絡信箱：ntub113022national@gmail.com
 
           若非本人操作，請忽略此信。
           感謝您的支持！
