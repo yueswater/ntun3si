@@ -44,6 +44,7 @@ export default function Login() {
 
         const { token, user } = res.data;
         login(user, token);
+        window.dispatchEvent(new Event("auth-updated"));
         if (user.role === "admin") {
           navigate("/admin/dashboard", { replace: true });
         } else {

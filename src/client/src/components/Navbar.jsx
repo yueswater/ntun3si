@@ -38,6 +38,22 @@ export default function Navbar() {
     }
   }, []);
 
+  // 🔄 NEW: Listen to AuthContext login/logout updates
+  useEffect(() => {
+    const updateUser = () => {
+      const token = localStorage.getItem("token");
+      const storedUser = localStorage.getItem("user");
+      if (token && storedUser) {
+        setUser(JSON.parse(storedUser));
+      } else {
+        setUser(null);
+      }
+    };
+
+    window.addEventListener("auth-updated", updateUser);
+    return () => window.removeEventListener("auth-updated", updateUser);
+  }, []);
+
   // Close avatar dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -55,7 +71,9 @@ export default function Navbar() {
     localStorage.removeItem("user");
     setUser(null);
     navigate("/");
-    window.location.reload();
+
+    // 🔄 NEW: Notify navbar to refresh immediately
+    window.dispatchEvent(new Event("auth-updated"));
   };
 
   // Highlight active route

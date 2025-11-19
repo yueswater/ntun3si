@@ -19,6 +19,8 @@ export function AuthProvider({ children }) {
         // Verify token and get user data
         const userData = await get("/users/me"); // Adjust endpoint as needed
         setUser(userData);
+
+        localStorage.setItem("user", JSON.stringify(userData));
       }
     } catch (error) {
       console.error("Auth check failed:", error);
@@ -29,7 +31,13 @@ export function AuthProvider({ children }) {
   };
 
   const login = (userData, token) => {
+    // 儲存 token
     localStorage.setItem("token", token);
+
+    // ★ 新增：順便把 user 存進 localStorage，讓 Navbar 讀得到
+    localStorage.setItem("user", JSON.stringify(userData));
+
+    // 更新 Context 裡的 user（給有用 useAuth 的元件用）
     setUser(userData);
   };
 
