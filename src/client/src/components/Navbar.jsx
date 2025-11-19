@@ -137,16 +137,6 @@ export default function Navbar() {
 
         {/* Right section: Search bar + Login/Avatar */}
         <div className="flex items-center gap-4">
-          {/* Mobile search button */}
-          {!isLoginPage && (
-            <button
-              className="btn btn-ghost btn-circle text-[#03045E] lg:hidden mr-1"
-              onClick={toggleSearch}
-            >
-              <FontAwesomeIcon icon={faMagnifyingGlass} size="lg" />
-            </button>
-          )}
-
           {/* Desktop search bar */}
           {!isLoginPage && (
             <div className="hidden lg:block">
@@ -210,33 +200,43 @@ export default function Navbar() {
 
       {/* Mobile hamburger menu */}
       {isOpen && (
-        <div className="lg:hidden bg-white shadow-md border-t">
-          <div className="flex justify-around p-4 text-lg font-medium">
-            <Link
-              to="/articles"
-              onClick={() => setIsOpen(false)}
-              className={`${
-                isActive("/articles")
-                  ? "text-[#03045E] font-semibold"
-                  : "text-[#262626]"
-              }`}
-            >
-              文章總覽
-            </Link>
-            <Link
-              to="/events"
-              onClick={() => setIsOpen(false)}
-              className={`${
-                isActive("/events")
-                  ? "text-[#03045E] font-semibold"
-                  : "text-[#262626]"
-              }`}
-            >
-              活動總覽
-            </Link>
-          </div>
+      <div className="lg:hidden bg-white shadow-md border-t p-4 text-lg font-medium flex flex-col gap-4">
+
+        {/* 第一排：文章 / 活動（左右排列） */}
+        <div className="flex justify-around">
+          <Link
+            to="/articles"
+            onClick={() => setIsOpen(false)}
+            className={`${
+              isActive("/articles")
+                ? "text-[#03045E] font-semibold"
+                : "text-[#262626]"
+            }`}
+          >
+            文章總覽
+          </Link>
+
+          <Link
+            to="/events"
+            onClick={() => setIsOpen(false)}
+            className={`${
+              isActive("/events")
+                ? "text-[#03045E] font-semibold"
+                : "text-[#262626]"
+            }`}
+          >
+            活動總覽
+          </Link>
         </div>
-      )}
+
+        {/* 第二排：搜尋欄（整行） */}
+        {!isLoginPage && (
+          <div className="w-full">
+            <SearchBar />
+          </div>
+        )}
+      </div>
+    )}
     </header>
   );
 }
