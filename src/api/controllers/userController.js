@@ -137,7 +137,7 @@ export async function verifyEmailToken(req, res) {
     user.tokenExpiresAt = null;
     await user.save();
 
-    return res.redirect(302, `${process.env.FRONTEND_URL}/verify-success`);
+    return res.redirect(302, `${process.env.FRONTEND_URL}/login`);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
