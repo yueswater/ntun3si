@@ -5,6 +5,12 @@ import {
   sendEventRegistrationEmail,
   sendNewsletterEmail,
 } from "../utils/emailService.js";
+import {
+  subscribeNewsletter,
+  unsubscribeNewsletter,
+  unsubscribeByLink,
+} from "../controllers/newsletterController.js";
+
 
 const router = express.Router();
 
@@ -42,14 +48,8 @@ router.post("/event", async (req, res) => {
 });
 
 // Newsletter email
-router.post("/newsletter", async (req, res) => {
-  try {
-    const { recipients, subject, content } = req.body;
-    await sendNewsletterEmail(recipients, subject, content);
-    res.json({ message: "Newsletter sent successfully" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+router.post("/newsletter", subscribeNewsletter);
+router.post("/newsletter/unsubscribe", unsubscribeNewsletter);
+router.get("/newsletter/unsubscribe", unsubscribeByLink);
 
 export default router;

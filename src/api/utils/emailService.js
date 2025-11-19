@@ -62,7 +62,7 @@ export async function sendRegistrationEmail(user, verifyUrl) {
   });
   await sendMail({
     to: user.email,
-    subject: "Welcome to NTUN3SI - Please confirm your email",
+    subject: "【臺大國安社】請驗證您的電子郵件 | Email Verification Required",
     markdown,
   });
 }
@@ -79,7 +79,7 @@ export async function sendEventRegistrationEmail(user, event) {
   });
   await sendMail({
     to: user.email,
-    subject: `[NTUN3SI] ${event.title} 報名成功`,
+    subject: `【臺大國安社】${event.title} 報名成功 | Event Registration Confirmed`,
     markdown,
   });
 }
@@ -87,9 +87,17 @@ export async function sendEventRegistrationEmail(user, event) {
 /**
  * Newsletter (Markdown template)
  */
-export async function sendNewsletterEmail(recipients, subject, content) {
-  const markdown = loadTemplate("newsletter", { subject, content });
-  for (const email of recipients) {
-    await sendMail({ to: email, subject, markdown });
-  }
+export async function sendNewsletterEmail(email) {
+  const unsubscribeUrl = `https://ntun3si.space/api/mail/newsletter/unsubscribe?email=${encodeURIComponent(email)}`;
+
+  const markdown = loadTemplate("newsletter_welcome", {
+    unsubscribeUrl,
+  });
+
+  await sendMail({
+    to: email,
+    subject: "【臺大國安社】電子報訂閱成功 | Newsletter Subscription Confirmed",
+    markdown,
+  });
 }
+

@@ -24,22 +24,7 @@ export default function Footer() {
       const res = await fetch(`${apiBase}/mail/newsletter`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          recipients: [email],
-          subject: "【臺大國安社】電子報訂閱成功通知",
-          content: `
-          感謝您訂閱 NTUN3SI 國安社電子報！
-
-          我們已成功收到您的訂閱，未來將定期寄送社團活動公告、專題文章與最新研究分享給您。  
-          若您非本人操作，請忽略此信件。
-
-          感謝您對 NTUN3SI 的支持，  
-          期待與您一同關注國際安全與戰略議題。
-
-          — NTUN3SI 電子報小組
-          `,
-        }),
+        body: JSON.stringify({ email }),
       });
 
       let data;
