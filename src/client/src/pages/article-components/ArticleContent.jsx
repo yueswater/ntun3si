@@ -8,8 +8,6 @@ import "katex/dist/katex.min.css";
 export default function ArticleContent({ article, html }) {
   if (!article) return null;
 
-  console.log("Rendered HTML snippet:", html.slice(0, 300));
-
   return (
     <main className="col-span-12 lg:col-span-8">
       <article>

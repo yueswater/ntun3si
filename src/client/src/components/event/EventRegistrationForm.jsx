@@ -31,6 +31,7 @@ export default function EventRegistrationForm({ event, form }) {
         ...prev,
         name: user.name || "",
         email: user.email || "",
+        phone: user.phone || "",
       }));
     }
   }, [user]);
