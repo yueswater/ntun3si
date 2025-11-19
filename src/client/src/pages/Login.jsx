@@ -112,7 +112,7 @@ export default function Login() {
 
             <div className="form-control">
               <label className="label font-semibold">
-                <span className="label-text">帳號或電子郵件</span>
+                <span className="label-text">電子郵件</span>
               </label>
               <input
                 type="text"
