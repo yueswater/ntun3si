@@ -137,7 +137,7 @@ export async function verifyEmailToken(req, res) {
     user.tokenExpiresAt = null;
     await user.save();
 
-    res.json({ message: "Email verified successfully" });
+    return res.redirect(302, `${process.env.FRONTEND_URL}/verify-success`);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
