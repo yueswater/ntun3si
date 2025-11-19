@@ -15,9 +15,9 @@ import { verifyToken, adminOnly } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 // Public
-router.get("/", verifyToken, adminOnly, getEvents);
-router.get("/slug/:slug", verifyToken, adminOnly, getEventBySlug);
-router.get("/:uid", verifyToken, adminOnly, getEventByUid);
+router.get("/", getEvents);
+router.get("/slug/:slug", getEventBySlug);
+router.get("/:uid", getEventByUid);
 
 // Admin
 router.post("/", verifyToken, adminOnly, createEvent);
