@@ -40,12 +40,16 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://ntun3si.onrender.com",
       "https://ntun3si.space",
+      "https://www.ntun3si.space",
+      "https://ntun3si.onrender.com"
     ],
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
 
 // Parse JSON request bodies
 app.use(express.json());

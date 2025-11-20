@@ -113,10 +113,7 @@ export default function Profile() {
     formData.append("type", "avatar");
 
     try {
-      const res = await axiosClient.post("/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
+      const res = await axiosClient.post("/upload", formData);
       const avatarUrl = res.data.url;
       const token = localStorage.getItem("token");
       const updateRes = await axiosClient.put(
