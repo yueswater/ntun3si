@@ -17,6 +17,7 @@
     "axios": "^1.12.2",
     "daisyui": "^4.12.24",
     "fuse.js": "^7.1.0",
+    "heic2any": "^0.0.4",
     "katex": "^0.16.25",
     "lottie-react": "^2.4.1",
     "pinyin-pro": "^3.27.0",

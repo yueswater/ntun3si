@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axiosClient from "../api/axiosClient";
 import AnimatedButton from "../components/AnimatedButton";
 import AppAlert from "../components/AppAlert";
+import heic2any from "heic2any";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -61,7 +62,7 @@ export default function Profile() {
 
   // 處理檔案選擇
   const handleFileChange = async (e) => {
-    const file = e.target.files[0];
+    let file = e.target.files[0];
     if (!file) return;
 
     const maxSize = 5 * 1024 * 1024;
@@ -70,11 +71,31 @@ export default function Profile() {
       return;
     }
 
-    if (!file.type.startsWith("image/")) {
-      setAlert({ type: "error", message: "請選擇圖片檔案" });
-      return;
+    // 偵測 HEIC / HEIF
+    if (
+      file.type === "image/heic" ||
+      file.type === "image/heif" ||
+      file.name.endsWith(".heic") ||
+      file.name.endsWith(".heif")
+    ) {
+      try {
+        const convertedBlob = await heic2any({
+          blob: file,
+          toType: "image/jpeg",
+          quality: 0.9,
+        });
+
+        file = new File([convertedBlob], file.name.replace(/\.(heic|heif)$/i, ".jpg"), {
+          type: "image/jpeg",
+        });
+      } catch (error) {
+        console.error("HEIC 轉換失敗:", error);
+        setAlert({ type: "error", message: "HEIC 檔案無法轉換" });
+        return;
+      }
     }
 
+    // FileReader 預覽
     const reader = new FileReader();
     reader.onloadend = () => {
       setAvatarPreview(reader.result);
@@ -92,18 +113,23 @@ export default function Profile() {
     formData.append("type", "avatar");
 
     try {
-      const res = await axiosClient.post("/upload", formData, {
+      const res = await axiosClient.post("/api/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
       const avatarUrl = res.data.url;
-      const updateRes = await axiosClient.put("/users/me", {
-        avatar: avatarUrl,
-      });
+      const token = localStorage.getItem("token");
+      const updateRes = await axiosClient.put(
+          "/users/me",
+          { avatar: avatarUrl },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
       setUser(updateRes.data);
       setAvatarPreview(avatarUrl);
-
+d
       // 更新 localStorage
       const storedUser = JSON.parse(localStorage.getItem("user"));
       storedUser.avatar = avatarUrl;
@@ -194,7 +220,7 @@ export default function Profile() {
                   type="file"
                   ref={fileInputRef}
                   onChange={handleFileChange}
-                  accept="image/*"
+                  accept="image/png, image/jpeg, image/jpg, image/heic, image/heif, image/*"
                   className="hidden"
                 />
 
