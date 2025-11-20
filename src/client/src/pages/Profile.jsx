@@ -113,7 +113,7 @@ export default function Profile() {
     formData.append("type", "avatar");
 
     try {
-      const res = await axiosClient.post("/api/upload", formData, {
+      const res = await axiosClient.post("/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
