@@ -113,29 +113,46 @@ export default function Profile() {
     formData.append("type", "avatar");
 
     try {
-      const res = await axiosClient.post("/upload", formData);
-      const avatarUrl = res.data.url;
       const token = localStorage.getItem("token");
+      
+      // 上傳檔案到 R2
+      const res = await axiosClient.post("/upload", formData, {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data"
+        },
+      });
+      
+      const avatarUrl = res.data.url;
+      
+      // 更新使用者資料
       const updateRes = await axiosClient.put(
-          "/users/me",
-          { avatar: avatarUrl },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        "/users/me",
+        { avatar: avatarUrl },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       setUser(updateRes.data);
       setAvatarPreview(avatarUrl);
-d
+
       // 更新 localStorage
       const storedUser = JSON.parse(localStorage.getItem("user"));
       storedUser.avatar = avatarUrl;
       localStorage.setItem("user", JSON.stringify(storedUser));
 
-      setAlert({ type: "success", message: "大頭貼更新成功！" });
+      setAlert({ type: "success", message: "大頭貼更新成功!" });
     } catch (err) {
       console.error("Failed to upload avatar:", err);
-      setAlert({ type: "error", message: "上傳失敗，請稍後重試" });
+      console.error("Error details:", {
+        status: err.response?.status,
+        data: err.response?.data,
+        message: err.message
+      });
+      
+      const errorMessage = err.response?.data?.message || "上傳失敗,請稍後重試";
+      setAlert({ type: "error", message: errorMessage });
     } finally {
       setUploadingAvatar(false);
     }
@@ -160,10 +177,10 @@ d
       storedUser.email = res.data.email;
       localStorage.setItem("user", JSON.stringify(storedUser));
 
-      setAlert({ type: "success", message: "個人資料更新成功！" });
+      setAlert({ type: "success", message: "個人資料更新成功!" });
     } catch (err) {
       console.error("Failed to update profile:", err);
-      setAlert({ type: "error", message: "更新失敗，請稍後重試" });
+      setAlert({ type: "error", message: "更新失敗,請稍後重試" });
     } finally {
       setSaving(false);
     }
@@ -194,7 +211,7 @@ d
         <h1 className="text-3xl font-bold mb-8">個人檔案</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* 左側：大頭貼區域 */}
+          {/* 左側:大頭貼區域 */}
           <div className="lg:col-span-1">
             <div className="card bg-base-100 shadow-lg">
               <div className="card-body items-center text-center">
@@ -231,13 +248,13 @@ d
                 />
 
                 <p className="text-xs text-gray-400 mt-2">
-                  支援 JPG、PNG，檔案大小 ≤ 5MB
+                  支援 JPG、PNG,檔案大小 ≤ 5MB
                 </p>
               </div>
             </div>
           </div>
 
-          {/* 右側：個人資料表單 */}
+          {/* 右側:個人資料表單 */}
           <div className="lg:col-span-2">
             <div className="card bg-base-100 shadow-lg">
               <div className="card-body">
@@ -311,13 +328,13 @@ d
 
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="text-gray-500">身份：</span>
+                      <span className="text-gray-500">身份:</span>
                       <span className="ml-2 font-semibold">
                         {user?.role === "admin" ? "管理員" : "會員"}
                       </span>
                     </div>
                     <div>
-                      <span className="text-gray-500">Email 驗證：</span>
+                      <span className="text-gray-500">Email 驗證:</span>
                       {user?.emailVerified ? (
                         <span className="ml-2 badge badge-success text-white badge-sm">
                           已驗證
@@ -329,7 +346,7 @@ d
                       )}
                     </div>
                     <div className="col-span-2">
-                      <span className="text-gray-500">註冊日期：</span>
+                      <span className="text-gray-500">註冊日期:</span>
                       <span className="ml-2">
                         {new Date(user?.createdAt).toLocaleDateString()}
                       </span>
