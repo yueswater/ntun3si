@@ -4,6 +4,7 @@ import cors from "cors";
 import path from "path";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
+
 import User from "./src/api/models/User.js";
 import { connectDB } from "./src/api/utils/db.js";
 import articleRoutes from "./src/api/routes/articleRoutes.js";
@@ -18,30 +19,50 @@ import registrationRoutes from "./src/api/routes/registrationRoutes.js";
 
 dotenv.config();
 
+// ------------------------------------------------------------
+// Resolve __dirname in ES modules
+// ------------------------------------------------------------
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// ------------------------------------------------------------
+// Create Express app
+// ------------------------------------------------------------
 const app = express();
 
 // ------------------------------------------------------------
-// Middleware setup
+// Global middleware
 // ------------------------------------------------------------
+
+// CORS configuration
+// Add all allowed frontend origins here
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://ntun3si.onrender.com"],
+    origin: [
+      "http://localhost:5173",
+      "https://ntun3si.onrender.com",
+      "https://ntun3si.space",
+    ],
     credentials: true,
   })
 );
+
+// Parse JSON request bodies
 app.use(express.json());
+
+// (Optional but recommended) support URL-encoded form data
+app.use(express.urlencoded({ extended: true }));
+
+// Initialize Passport (JWT / strategies)
 app.use(passport.initialize());
 
 // ------------------------------------------------------------
-// Connect to MongoDB
+// Database connection
 // ------------------------------------------------------------
 await connectDB();
 
 // ------------------------------------------------------------
-// API routes
+// API routes (must come BEFORE static file serving)
 // ------------------------------------------------------------
 app.use("/api/articles", articleRoutes);
 app.use("/api/users", userRoutes);
@@ -53,29 +74,31 @@ app.use("/api/registrations", registrationRoutes);
 app.use("/api/mail", mailRoutes);
 
 // ------------------------------------------------------------
-// Serve frontend in production
+// Static frontend (only in production)
 // ------------------------------------------------------------
 if (process.env.NODE_ENV === "production") {
   const distPath = path.join(__dirname, "src/client/dist");
 
-  // Serve static frontend assets (CSS, JS, images)
+  // Serve compiled frontend assets (JS, CSS, images, etc.)
   app.use(express.static(distPath));
 
-  // Get sitemap
+  // Serve sitemap explicitly
   app.get("/sitemap.xml", (req, res) => {
     res.sendFile(path.join(distPath, "sitemap.xml"));
   });
 
-  // Fallback route: send index.html for all non-API requests
+  // SPA fallback: send index.html for all non-API routes
+  // IMPORTANT: this must stay AFTER all /api/* routes
   app.get(/.*/, (req, res) => {
     res.sendFile(path.join(distPath, "index.html"));
   });
 }
 
 // ------------------------------------------------------------
-// Start server
+// Start HTTP server
 // ------------------------------------------------------------
 const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
   if (process.env.NODE_ENV === "production") {
@@ -84,14 +107,19 @@ app.listen(PORT, () => {
 });
 
 // ------------------------------------------------------------
-// Scheduled task: delete unverified users daily at 3 AM
+// Scheduled job: delete expired, unverified users every day at 3 AM
 // ------------------------------------------------------------
 cron.schedule("0 3 * * *", async () => {
-  const result = await User.deleteMany({
-    emailVerified: false,
-    tokenExpiresAt: { $lt: new Date() },
-  });
-  if (result.deletedCount > 0) {
-    console.log(`[CRON] Deleted ${result.deletedCount} unverified accounts`);
+  try {
+    const result = await User.deleteMany({
+      emailVerified: false,
+      tokenExpiresAt: { $lt: new Date() },
+    });
+
+    if (result.deletedCount > 0) {
+      console.log(`[CRON] Deleted ${result.deletedCount} unverified accounts`);
+    }
+  } catch (err) {
+    console.error("[CRON] Failed to delete unverified accounts:", err);
   }
 });
