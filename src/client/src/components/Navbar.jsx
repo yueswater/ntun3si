@@ -108,9 +108,14 @@ export default function Navbar() {
 
           <Link
             to="/"
-            className={`flex items-center gap-2 text-2xl font-bold text-[#03045E] absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0 transition-all duration-200 ${
-              isHomePage ? "-ml-2" : ""
-            } hover:bg-transparent focus:bg-transparent active:bg-transparent`}
+            className={`
+              flex items-center gap-2 text-2xl font-bold text-[#03045E]
+              absolute left-[45%] -translate-x-1/2    /* 手機：向左 2% */
+              lg:static lg:translate-x-0
+              transition-all duration-200
+              ${isHomePage ? "-ml-2" : ""}
+              hover:bg-transparent focus:bg-transparent active:bg-transparent
+            `}
             onClick={() => {
               setIsOpen(false);
               setShowSearch(false);
@@ -165,6 +170,14 @@ export default function Navbar() {
               <SearchBar />
             </div>
           )}
+
+          {/* Mobile: Language toggle */}
+          <button
+            onClick={() => changeLang(i18n.language === "zh" ? "en" : "zh")}
+            className="btn btn-ghost lg:hidden"
+          >
+            <FontAwesomeIcon icon={faLanguage} className="text-[#03045E]" />
+          </button>
 
           {user ? (
             <div className="relative" ref={avatarRef}>
@@ -248,12 +261,6 @@ export default function Navbar() {
             >
               {t("navbar.events")}
             </Link>
-          </div>
-
-          {/* 手機版語言切換 */}
-          <div className="flex justify-center gap-4 mt-2">
-            <button onClick={() => changeLang("zh")}>中文</button>
-            <button onClick={() => changeLang("en")}>EN</button>
           </div>
 
           {!isLoginPage && (

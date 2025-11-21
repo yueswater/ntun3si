@@ -78,7 +78,13 @@ export default function SearchBar() {
 
   return (
     <div
-      className="relative w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl"
+      className="
+          relative
+          w-[90vw] max-w-sm     /* 手機：固定 90% 寬，最多不超過 small */
+          sm:w-full sm:max-w-md
+          md:max-w-lg
+          lg:max-w-2xl
+        "
       ref={containerRef}
     >
       {/* Search input */}

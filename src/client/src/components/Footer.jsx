@@ -50,7 +50,13 @@ export default function Footer() {
   return (
     <footer className="bg-base-200 text-base-content px-6 md:px-16 py-10">
       {/* ====== Main navigation area ====== */}
-      <div className="flex flex-wrap justify-center text-center md:justify-center md:text-left md:flex-nowrap md:gap-x-16 gap-x-10 gap-y-8 px-2">
+      <div
+        className="
+          flex flex-wrap justify-center text-center 
+          md:justify-center md:text-left md:flex-nowrap 
+          md:gap-x-16 gap-x-10 gap-y-8 px-2
+        "
+      >
         {/* Services section */}
         <nav className="space-y-2">
           <h6 className="footer-title">{t("footer.services.title")}</h6>
