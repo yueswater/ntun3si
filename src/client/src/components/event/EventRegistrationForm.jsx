@@ -2,29 +2,29 @@ import { useState, useEffect } from "react";
 import { post } from "../../utils/api";
 import { useAuth } from "../../contexts/AuthContext";
 import CountrySelect from "../../components/CountrySelect";
+import { useTranslation } from "react-i18next";
 
-/**
- * Event Registration Form Component
- * Handles user registration for events with custom fields
- */
 export default function EventRegistrationForm({ event, form }) {
   const { user } = useAuth();
+  const { t } = useTranslation();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
-    nationality: "中華民國",
+    nationality: t("event.form.default_nationality"),
     school: "",
     department: "",
     studentId: "",
     customResponses: [],
   });
+
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const [confirmationMsg, setConfirmationMsg] = useState("");
 
-  // Pre-fill user data if logged in
+  // Pre-fill user data
   useEffect(() => {
     if (user) {
       setFormData((prev) => ({
@@ -36,21 +36,22 @@ export default function EventRegistrationForm({ event, form }) {
     }
   }, [user]);
 
-  // Initialize custom responses
+  // Init custom fields
   useEffect(() => {
     if (form?.customFields) {
-      const responses = form.customFields.map((field) => ({
-        fieldId: field.fieldId,
-        label: field.label,
-        value: field.type === "checkbox" ? [] : "",
+      setFormData((prev) => ({
+        ...prev,
+        customResponses: form.customFields.map((field) => ({
+          fieldId: field.fieldId,
+          label: field.label,
+          value: field.type === "checkbox" ? [] : "",
+        })),
       }));
-      setFormData((prev) => ({ ...prev, customResponses: responses }));
     }
   }, [form]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleNationalityChange = (value) => {
@@ -70,40 +71,40 @@ export default function EventRegistrationForm({ event, form }) {
     setFormData((prev) => ({
       ...prev,
       customResponses: prev.customResponses.map((resp) => {
-        if (resp.fieldId === fieldId) {
-          const currentValues = Array.isArray(resp.value) ? resp.value : [];
-          const newValues = checked
-            ? [...currentValues, option]
-            : currentValues.filter((v) => v !== option);
-          return { ...resp, value: newValues };
-        }
-        return resp;
+        if (resp.fieldId !== fieldId) return resp;
+
+        const newValues = checked
+          ? [...resp.value, option]
+          : resp.value.filter((v) => v !== option);
+
+        return { ...resp, value: newValues };
       }),
     }));
   };
 
+  // Validation (i18n)
   const validateForm = () => {
     if (!formData.name.trim()) {
-      setError("請輸入姓名");
+      setError(t("event.error.name_required"));
       return false;
     }
     if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email)) {
-      setError("請輸入有效的電子郵件");
+      setError(t("event.error.email_invalid"));
       return false;
     }
     if (!formData.phone.trim()) {
-      setError("請輸入電話號碼");
+      setError(t("event.error.phone_required"));
       return false;
     }
 
-    // Validate required custom fields
     for (const field of form.customFields) {
       if (field.required) {
         const response = formData.customResponses.find(
           (r) => r.fieldId === field.fieldId
         );
+
         if (!response || !response.value || response.value.length === 0) {
-          setError(`請填寫必填欄位：${field.label}`);
+          setError(t("event.error.custom_required", { field: field.label }));
           return false;
         }
       }
@@ -121,47 +122,44 @@ export default function EventRegistrationForm({ event, form }) {
     setSubmitting(true);
 
     try {
-      // 1. Submit registration to backend
+      // Submit registration
       const response = await post(
         `/registrations/event/${event.uid}`,
         formData
       );
-      setConfirmationMsg(response.confirmationMessage || "報名成功！");
+
+      setConfirmationMsg(
+        response.confirmationMessage || t("event.success.default")
+      );
       setSuccess(true);
 
-      // 2. Send confirmation email via existing newsletter endpoint
       const apiBase =
         import.meta.env.VITE_BASE_URL?.replace(/\/$/, "") ||
         "http://localhost:5050/api";
 
+      // Send confirmation email
       await fetch(`${apiBase}/mail/newsletter`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
           recipients: [formData.email],
-          subject: `【NTUN3SI 國安社】${event.title} 報名成功通知`,
-          content: `
-          您好 ${formData.name}：
-          感謝您報名「${event.title}」活動，我們已成功收到您的報名資訊。
-          
-          活動資訊：
-          - 日期：${new Date(event.date).toLocaleString("zh-TW")}
-          - 地點：${event.location || "待通知"}
-          - 聯絡信箱：ntub113022national@gmail.com
-
-          若非本人操作，請忽略此信。
-          感謝您的支持！
-        `,
+          subject: t("event.email.subject", { title: event.title }),
+          content: t("event.email.content", {
+            name: formData.name,
+            title: event.title,
+            date: new Date(event.date).toLocaleString("zh-TW"),
+            location: event.location || t("event.email.location_tba"),
+          }),
         }),
       });
 
-      // 3. Reset form after submission
+      // Reset form
       setFormData({
         name: user?.name || "",
         email: user?.email || "",
         phone: "",
-        nationality: "中華民國",
+        nationality: t("event.form.default_nationality"),
         school: "",
         department: "",
         studentId: "",
@@ -172,7 +170,7 @@ export default function EventRegistrationForm({ event, form }) {
         })),
       });
     } catch (err) {
-      setError(err.response?.data?.message || "報名失敗，請稍後再試");
+      setError(err.response?.data?.message || t("event.error.submit_failed"));
     } finally {
       setSubmitting(false);
     }
@@ -183,17 +181,16 @@ export default function EventRegistrationForm({ event, form }) {
     return (
       <div className="card bg-success text-success-content">
         <div className="card-body">
-          <h3 className="card-title">✓ 報名成功！</h3>
+          <h3 className="card-title">{t("event.success.title")}</h3>
           <p>{confirmationMsg}</p>
-          <p className="text-sm mt-2">
-            我們已將確認信寄至您的電子郵件，請查收。
-          </p>
+          <p className="text-sm mt-2">{t("event.success.check_email")}</p>
+
           <div className="card-actions justify-end mt-4">
             <button
               className="btn btn-ghost"
               onClick={() => (window.location.href = "/events")}
             >
-              返回活動列表
+              {t("event.action.back_to_events")}
             </button>
           </div>
         </div>
@@ -201,7 +198,6 @@ export default function EventRegistrationForm({ event, form }) {
     );
   }
 
-  // Registration closed alert
   const deadline = form.registrationDeadline
     ? new Date(form.registrationDeadline)
     : null;
@@ -210,7 +206,7 @@ export default function EventRegistrationForm({ event, form }) {
   if (isClosed) {
     return (
       <div className="alert alert-warning">
-        <span>報名已截止</span>
+        <span>{t("event.error.closed")}</span>
       </div>
     );
   }
@@ -225,11 +221,11 @@ export default function EventRegistrationForm({ event, form }) {
 
       {/* Required Fields */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* 姓名 */}
+        {/* Name */}
         <div className="form-control">
           <label className="label">
             <span className="label-text">
-              姓名 <span className="text-error">*</span>
+              {t("event.form.name")} <span className="text-error">*</span>
             </span>
           </label>
           <input
@@ -242,11 +238,11 @@ export default function EventRegistrationForm({ event, form }) {
           />
         </div>
 
-        {/* 電子郵件 */}
+        {/* Email */}
         <div className="form-control">
           <label className="label">
             <span className="label-text">
-              電子郵件 <span className="text-error">*</span>
+              {t("event.form.email")} <span className="text-error">*</span>
             </span>
           </label>
           <input
@@ -259,11 +255,11 @@ export default function EventRegistrationForm({ event, form }) {
           />
         </div>
 
-        {/* 電話 */}
+        {/* Phone */}
         <div className="form-control">
           <label className="label">
             <span className="label-text">
-              電話 <span className="text-error">*</span>
+              {t("event.form.phone")} <span className="text-error">*</span>
             </span>
           </label>
           <input
@@ -272,16 +268,17 @@ export default function EventRegistrationForm({ event, form }) {
             value={formData.phone}
             onChange={handleChange}
             className="input input-bordered"
-            placeholder="範例：0912-345-678"
+            placeholder={t("event.form.phone_placeholder")}
             required
           />
         </div>
 
-        {/* 國籍 */}
+        {/* Nationality */}
         <div className="form-control">
           <label className="label">
             <span className="label-text">
-              國籍 <span className="text-error">*</span>
+              {t("event.form.nationality")}{" "}
+              <span className="text-error">*</span>
             </span>
           </label>
           <CountrySelect
@@ -292,12 +289,12 @@ export default function EventRegistrationForm({ event, form }) {
         </div>
       </div>
 
-      {/* 選填欄位 */}
-      <div className="divider">選填資訊</div>
+      {/* Optional Fields */}
+      <div className="divider">{t("event.section.optional")}</div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="form-control">
           <label className="label">
-            <span className="label-text">學校</span>
+            <span className="label-text">{t("event.form.school")}</span>
           </label>
           <input
             type="text"
@@ -305,13 +302,13 @@ export default function EventRegistrationForm({ event, form }) {
             value={formData.school}
             onChange={handleChange}
             className="input input-bordered"
-            placeholder="例：國立臺灣大學"
+            placeholder={t("event.form.school_placeholder")}
           />
         </div>
 
         <div className="form-control">
           <label className="label">
-            <span className="label-text">系級</span>
+            <span className="label-text">{t("event.form.department")}</span>
           </label>
           <input
             type="text"
@@ -319,13 +316,13 @@ export default function EventRegistrationForm({ event, form }) {
             value={formData.department}
             onChange={handleChange}
             className="input input-bordered"
-            placeholder="例：資訊工程學系 大二"
+            placeholder={t("event.form.department_placeholder")}
           />
         </div>
 
         <div className="form-control">
           <label className="label">
-            <span className="label-text">學號</span>
+            <span className="label-text">{t("event.form.studentId")}</span>
           </label>
           <input
             type="text"
@@ -340,7 +337,7 @@ export default function EventRegistrationForm({ event, form }) {
       {/* Custom Fields */}
       {form.customFields && form.customFields.length > 0 && (
         <>
-          <div className="divider">其他問題</div>
+          <div className="divider">{t("event.section.custom")}</div>
           <div className="space-y-4">
             {form.customFields.map((field) => {
               const response = formData.customResponses.find(
@@ -395,7 +392,9 @@ export default function EventRegistrationForm({ event, form }) {
                       className="select select-bordered"
                       required={field.required}
                     >
-                      <option value="">請選擇...</option>
+                      <option value="">
+                        {t("event.form.select_placeholder")}
+                      </option>
                       {field.options?.map((option, idx) => (
                         <option key={idx} value={option}>
                           {option}
@@ -461,7 +460,7 @@ export default function EventRegistrationForm({ event, form }) {
         </>
       )}
 
-      {/* Submit Button */}
+      {/* Submit */}
       <div className="form-control mt-6">
         <button
           type="submit"
@@ -471,19 +470,27 @@ export default function EventRegistrationForm({ event, form }) {
           {submitting ? (
             <>
               <span className="loading loading-spinner"></span>
-              報名中...
+              {t("event.action.submitting")}
             </>
           ) : (
-            "確認報名"
+            t("event.action.submit")
           )}
         </button>
       </div>
 
       {/* Info */}
       <div className="text-sm text-gray-500 mt-4">
-        <p>* 為必填欄位</p>
-        {deadline && <p>報名截止時間：{deadline.toLocaleString("zh-TW")}</p>}
-        {form.maxRegistrations && <p>名額限制：{form.maxRegistrations} 人</p>}
+        <p>{t("event.form.required_hint")}</p>
+        {deadline && (
+          <p>
+            {t("event.form.deadline")} {deadline.toLocaleString("zh-TW")}
+          </p>
+        )}
+        {form.maxRegistrations && (
+          <p>
+            {t("event.form.max_limit")} {form.maxRegistrations}
+          </p>
+        )}
       </div>
     </form>
   );

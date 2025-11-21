@@ -6,8 +6,10 @@ import {
   faXmark,
   faMagnifyingGlass,
   faRightToBracket,
+  faLanguage,
 } from "@fortawesome/free-solid-svg-icons";
 import SearchBar from "./SearchBar";
+import { useTranslation } from "react-i18next";
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
@@ -17,19 +19,23 @@ export default function Navbar() {
   const avatarRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const { t, i18n } = useTranslation();
 
   const isAdmin = location.pathname.startsWith("/admin");
   const isLoginPage = location.pathname.startsWith("/login");
   const isHomePage = location.pathname === "/";
 
-  // Header layout classes
+  // 切換語言
+  const changeLang = (lang) => {
+    i18n.changeLanguage(lang);
+  };
+
   const headerClass =
     "bg-white shadow-sm fixed top-0 z-50 " +
     (isAdmin
       ? "left-0 w-full lg:left-64 lg:w-[calc(100%-16rem)]"
       : "left-0 w-full");
 
-  // Load user data from localStorage
   useEffect(() => {
     const token = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
@@ -38,7 +44,6 @@ export default function Navbar() {
     }
   }, []);
 
-  // 🔄 NEW: Listen to AuthContext login/logout updates
   useEffect(() => {
     const updateUser = () => {
       const token = localStorage.getItem("token");
@@ -54,7 +59,6 @@ export default function Navbar() {
     return () => window.removeEventListener("auth-updated", updateUser);
   }, []);
 
-  // Close avatar dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (avatarRef.current && !avatarRef.current.contains(e.target)) {
@@ -65,33 +69,27 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Handle logout
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);
     navigate("/");
 
-    // 🔄 NEW: Notify navbar to refresh immediately
     window.dispatchEvent(new Event("auth-updated"));
   };
 
-  // Highlight active route
   const isActive = (path) => location.pathname.startsWith(path);
 
-  // Toggle mobile search bar
   const toggleSearch = () => {
     setShowSearch(!showSearch);
     if (isOpen) setIsOpen(false);
   };
 
-  // Toggle hamburger menu
   const toggleMenu = () => {
     setIsOpen(!isOpen);
     if (showSearch) setShowSearch(false);
   };
 
-  // Toggle avatar dropdown
   const toggleAvatar = () => {
     setIsAvatarOpen((prev) => !prev);
   };
@@ -101,7 +99,6 @@ export default function Navbar() {
       <div className="navbar container mx-auto px-4 py-3 flex items-center justify-between lg:justify-between relative">
         {/* Left section: Hamburger + Logo + Navigation links */}
         <div className="flex items-center gap-6">
-          {/* Mobile hamburger icon */}
           <button
             className="btn btn-ghost text-[#03045E] lg:hidden"
             onClick={toggleMenu}
@@ -109,7 +106,6 @@ export default function Navbar() {
             <FontAwesomeIcon icon={isOpen ? faXmark : faBars} size="lg" />
           </button>
 
-          {/* Logo area with image + text */}
           <Link
             to="/"
             className={`flex items-center gap-2 text-2xl font-bold text-[#03045E] absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0 transition-all duration-200 ${
@@ -125,7 +121,7 @@ export default function Navbar() {
               alt="NTUN3SI Logo"
               className="w-8 h-8 object-contain"
             />
-            <span>臺大國安社</span>
+            <span>{t("navbar.clubName")}</span>
           </Link>
 
           {/* Desktop navigation links */}
@@ -138,8 +134,9 @@ export default function Navbar() {
                   : "text-[#262626] hover:text-[#03045E]"
               }`}
             >
-              文章總覽
+              {t("navbar.articles")}
             </Link>
+
             <Link
               to="/events"
               className={`transition-colors duration-200 ${
@@ -148,21 +145,27 @@ export default function Navbar() {
                   : "text-[#262626] hover:text-[#03045E]"
               }`}
             >
-              活動總覽
+              {t("navbar.events")}
             </Link>
+
+            {/* 語言切換 toggle */}
+            <button
+              onClick={() => changeLang(i18n.language === "zh" ? "en" : "zh")}
+              className="btn btn-ghost"
+            >
+              <FontAwesomeIcon icon={faLanguage} className="text-[#03045E]" />
+            </button>
           </div>
         </div>
 
         {/* Right section: Search bar + Login/Avatar */}
         <div className="flex items-center gap-4">
-          {/* Desktop search bar */}
           {!isLoginPage && (
             <div className="hidden lg:block">
               <SearchBar />
             </div>
           )}
 
-          {/* Avatar or Login button */}
           {user ? (
             <div className="relative" ref={avatarRef}>
               <button
@@ -184,10 +187,12 @@ export default function Navbar() {
                     <span>{user.name || user.username}</span>
                   </li>
                   <li>
-                    <a onClick={() => navigate("/profile")}>個人檔案</a>
+                    <a onClick={() => navigate("/profile")}>
+                      {t("navbar.profile")}
+                    </a>
                   </li>
                   <li>
-                    <a onClick={handleLogout}>登出</a>
+                    <a onClick={handleLogout}>{t("navbar.logout")}</a>
                   </li>
                 </ul>
               )}
@@ -198,7 +203,9 @@ export default function Navbar() {
               className="relative overflow-hidden border border-gray-300 text-[#03045E] font-semibold rounded-full px-6 py-3 text-base transition-all duration-300 hover:text-white hover:border-[#03045E] group"
             >
               <span className="absolute inset-0 bg-[#03045E] scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100 rounded-full"></span>
-              <span className="relative z-10 hidden sm:inline">註冊／登入</span>
+              <span className="relative z-10 hidden sm:inline">
+                {t("navbar.login")}
+              </span>
               <span className="relative z-10 sm:hidden">
                 <FontAwesomeIcon icon={faRightToBracket} size="lg" />
               </span>
@@ -207,7 +214,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile search bar */}
       {showSearch && !isLoginPage && (
         <div className="lg:hidden bg-white shadow-inner border-t p-3">
           <div className="w-[95%] mx-auto">
@@ -216,45 +222,47 @@ export default function Navbar() {
         </div>
       )}
 
-      {/* Mobile hamburger menu */}
       {isOpen && (
-      <div className="lg:hidden bg-white shadow-md border-t p-4 text-lg font-medium flex flex-col gap-4">
+        <div className="lg:hidden bg-white shadow-md border-t p-4 text-lg font-medium flex flex-col gap-4">
+          <div className="flex justify-around">
+            <Link
+              to="/articles"
+              onClick={() => setIsOpen(false)}
+              className={`${
+                isActive("/articles")
+                  ? "text-[#03045E] font-semibold"
+                  : "text-[#262626]"
+              }`}
+            >
+              {t("navbar.articles")}
+            </Link>
 
-        {/* 第一排：文章 / 活動（左右排列） */}
-        <div className="flex justify-around">
-          <Link
-            to="/articles"
-            onClick={() => setIsOpen(false)}
-            className={`${
-              isActive("/articles")
-                ? "text-[#03045E] font-semibold"
-                : "text-[#262626]"
-            }`}
-          >
-            文章總覽
-          </Link>
-
-          <Link
-            to="/events"
-            onClick={() => setIsOpen(false)}
-            className={`${
-              isActive("/events")
-                ? "text-[#03045E] font-semibold"
-                : "text-[#262626]"
-            }`}
-          >
-            活動總覽
-          </Link>
-        </div>
-
-        {/* 第二排：搜尋欄（整行） */}
-        {!isLoginPage && (
-          <div className="w-full">
-            <SearchBar />
+            <Link
+              to="/events"
+              onClick={() => setIsOpen(false)}
+              className={`${
+                isActive("/events")
+                  ? "text-[#03045E] font-semibold"
+                  : "text-[#262626]"
+              }`}
+            >
+              {t("navbar.events")}
+            </Link>
           </div>
-        )}
-      </div>
-    )}
+
+          {/* 手機版語言切換 */}
+          <div className="flex justify-center gap-4 mt-2">
+            <button onClick={() => changeLang("zh")}>中文</button>
+            <button onClick={() => changeLang("en")}>EN</button>
+          </div>
+
+          {!isLoginPage && (
+            <div className="w-full">
+              <SearchBar />
+            </div>
+          )}
+        </div>
+      )}
     </header>
   );
 }

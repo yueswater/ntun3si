@@ -1,0 +1,164 @@
+{
+  "navbar": {
+    "clubName": "NTU N3SI",
+    "articles": "Articles",
+    "events": "Events",
+    "login": "Login / Register",
+    "logout": "Logout",
+    "profile": "Profile"
+  },
+  "home": {
+    "hot_articles": "Hot Articles",
+    "views": "views",
+    "no_hot_articles": "No hot articles",
+    "latest_articles": "Latest Articles",
+    "view_all": "View All",
+    "upcoming_events": "Upcoming Events",
+    "no_content": "No content available"
+  },
+  "search": {
+    "placeholder": "Search articles or events",
+    "article": "Article",
+    "event": "Event",
+    "noContent": "No content available"
+  },
+  "footer": {
+    "services": {
+      "title": "Services",
+      "event": "Events",
+      "submit": "Submission Policy",
+      "members": "Member Area"
+    },
+    "about": {
+      "title": "About Us",
+      "intro": "Introduction",
+      "contact": "Contact Us",
+      "partners": "Partners"
+    },
+    "policy": {
+      "title": "Policies",
+      "terms": "Terms of Use",
+      "privacy": "Privacy Policy"
+    },
+    "newsletter": {
+      "title": "Newsletter",
+      "subtitle": "Subscribe to our newsletter",
+      "subscribe": "Subscribe",
+      "loading": "Processing..."
+    },
+    "subscribe_success": "Subscribed successfully. Please check your email.",
+    "subscribe_failed": "Subscription failed",
+    "all_rights": "All rights reserved."
+  },
+  "article": {
+    "featured": "Featured",
+    "read_more": "Read more",
+    "no_content": "No content",
+    "label": "Article",
+    "related_articles": "Related Articles"
+  },
+  "event": {
+    "date_pending": "Date TBD",
+    "no_description": "No description",
+    "label": "Event",
+    "full": "Full",
+    "not_found": "The event does not exist or has been removed.",
+    "back_list": "Back to Events",
+    "time": "Event Time",
+    "location": "Event Location",
+    "speaker": "Speaker",
+    "description_title": "Event Description",
+    "notes_title": "Notes",
+    "registration": "Event Registration",
+    "ended": "This event has ended and is no longer open for registration.",
+    "not_open": "Registration for this event is not yet available.",
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "nationality": "Nationality",
+      "school": "School",
+      "department": "Department",
+      "studentId": "Student ID",
+
+      "default_nationality": "Taiwan (ROC)",
+
+      "phone_placeholder": "Example: 0912-345-678",
+      "school_placeholder": "e.g., National Taiwan University",
+      "department_placeholder": "e.g., CS Department, Sophomore",
+
+      "select_placeholder": "Please select...",
+      "required_hint": "* indicates required fields",
+      "deadline": "Registration deadline:",
+      "max_limit": "Capacity:"
+    },
+
+    "section": {
+      "optional": "Optional Information",
+      "custom": "Additional Questions"
+    },
+
+    "action": {
+      "submit": "Submit Registration",
+      "submitting": "Submitting…",
+      "back_to_events": "Back to Events"
+    },
+
+    "success": {
+      "title": "✓ Registration Successful!",
+      "default": "Registration Successful!",
+      "check_email": "We have sent a confirmation email to your inbox."
+    },
+
+    "error": {
+      "name_required": "Please enter your name",
+      "email_invalid": "Please enter a valid email address",
+      "phone_required": "Please enter your phone number",
+      "custom_required": "Required field: {{field}}",
+      "submit_failed": "Registration failed, please try again later",
+      "closed": "Registration is closed"
+    },
+
+    "email": {
+      "subject": "[NTUN3SI] Registration Confirmation — {{title}}",
+      "location_tba": "To be announced",
+      "content": "Hello {{name}},\nThank you for registering for \"{{title}}\". Your registration has been successfully received.\n\nEvent Information:\n- Date: {{date}}\n- Location: {{location}}\n- Contact: ntub113022national@gmail.com\n\nIf this wasn’t you, please ignore this message.\nThank you for your support!"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+
+    "uploading": "Uploading...",
+    "change_avatar": "Change Avatar",
+    "avatar_updated": "Avatar updated successfully!",
+    "error_upload": "Upload failed, please try again later",
+    "file_hint": "Supports JPG, PNG, file size ≤ 5MB",
+    "error_file_size": "File size cannot exceed 5MB",
+    "error_heic": "Unable to convert HEIC file",
+
+    "basic_info": "Basic Information",
+    "username": "Username",
+    "username_hint": "Username cannot be modified",
+
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "phone_placeholder": "Enter phone number",
+
+    "role": "Role",
+    "role_admin": "Admin",
+    "role_member": "Member",
+
+    "email_verified": "Email Verification",
+    "verified": "Verified",
+    "unverified": "Unverified",
+
+    "register_date": "Registration Date",
+
+    "updated": "Profile updated successfully!",
+    "update_failed": "Update failed, please try again later",
+
+    "back": "Back",
+    "save": "Save Changes"
+  }
+}

@@ -5,8 +5,10 @@ import {
   faLine,
 } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useTranslation } from "react-i18next";
 
 export default function Footer() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -34,11 +36,12 @@ export default function Footer() {
         data = {};
       }
 
-      if (!res.ok) throw new Error(data.message || "Subscription failed.");
-      alert("訂閱成功，請查收確認信。");
+      if (!res.ok)
+        throw new Error(data.message || t("footer.subscribe_failed"));
+      alert(t("footer.subscribe_success"));
       setEmail("");
     } catch (err) {
-      alert(`訂閱失敗：${err.message}`);
+      alert(`${t("footer.subscribe_failed")}: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -50,34 +53,38 @@ export default function Footer() {
       <div className="flex flex-wrap justify-center text-center md:justify-center md:text-left md:flex-nowrap md:gap-x-16 gap-x-10 gap-y-8 px-2">
         {/* Services section */}
         <nav className="space-y-2">
-          <h6 className="footer-title">社團服務</h6>
-          <a className="link link-hover block">活動公告</a>
-          <a className="link link-hover block">投稿制度</a>
-          <a className="link link-hover block">會員專區</a>
+          <h6 className="footer-title">{t("footer.services.title")}</h6>
+          <a className="link link-hover block">{t("footer.services.event")}</a>
+          <a className="link link-hover block">{t("footer.services.submit")}</a>
+          <a className="link link-hover block">
+            {t("footer.services.members")}
+          </a>
         </nav>
 
         {/* About section */}
         <nav className="space-y-2">
-          <h6 className="footer-title">關於我們</h6>
-          <a className="link link-hover block">社團介紹</a>
-          <a className="link link-hover block">聯絡我們</a>
-          <a className="link link-hover block">合作夥伴</a>
+          <h6 className="footer-title">{t("footer.about.title")}</h6>
+          <a className="link link-hover block">{t("footer.about.intro")}</a>
+          <a className="link link-hover block">{t("footer.about.contact")}</a>
+          <a className="link link-hover block">{t("footer.about.partners")}</a>
         </nav>
 
         {/* Policy section */}
         <nav className="space-y-2">
-          <h6 className="footer-title">政策與條款</h6>
+          <h6 className="footer-title">{t("footer.policy.title")}</h6>
           <a className="link link-hover block" href="/terms">
-            使用條款
+            {t("footer.policy.terms")}
           </a>
-          <a className="link link-hover block">隱私政策</a>
+          <a className="link link-hover block">{t("footer.policy.privacy")}</a>
         </nav>
 
         {/* Newsletter subscription (desktop only) */}
         <form className="hidden md:block space-y-2" onSubmit={handleSubscribe}>
-          <h6 className="footer-title">電子報</h6>
+          <h6 className="footer-title">{t("footer.newsletter.title")}</h6>
           <label className="label">
-            <span className="label-text">訂閱我們的電子報</span>
+            <span className="label-text">
+              {t("footer.newsletter.subtitle")}
+            </span>
           </label>
           <fieldset className="join">
             <input
@@ -94,7 +101,9 @@ export default function Footer() {
               className="btn btn-primary join-item rounded-xl"
               disabled={loading}
             >
-              {loading ? "處理中..." : "訂閱"}
+              {loading
+                ? t("footer.newsletter.loading")
+                : t("footer.newsletter.subscribe")}
             </button>
           </fieldset>
         </form>
@@ -105,9 +114,9 @@ export default function Footer() {
         className="mt-8 block md:hidden text-center space-y-2"
         onSubmit={handleSubscribe}
       >
-        <h6 className="footer-title">電子報</h6>
+        <h6 className="footer-title">{t("footer.newsletter.title")}</h6>
         <label className="label justify-center">
-          <span className="label-text">訂閱我們的電子報</span>
+          <span className="label-text">{t("footer.newsletter.subtitle")}</span>
         </label>
         <fieldset className="join justify-center">
           <input
@@ -124,12 +133,14 @@ export default function Footer() {
             className="btn btn-primary join-item rounded-xl"
             disabled={loading}
           >
-            {loading ? "處理中..." : "訂閱"}
+            {loading
+              ? t("footer.newsletter.loading")
+              : t("footer.newsletter.subscribe")}
           </button>
         </fieldset>
       </form>
 
-      {/* ====== Social media icons ====== */}
+      {/* ====== Social icons ====== */}
       <div className="mt-8 flex justify-center gap-6">
         <a
           href="https://www.instagram.com/ntu_n3si/"
@@ -160,9 +171,9 @@ export default function Footer() {
         </a>
       </div>
 
-      {/* ====== Copyright text ====== */}
+      {/* ====== Copyright ====== */}
       <div className="mt-6 text-center text-sm opacity-70">
-        © {new Date().getFullYear()} NTUN3SI 國安社. All rights reserved.
+        © {new Date().getFullYear()} 臺大國安社. {t("footer.all_rights")}
       </div>
     </footer>
   );

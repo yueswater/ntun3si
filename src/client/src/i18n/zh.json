@@ -1,0 +1,165 @@
+{
+  "navbar": {
+    "clubName": "臺大國安社",
+    "articles": "文章總覽",
+    "events": "活動總覽",
+    "login": "註冊／登入",
+    "logout": "登出",
+    "profile": "個人檔案"
+  },
+  "home": {
+    "hot_articles": "熱門文章",
+    "views": "次瀏覽",
+    "no_hot_articles": "暫無熱門文章",
+    "latest_articles": "最新文章",
+    "view_all": "查看全部",
+    "upcoming_events": "近期活動",
+    "no_content": "暫無內容"
+  },
+  "search": {
+    "placeholder": "搜尋文章或活動",
+    "article": "文章",
+    "event": "活動",
+    "noContent": "暫無內容"
+  },
+  "footer": {
+    "services": {
+      "title": "社團服務",
+      "event": "活動公告",
+      "submit": "投稿制度",
+      "members": "會員專區"
+    },
+    "about": {
+      "title": "關於我們",
+      "intro": "社團介紹",
+      "contact": "聯絡我們",
+      "partners": "合作夥伴"
+    },
+    "policy": {
+      "title": "政策與條款",
+      "terms": "使用條款",
+      "privacy": "隱私政策"
+    },
+    "newsletter": {
+      "title": "電子報",
+      "subtitle": "訂閱我們的電子報",
+      "subscribe": "訂閱",
+      "loading": "處理中..."
+    },
+    "subscribe_success": "訂閱成功，請查收確認信。",
+    "subscribe_failed": "訂閱失敗",
+    "clubName": "臺大國安社",
+    "all_rights": "保留所有權利。"
+  },
+  "article": {
+    "featured": "精選文章",
+    "read_more": "閱讀更多",
+    "no_content": "暫無內容",
+    "label": "文章",
+    "related_articles": "其他文章"
+  },
+  "event": {
+    "date_pending": "日期待定",
+    "no_description": "暫無描述",
+    "label": "活動",
+    "full": "額滿",
+    "not_found": "活動不存在或已被刪除",
+    "back_list": "返回活動列表",
+    "time": "活動時間",
+    "location": "活動地點",
+    "speaker": "講者",
+    "description_title": "活動簡介",
+    "notes_title": "注意事項",
+    "registration": "活動報名",
+    "ended": "此活動已結束，無法報名",
+    "not_open": "此活動暫時尚未開放報名",
+    "form": {
+      "name": "姓名",
+      "email": "電子郵件",
+      "phone": "電話",
+      "nationality": "國籍",
+      "school": "學校",
+      "department": "系級",
+      "studentId": "學號",
+
+      "default_nationality": "中華民國",
+
+      "phone_placeholder": "範例：0912-345-678",
+      "school_placeholder": "例：國立臺灣大學",
+      "department_placeholder": "例：資訊工程學系 大二",
+
+      "select_placeholder": "請選擇...",
+      "required_hint": "* 為必填欄位",
+      "deadline": "報名截止時間：",
+      "max_limit": "名額限制："
+    },
+
+    "section": {
+      "optional": "選填資訊",
+      "custom": "其他問題"
+    },
+
+    "action": {
+      "submit": "確認報名",
+      "submitting": "報名中…",
+      "back_to_events": "返回活動列表"
+    },
+
+    "success": {
+      "title": "✓ 報名成功！",
+      "default": "報名成功！",
+      "check_email": "我們已將確認信寄至您的電子郵件，請查收。"
+    },
+
+    "error": {
+      "name_required": "請輸入姓名",
+      "email_invalid": "請輸入有效的電子郵件",
+      "phone_required": "請輸入電話號碼",
+      "custom_required": "請填寫必填欄位：{{field}}",
+      "submit_failed": "報名失敗，請稍後再試",
+      "closed": "報名已截止"
+    },
+
+    "email": {
+      "subject": "【NTUN3SI 國安社】{{title}} 報名成功通知",
+      "location_tba": "待通知",
+      "content": "您好 {{name}}：\n感謝您報名「{{title}}」活動，我們已成功收到您的報名資訊。\n\n活動資訊：\n- 日期：{{date}}\n- 地點：{{location}}\n- 聯絡信箱：ntub113022national@gmail.com\n\n若非本人操作，請忽略此信。\n感謝您的支持！"
+    }
+  },
+  "profile": {
+    "title": "個人檔案",
+
+    "uploading": "上傳中...",
+    "change_avatar": "更換大頭貼",
+    "avatar_updated": "大頭貼更新成功！",
+    "error_upload": "上傳失敗，請稍後重試",
+    "file_hint": "支援 JPG、PNG，檔案大小 ≤ 5MB",
+    "error_file_size": "檔案大小不能超過 5MB",
+    "error_heic": "HEIC 檔案無法轉換",
+
+    "basic_info": "基本資料",
+    "username": "帳號",
+    "username_hint": "帳號無法修改",
+
+    "name": "姓名",
+    "email": "電子郵件",
+    "phone": "電話",
+    "phone_placeholder": "請輸入電話號碼",
+
+    "role": "身份",
+    "role_admin": "管理員",
+    "role_member": "會員",
+
+    "email_verified": "Email 驗證",
+    "verified": "已驗證",
+    "unverified": "未驗證",
+
+    "register_date": "註冊日期",
+
+    "updated": "個人資料更新成功！",
+    "update_failed": "更新失敗，請稍後重試",
+
+    "back": "返回",
+    "save": "儲存變更"
+  }
+}

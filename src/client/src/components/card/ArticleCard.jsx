@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function ArticleCard({ article, variant = "default" }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const defaultImg =
     "https://via.placeholder.com/800x450/e5e7eb/9ca3af?text=No+Image";
@@ -17,7 +19,7 @@ export default function ArticleCard({ article, variant = "default" }) {
 
   // Extract preview text from markdown
   const getPreviewText = (content, length = 100) => {
-    if (!content) return "暫無內容";
+    if (!content) return t("article.no_content");
     return content.replace(/[#*>`\[\]!]/g, "").slice(0, length) + "...";
   };
 
@@ -37,7 +39,9 @@ export default function ArticleCard({ article, variant = "default" }) {
         </figure>
 
         <div className="card-body p-6">
-          <div className="badge badge-primary badge-sm mb-2">精選文章</div>
+          <div className="badge badge-primary badge-sm mb-2">
+            {t("article.featured")}
+          </div>
           <h2 className="card-title text-xl font-bold group-hover:text-primary transition-colors line-clamp-2">
             {article.title}
           </h2>
@@ -48,7 +52,9 @@ export default function ArticleCard({ article, variant = "default" }) {
             <span className="text-xs text-gray-400">
               {formatDate(article.createdAt)}
             </span>
-            <button className="btn btn-primary btn-xs">閱讀更多 →</button>
+            <button className="btn btn-primary btn-xs">
+              {t("article.read_more")} →
+            </button>
           </div>
         </div>
       </div>
@@ -98,7 +104,9 @@ export default function ArticleCard({ article, variant = "default" }) {
           <span className="text-xs text-gray-400">
             {formatDate(article.createdAt)}
           </span>
-          <div className="badge badge-outline badge-xs">文章</div>
+          <div className="badge badge-outline badge-xs">
+            {t("article.label")}
+          </div>
         </div>
       </div>
     </div>

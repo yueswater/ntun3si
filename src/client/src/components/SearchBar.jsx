@@ -8,21 +8,17 @@ import {
   faNewspaper,
   faCalendarDays,
 } from "@fortawesome/free-solid-svg-icons";
+import { useTranslation } from "react-i18next";
 
-/**
- * Stockfeel-style search bar
- * - Supports Chinese fuzzy search (Fuse.js)
- * - Delayed trigger for Zhuyin input (0.5s debounce)
- * - Instantly displays dropdown search suggestions
- */
 export default function SearchBar() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [fuse, setFuse] = useState(null);
   const navigate = useNavigate();
   const containerRef = useRef(null);
+  const { t } = useTranslation(); // ← 新增這行
 
-  // Initialize Fuse.js (merge articles and events)
+  // Initialize Fuse.js
   useEffect(() => {
     async function initSearch() {
       try {
@@ -37,7 +33,7 @@ export default function SearchBar() {
 
         const fuseInstance = new Fuse(combined, {
           includeScore: true,
-          threshold: 0.35, // Fuzzy tolerance (lower = stricter)
+          threshold: 0.35,
           keys: ["title", "description", "content_md", "content_html"],
         });
         setFuse(fuseInstance);
@@ -48,7 +44,7 @@ export default function SearchBar() {
     initSearch();
   }, []);
 
-  // Debounce search (trigger after 500ms of no typing)
+  // Debounce search
   useEffect(() => {
     const handler = setTimeout(() => {
       if (!fuse || !query.trim()) {
@@ -61,7 +57,7 @@ export default function SearchBar() {
     return () => clearTimeout(handler);
   }, [query, fuse]);
 
-  // Handle selecting a result (navigate to article or event)
+  // Select result
   const handleSelect = (item) => {
     if (item.type === "article") navigate(`/articles/${item.slug}`);
     else if (item.type === "event") navigate(`/events/${item.slug}`);
@@ -69,7 +65,7 @@ export default function SearchBar() {
     setResults([]);
   };
 
-  // Close dropdown when clicking outside
+  // Click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
@@ -85,12 +81,12 @@ export default function SearchBar() {
       className="relative w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl"
       ref={containerRef}
     >
-      {/* Search input box */}
+      {/* Search input */}
       <input
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="搜尋文章或活動"
+        placeholder={t("search.placeholder")} // ← i18n
         className="input input-bordered w-full rounded-full text-[#262626] placeholder:text-gray-400 pr-10"
       />
       <FontAwesomeIcon
@@ -116,7 +112,9 @@ export default function SearchBar() {
                     }
                     className="text-[#03045E]"
                   />
-                  {item.type === "article" ? "文章" : "活動"}
+                  {item.type === "article"
+                    ? t("search.article")
+                    : t("search.event")}
                 </p>
 
                 {/* Title */}
@@ -124,7 +122,7 @@ export default function SearchBar() {
                   {item.title}
                 </p>
 
-                {/* Description / preview */}
+                {/* Preview */}
                 <p className="text-sm text-gray-500 line-clamp-1">
                   {item.preview ||
                     item.description ||
@@ -132,7 +130,7 @@ export default function SearchBar() {
                       ? item.content_md
                           .replace(/[#>*`[\]!]/g, "")
                           .slice(0, 60) + "..."
-                      : "暫無內容")}
+                      : t("search.noContent"))}
                 </p>
               </li>
             ))}

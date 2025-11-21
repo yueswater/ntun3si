@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { get } from "../utils/api";
 import EventRegistrationForm from "../components/event/EventRegistrationForm";
+import { useTranslation } from "react-i18next";
 
-/**
- * Event Page - Shows event details and registration form
- */
 export default function EventPage() {
   const { slug } = useParams();
+  const { t } = useTranslation();
   const [event, setEvent] = useState(null);
   const [form, setForm] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,31 +17,25 @@ export default function EventPage() {
       try {
         setLoading(true);
 
-        // Fetch event details
         const eventData = await get(`/events/slug/${slug}`);
         setEvent(eventData);
 
-        // Fetch registration form if exists
         try {
           const formData = await get(`/forms/event/${eventData.uid}`);
           setForm(formData);
-        } catch (formError) {
-          // Form might not exist, that's okay
-          console.log("No registration form for this event");
+        } catch {
           setForm(null);
         }
       } catch (err) {
         console.error("Error fetching event:", err);
-        setError("活動不存在或已被刪除");
+        setError(t("event.not_found"));
       } finally {
         setLoading(false);
       }
     };
 
-    if (slug) {
-      fetchData();
-    }
-  }, [slug]);
+    if (slug) fetchData();
+  }, [slug, t]);
 
   if (loading) {
     return (
@@ -56,10 +49,10 @@ export default function EventPage() {
     return (
       <div className="container mx-auto px-6 py-16 text-center">
         <h2 className="text-2xl font-bold text-error mb-4">
-          {error || "活動不存在"}
+          {error || t("event.not_found")}
         </h2>
         <a href="/events" className="btn btn-primary">
-          返回活動列表
+          {t("event.back_list")}
         </a>
       </div>
     );
@@ -70,7 +63,7 @@ export default function EventPage() {
 
   return (
     <div className="container mx-auto px-6 py-10">
-      {/* Event Hero Section */}
+      {/* Top Section */}
       <div className="mb-12">
         {event.previewImg && (
           <div className="mb-6 rounded-lg overflow-hidden">
@@ -84,7 +77,7 @@ export default function EventPage() {
 
         <h1 className="text-4xl font-bold mb-4">{event.title}</h1>
 
-        {/* Event Meta Info */}
+        {/* Event Meta */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div className="flex items-center gap-3">
             <svg
@@ -101,7 +94,7 @@ export default function EventPage() {
               />
             </svg>
             <div>
-              <p className="text-sm text-gray-500">活動時間</p>
+              <p className="text-sm text-gray-500">{t("event.time")}</p>
               <p className="font-medium">{eventDate.toLocaleString("zh-TW")}</p>
             </div>
           </div>
@@ -128,17 +121,17 @@ export default function EventPage() {
                 />
               </svg>
               <div>
-                <p className="text-sm text-gray-500">活動地點</p>
+                <p className="text-sm text-gray-500">{t("event.location")}</p>
                 <p className="font-medium">{event.location}</p>
               </div>
             </div>
           )}
         </div>
 
-        {/* Speaker Info */}
+        {/* Speaker */}
         {event.speaker && (
           <div className="bg-base-200 rounded-lg p-6 mb-6">
-            <h3 className="text-xl font-semibold mb-2">講者</h3>
+            <h3 className="text-xl font-semibold mb-2">{t("event.speaker")}</h3>
             <p className="font-medium mb-2">{event.speaker}</p>
             {event.speakerBio && (
               <p className="text-sm text-gray-600">{event.speakerBio}</p>
@@ -149,7 +142,9 @@ export default function EventPage() {
         {/* Description */}
         {event.description && (
           <div className="prose prose-lg max-w-none mb-8">
-            <h3 className="text-xl font-semibold mb-3">活動簡介</h3>
+            <h3 className="text-xl font-semibold mb-3">
+              {t("event.description_title")}
+            </h3>
             <p className="whitespace-pre-wrap">{event.description}</p>
           </div>
         )}
@@ -171,14 +166,14 @@ export default function EventPage() {
               />
             </svg>
             <div>
-              <h4 className="font-bold">注意事項</h4>
+              <h4 className="font-bold">{t("event.notes_title")}</h4>
               <p className="text-sm whitespace-pre-wrap">{event.notes}</p>
             </div>
           </div>
         )}
 
         {/* Hashtags */}
-        {event.hashtags && event.hashtags.length > 0 && (
+        {event.hashtags?.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {event.hashtags.map((tag, index) => (
               <span key={index} className="badge badge-outline">
@@ -189,15 +184,15 @@ export default function EventPage() {
         )}
       </div>
 
-      {/* Registration Form Section */}
+      {/* Registration */}
       {form && !isPastEvent && (
         <div className="border-t pt-12">
-          <h2 className="text-3xl font-bold mb-6">活動報名</h2>
+          <h2 className="text-3xl font-bold mb-6">{t("event.registration")}</h2>
           <EventRegistrationForm event={event} form={form} />
         </div>
       )}
 
-      {/* Past Event Message */}
+      {/* Past Event */}
       {isPastEvent && (
         <div className="alert alert-warning">
           <svg
@@ -213,11 +208,11 @@ export default function EventPage() {
               d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <span>此活動已結束，無法報名</span>
+          <span>{t("event.ended")}</span>
         </div>
       )}
 
-      {/* No Form Message */}
+      {/* No Form */}
       {!form && !isPastEvent && (
         <div className="alert alert-info">
           <svg
@@ -233,7 +228,7 @@ export default function EventPage() {
               d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <span>此活動暫時尚未開放報名</span>
+          <span>{t("event.not_open")}</span>
         </div>
       )}
     </div>

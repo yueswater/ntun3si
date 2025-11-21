@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import PageTransition from "./components/PageTransition";
+import "./i18n";
 
 // Public layout and pages
 import Layout from "./layout/Layout";

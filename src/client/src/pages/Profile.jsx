@@ -4,8 +4,11 @@ import axiosClient from "../api/axiosClient";
 import AnimatedButton from "../components/AnimatedButton";
 import AppAlert from "../components/AppAlert";
 import heic2any from "heic2any";
+import { useTranslation } from "react-i18next";
 
 export default function Profile() {
+  const { t } = useTranslation(); // ★ added i18n
+
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -43,10 +46,7 @@ export default function Profile() {
         });
         setAvatarPreview(res.data.avatar || "");
       } catch (err) {
-        console.error("Failed to fetch profile:", err);
-        if (err.response?.status === 401) {
-          navigate("/login");
-        }
+        if (err.response?.status === 401) navigate("/login");
       } finally {
         setLoading(false);
       }
@@ -67,7 +67,7 @@ export default function Profile() {
 
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
-      setAlert({ type: "error", message: "檔案大小不能超過 5MB" });
+      setAlert({ type: "error", message: t("profile.error_file_size") });
       return;
     }
 
@@ -84,22 +84,20 @@ export default function Profile() {
           toType: "image/jpeg",
           quality: 0.9,
         });
-
-        file = new File([convertedBlob], file.name.replace(/\.(heic|heif)$/i, ".jpg"), {
-          type: "image/jpeg",
-        });
-      } catch (error) {
-        console.error("HEIC 轉換失敗:", error);
-        setAlert({ type: "error", message: "HEIC 檔案無法轉換" });
+        file = new File(
+          [convertedBlob],
+          file.name.replace(/\.(heic|heif)$/i, ".jpg"),
+          { type: "image/jpeg" }
+        );
+      } catch {
+        setAlert({ type: "error", message: t("profile.error_heic") });
         return;
       }
     }
 
     // FileReader 預覽
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setAvatarPreview(reader.result);
-    };
+    reader.onloadend = () => setAvatarPreview(reader.result);
     reader.readAsDataURL(file);
 
     await uploadAvatar(file);
@@ -114,44 +112,33 @@ export default function Profile() {
 
     try {
       const token = localStorage.getItem("token");
-      
-      // 上傳檔案到 R2
+
       const res = await axiosClient.post("/upload", formData, {
-        headers: { 
+        headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data"
+          "Content-Type": "multipart/form-data",
         },
       });
-      
+
       const avatarUrl = res.data.url;
-      
-      // 更新使用者資料
+
       const updateRes = await axiosClient.put(
         "/users/me",
         { avatar: avatarUrl },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       setUser(updateRes.data);
       setAvatarPreview(avatarUrl);
 
-      // 更新 localStorage
       const storedUser = JSON.parse(localStorage.getItem("user"));
       storedUser.avatar = avatarUrl;
       localStorage.setItem("user", JSON.stringify(storedUser));
 
-      setAlert({ type: "success", message: "大頭貼更新成功!" });
+      setAlert({ type: "success", message: t("profile.avatar_updated") });
     } catch (err) {
-      console.error("Failed to upload avatar:", err);
-      console.error("Error details:", {
-        status: err.response?.status,
-        data: err.response?.data,
-        message: err.message
-      });
-      
-      const errorMessage = err.response?.data?.message || "上傳失敗,請稍後重試";
+      const errorMessage =
+        err.response?.data?.message || t("profile.error_upload");
       setAlert({ type: "error", message: errorMessage });
     } finally {
       setUploadingAvatar(false);
@@ -177,10 +164,9 @@ export default function Profile() {
       storedUser.email = res.data.email;
       localStorage.setItem("user", JSON.stringify(storedUser));
 
-      setAlert({ type: "success", message: "個人資料更新成功!" });
-    } catch (err) {
-      console.error("Failed to update profile:", err);
-      setAlert({ type: "error", message: "更新失敗,請稍後重試" });
+      setAlert({ type: "success", message: t("profile.updated") });
+    } catch {
+      setAlert({ type: "error", message: t("profile.update_failed") });
     } finally {
       setSaving(false);
     }
@@ -208,10 +194,10 @@ export default function Profile() {
       )}
 
       <div className="container mx-auto max-w-4xl px-4">
-        <h1 className="text-3xl font-bold mb-8">個人檔案</h1>
+        <h1 className="text-3xl font-bold mb-8">{t("profile.title")}</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* 左側:大頭貼區域 */}
+          {/* 左側: 大頭貼 */}
           <div className="lg:col-span-1">
             <div className="card bg-base-100 shadow-lg">
               <div className="card-body items-center text-center">
@@ -234,12 +220,16 @@ export default function Profile() {
                   type="file"
                   ref={fileInputRef}
                   onChange={handleFileChange}
-                  accept="image/png, image/jpeg, image/jpg, image/heic, image/heif, image/*"
+                  accept="image/*"
                   className="hidden"
                 />
 
                 <AnimatedButton
-                  label={uploadingAvatar ? "上傳中..." : "更換大頭貼"}
+                  label={
+                    uploadingAvatar
+                      ? t("profile.uploading")
+                      : t("profile.change_avatar")
+                  }
                   icon="faCamera"
                   variant="secondary"
                   size="sm"
@@ -248,23 +238,25 @@ export default function Profile() {
                 />
 
                 <p className="text-xs text-gray-400 mt-2">
-                  支援 JPG、PNG,檔案大小 ≤ 5MB
+                  {t("profile.file_hint")}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* 右側:個人資料表單 */}
+          {/* 右側: 資料表單 */}
           <div className="lg:col-span-2">
             <div className="card bg-base-100 shadow-lg">
               <div className="card-body">
-                <h2 className="card-title mb-4">基本資料</h2>
+                <h2 className="card-title mb-4">{t("profile.basic_info")}</h2>
 
                 <form onSubmit={handleSave} className="space-y-4">
                   {/* 帳號 */}
                   <div className="form-control">
                     <label className="label">
-                      <span className="label-text font-semibold">帳號</span>
+                      <span className="label-text font-semibold">
+                        {t("profile.username")}
+                      </span>
                     </label>
                     <input
                       type="text"
@@ -274,7 +266,7 @@ export default function Profile() {
                     />
                     <label className="label">
                       <span className="label-text-alt text-gray-400">
-                        帳號無法修改
+                        {t("profile.username_hint")}
                       </span>
                     </label>
                   </div>
@@ -282,7 +274,9 @@ export default function Profile() {
                   {/* 姓名 */}
                   <div className="form-control">
                     <label className="label">
-                      <span className="label-text font-semibold">姓名</span>
+                      <span className="label-text font-semibold">
+                        {t("profile.name")}
+                      </span>
                     </label>
                     <input
                       type="text"
@@ -297,7 +291,9 @@ export default function Profile() {
                   {/* 電子郵件 */}
                   <div className="form-control">
                     <label className="label">
-                      <span className="label-text font-semibold">電子郵件</span>
+                      <span className="label-text font-semibold">
+                        {t("profile.email")}
+                      </span>
                     </label>
                     <input
                       type="email"
@@ -312,14 +308,16 @@ export default function Profile() {
                   {/* 電話 */}
                   <div className="form-control">
                     <label className="label">
-                      <span className="label-text font-semibold">電話</span>
+                      <span className="label-text font-semibold">
+                        {t("profile.phone")}
+                      </span>
                     </label>
                     <input
                       type="tel"
                       name="phone"
                       value={form.phone}
                       onChange={handleChange}
-                      placeholder="請輸入電話號碼"
+                      placeholder={t("profile.phone_placeholder")}
                       className="input input-bordered"
                     />
                   </div>
@@ -328,25 +326,35 @@ export default function Profile() {
 
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="text-gray-500">身份:</span>
+                      <span className="text-gray-500">
+                        {t("profile.role")}:
+                      </span>
                       <span className="ml-2 font-semibold">
-                        {user?.role === "admin" ? "管理員" : "會員"}
+                        {user?.role === "admin"
+                          ? t("profile.role_admin")
+                          : t("profile.role_member")}
                       </span>
                     </div>
+
                     <div>
-                      <span className="text-gray-500">Email 驗證:</span>
+                      <span className="text-gray-500">
+                        {t("profile.email_verified")}:
+                      </span>
                       {user?.emailVerified ? (
                         <span className="ml-2 badge badge-success text-white badge-sm">
-                          已驗證
+                          {t("profile.verified")}
                         </span>
                       ) : (
                         <span className="ml-2 badge badge-error text-white badge-sm">
-                          未驗證
+                          {t("profile.unverified")}
                         </span>
                       )}
                     </div>
+
                     <div className="col-span-2">
-                      <span className="text-gray-500">註冊日期:</span>
+                      <span className="text-gray-500">
+                        {t("profile.register_date")}:
+                      </span>
                       <span className="ml-2">
                         {new Date(user?.createdAt).toLocaleDateString()}
                       </span>
@@ -355,13 +363,13 @@ export default function Profile() {
 
                   <div className="card-actions justify-end mt-6">
                     <AnimatedButton
-                      label="返回"
+                      label={t("profile.back")}
                       icon="faArrowLeft"
                       variant="ghost"
                       onClick={() => navigate(-1)}
                     />
                     <AnimatedButton
-                      label="儲存變更"
+                      label={t("profile.save")}
                       icon="faFloppyDisk"
                       variant="primary"
                       onClick={handleSave}
