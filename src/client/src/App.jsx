@@ -15,6 +15,7 @@ import ArticlesList from "./pages/ArticlesList";
 import EventsList from "./pages/EventsList";
 import ISearch from "./pages/ISearch";
 import Unsubscribe from "./pages/Unsubscribe";
+import Terms from "./pages/policy/terms";
 
 // Admin layout and pages
 import AdminLayout from "./layout/AdminLayout";
@@ -63,6 +64,7 @@ export default function App() {
               <Route path="articles/:slug" element={<ArticlePage />} />
               <Route path="events/:slug" element={<EventPage />} />
               <Route path="unsubscribe" element={<Unsubscribe />} />
+              <Route path="/terms" element={<Terms />} />
             </Route>
 
             {/* Admin Routes (protected by AdminRoute) */}

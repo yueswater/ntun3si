@@ -52,8 +52,8 @@ export default function Footer() {
         <nav className="space-y-2">
           <h6 className="footer-title">社團服務</h6>
           <a className="link link-hover block">活動公告</a>
-          <a className="link link-hover block">投稿專區</a>
-          <a className="link link-hover block">會員制度</a>
+          <a className="link link-hover block">投稿制度</a>
+          <a className="link link-hover block">會員專區</a>
         </nav>
 
         {/* About section */}
@@ -67,7 +67,9 @@ export default function Footer() {
         {/* Policy section */}
         <nav className="space-y-2">
           <h6 className="footer-title">政策與條款</h6>
-          <a className="link link-hover block">使用條款</a>
+          <a className="link link-hover block" href="/terms">
+            使用條款
+          </a>
           <a className="link link-hover block">隱私政策</a>
         </nav>
 

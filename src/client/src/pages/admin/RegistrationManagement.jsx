@@ -67,17 +67,41 @@ export default function RegistrationManagement() {
   };
 
   // Export CSV
-  const handleExportCSV = () => {
-    window.open(`/api/registrations/event/${eventUid}/export`, "_self");
-  };
+  const handleExportCSV = async () => {
+    const API = import.meta.env.VITE_BASE_URL
+      ? import.meta.env.VITE_BASE_URL.replace("/api", "")
+      : "http://localhost:5050";
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[60vh]">
-        <span className="loading loading-spinner loading-lg" />
-      </div>
-    );
-  }
+    console.log(`API: ${API}`);
+
+    try {
+      const response = await fetch(
+        `${API}/api/registrations/event/${eventUid}/export`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("下載失敗");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${event.title}-registrations.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+      alert("匯出失敗");
+    }
+  };
 
   if (error) {
     return (
