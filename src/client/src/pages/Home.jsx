@@ -130,10 +130,10 @@ export default function Home() {
             <button
               onClick={() => navigate("/articles")}
               className="relative flex items-center gap-2 font-semibold text-[#03045E] px-5 py-2 rounded-full 
-             overflow-hidden transition-all duration-300 border border-[#03045E]
-             before:absolute before:left-0 before:top-0 before:h-full before:w-0 
-             before:bg-[#03045E] before:transition-all before:duration-300 
-             hover:before:w-full hover:text-white group"
+       overflow-hidden transition-all duration-300 border border-[#03045E]
+       before:absolute before:left-0 before:top-0 before:h-full before:w-0 
+       before:bg-[#03045E] before:transition-all before:duration-300 
+       hover:before:w-full hover:text-white group"
             >
               <span className="relative z-10">查看全部</span>
               <FontAwesomeIcon
@@ -142,11 +142,21 @@ export default function Home() {
               />
             </button>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {events.slice(0, 4).map((event) => (
-              <EventCard key={event._id} event={event} variant="compact" />
-            ))}
-          </div>
+
+          {/* 先做排序 */}
+          {(() => {
+            const sortedEvents = [...events].sort(
+              (a, b) => new Date(b.date) - new Date(a.date)
+            );
+
+            return (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {sortedEvents.slice(0, 4).map((event) => (
+                  <EventCard key={event._id} event={event} variant="compact" />
+                ))}
+              </div>
+            );
+          })()}
         </div>
       )}
 
