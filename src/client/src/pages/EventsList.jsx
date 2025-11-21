@@ -14,7 +14,13 @@ export default function EventsList() {
 
   useEffect(() => {
     getList("events")
-      .then((data) => setEvents(data))
+      .then((data) => {
+        // 依照日期由新到舊排序
+        const sorted = [...data].sort(
+          (a, b) => new Date(b.date) - new Date(a.date)
+        );
+        setEvents(sorted);
+      })
       .catch((err) => console.error("Failed to fetch events:", err));
   }, []);
 
