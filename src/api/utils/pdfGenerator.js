@@ -11,6 +11,7 @@ const HOME = os.homedir();
 const extendedPATH = [
     `${HOME}/quarto/bin`,
     `${HOME}/bin`,
+    `${HOME}/.TinyTeX/bin/x86_64-linux`,
     process.env.PATH,
 ].join(":");
 

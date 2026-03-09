@@ -16,10 +16,14 @@ if ! command -v quarto &> /dev/null; then
 fi
 
 if [ ! -d "$HOME/bin" ] || ! command -v tlmgr &> /dev/null; then
-  echo "=== Installing TinyTeX... ==="
-  quarto install tinytex --update-path
-  export PATH="$HOME/bin:$PATH"
+  echo "=== Installing TinyTeX (direct download)... ==="
+  wget -q "https://yihui.org/tinytex/install-bin-unix.sh" -O /tmp/install-tinytex.sh
+  sh /tmp/install-tinytex.sh
+  export PATH="$HOME/bin:$HOME/.TinyTeX/bin/x86_64-linux:$PATH"
+  echo "TinyTeX installed"
 fi
+
+export PATH="$HOME/bin:$HOME/.TinyTeX/bin/x86_64-linux:$PATH"
 
 echo "=== Installing LaTeX CJK packages... ==="
 tlmgr install ctex xecjk fontspec fancyhdr ulem environ \
