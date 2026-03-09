@@ -42,10 +42,10 @@ tlmgr install ctex xecjk fontspec ulem environ \
 echo "=== Installing cwTeX fonts... ==="
 mkdir -p "$FONTS_DIR"
 if [ ! -f "$FONTS_DIR/cwTeXQMing-Medium.ttf" ]; then
-  wget -q "https://github.com/l10n-tw/cwtex-q-fonts-TTFs/archive/refs/tags/v0.42.zip" -O /tmp/cwtex.zip
-  unzip -o -q /tmp/cwtex.zip -d /tmp/cwtex
-  cp /tmp/cwtex/cwtex-q-fonts-TTFs-0.42/ttf/*.ttf "$FONTS_DIR/"
-  rm -rf /tmp/cwtex.zip /tmp/cwtex
+  wget -q "https://github.com/l10n-tw/cwtex-q-fonts-TTFs/archive/refs/tags/v0.42.tar.gz" -O /tmp/cwtex.tar.gz
+  tar -xzf /tmp/cwtex.tar.gz -C /tmp
+  cp /tmp/cwtex-q-fonts-TTFs-0.42/ttf/*.ttf "$FONTS_DIR/"
+  rm -rf /tmp/cwtex.tar.gz /tmp/cwtex-q-fonts-TTFs-0.42
   echo "cwTeX fonts installed:"
   ls "$FONTS_DIR"/*.ttf
 fi
