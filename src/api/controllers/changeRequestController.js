@@ -177,7 +177,7 @@ export async function downloadChangeRequestPDF(req, res) {
             content_md: cr.content_md,
             submittedBy: cr.submittedBy?.name || "未知",
             status: statusLabels[cr.status],
-            createdAt: new Date(cr.createdAt).toLocaleString("zh-TW"),
+            createdAt: cr.createdAt,
         });
 
         res.download(pdfPath, `修改需求_${cr.title}.pdf`, (err) => {
