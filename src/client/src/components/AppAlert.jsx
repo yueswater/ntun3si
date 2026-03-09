@@ -16,6 +16,13 @@ export default function AppAlert({ type = "info", message, onClose }) {
 
   if (!message) return null;
 
+  const iconColors = {
+    info: "stroke-info",
+    success: "stroke-success",
+    error: "stroke-error",
+    warning: "stroke-warning",
+  };
+
   const icons = {
     info: (
       <path
@@ -54,13 +61,13 @@ export default function AppAlert({ type = "info", message, onClose }) {
   return (
     <div
       role="alert"
-      className={`alert alert-${type} fixed top-4 right-4 w-fit shadow-lg z-50`}
+      className={`alert alert-${type} fixed top-4 right-4 w-fit shadow-lg z-50 text-black`}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
-        className="h-6 w-6 shrink-0 stroke-current"
+        className={`h-6 w-6 shrink-0 ${iconColors[type]}`}
       >
         {icons[type]}
       </svg>
