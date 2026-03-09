@@ -9,6 +9,8 @@ export default function EditorModalShell({
   flushSave,
   isPending,
   isNew,
+  saveLabel,
+  saving,
   children,
 }) {
   const [alert, setAlert] = useState({ type: "", message: "" });
@@ -79,16 +81,26 @@ export default function EditorModalShell({
             {isNew
               ? "新建項目需手動儲存"
               : isPending
-              ? "停止輸入 5 秒後自動儲存中..."
-              : "已自動儲存"}
+                ? "停止輸入 5 秒後自動儲存中..."
+                : "已自動儲存"}
           </span>
           <div className="flex gap-3">
-            <AnimatedButton
-              label="儲存變更"
-              icon="faFloppyDisk"
-              variant="primary"
-              onClick={handleSave}
-            />
+            {saving ? (
+              <button
+                className="relative flex items-center justify-center gap-x-1 px-3 py-1.5 rounded-full font-medium border whitespace-nowrap text-[#03045E] border-[#03045E] opacity-70 cursor-not-allowed"
+                disabled
+              >
+                <span className="loading loading-spinner loading-xs" />
+                <span>{saveLabel || "儲存變更"}</span>
+              </button>
+            ) : (
+              <AnimatedButton
+                label={saveLabel || "儲存變更"}
+                icon="faFloppyDisk"
+                variant="primary"
+                onClick={handleSave}
+              />
+            )}
             <AnimatedButton
               label="關閉"
               icon="faXmark"

@@ -175,7 +175,8 @@
     "cr_title_required": "請輸入修改需求標題",
     "cr_content_required": "請輸入修改內容",
     "cr_status_updated": "狀態已更新",
-    "pdf_download_failed": "PDF 下載失敗，請稍後再試"
+    "pdf_download_failed": "PDF 下載失敗，請稍後再試",
+    "cr_saved": "修改需求已儲存"
   },
   "cr": {
     "page_title": "修改需求管理",
@@ -196,6 +197,8 @@
     "edit": "編輯",
     "delete": "刪除",
     "confirm_delete": "確定要刪除「{{title}}」嗎？",
-    "pdf_generating": "產生中…"
+    "pdf_generating": "產生中…",
+    "submit": "送出修改",
+    "save_changes": "儲存變更"
   }
 }

@@ -22,12 +22,14 @@ const extendedPATH = [
 function formatDateZH(date) {
     const d = new Date(date);
     if (isNaN(d.getTime())) return "未知日期";
-    const y = d.getFullYear();
-    const m = d.getMonth() + 1;
-    const day = d.getDate();
-    const h = d.getHours();
-    const min = String(d.getMinutes()).padStart(2, "0");
-    const sec = String(d.getSeconds()).padStart(2, "0");
+    // Convert to Taipei time (UTC+8)
+    const taipei = new Date(d.getTime() + 8 * 60 * 60 * 1000);
+    const y = taipei.getUTCFullYear();
+    const m = taipei.getUTCMonth() + 1;
+    const day = taipei.getUTCDate();
+    const h = taipei.getUTCHours();
+    const min = String(taipei.getUTCMinutes()).padStart(2, "0");
+    const sec = String(taipei.getUTCSeconds()).padStart(2, "0");
     const period = h < 12 ? "上午" : "下午";
     const h12 = h % 12 || 12;
     return `${y}/${m}/${day} ${period} ${h12}:${min}:${sec}`;
@@ -90,8 +92,6 @@ format:
 | **狀態** | ${status} |
 | **送出者** | ${submittedBy} |
 | **送出時間** | ${dateStr} |
-
----
 
 ${content_md}
 `;

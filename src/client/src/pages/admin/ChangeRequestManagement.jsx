@@ -46,6 +46,7 @@ export default function ChangeRequestManagement() {
     const [content, setContent] = useState("");
     const [status, setStatus] = useState("submitted");
     const [pdfLoading, setPdfLoading] = useState(null); // uid of the item currently generating PDF
+    const [saving, setSaving] = useState(false);
 
     const {
         queue: queueAutoSave,
@@ -86,34 +87,42 @@ export default function ChangeRequestManagement() {
     };
 
     const handleManualSave = async () => {
-        if (!selected) return;
+        if (!selected || saving) return;
         const html = marked.parse(content);
+        setSaving(true);
 
-        if (isNew) {
-            if (!selected.title?.trim()) {
-                toast.warning(t("toast.cr_title_required"));
-                return;
-            }
-            if (!content.trim()) {
-                toast.warning(t("toast.cr_content_required"));
-                return;
-            }
+        try {
+            if (isNew) {
+                if (!selected.title?.trim()) {
+                    toast.warning(t("toast.cr_title_required"));
+                    return;
+                }
+                if (!content.trim()) {
+                    toast.warning(t("toast.cr_content_required"));
+                    return;
+                }
 
-            const created = await create("/change-requests", {
-                title: selected.title,
-                content_md: content,
-                content_html: html,
-            });
-            setRequests((list) => [created, ...list]);
-            open(created);
-            toast.success(t("toast.cr_created"));
-        } else {
-            await update("/change-requests", selected.uid, {
-                title: selected.title,
-                content_md: content,
-                content_html: html,
-                status,
-            });
+                const created = await create("/change-requests", {
+                    title: selected.title,
+                    content_md: content,
+                    content_html: html,
+                });
+                setRequests((list) => [created, ...list]);
+                open(created);
+                toast.success(t("toast.cr_created"));
+            } else {
+                await update("/change-requests", selected.uid, {
+                    title: selected.title,
+                    content_md: content,
+                    content_html: html,
+                    status,
+                });
+                toast.success(t("toast.cr_saved"));
+            }
+        } catch (err) {
+            toast.error(t("toast.save_failed"));
+        } finally {
+            setSaving(false);
         }
     };
 
@@ -254,6 +263,8 @@ export default function ChangeRequestManagement() {
                     flushSave={flushSave}
                     isPending={isPending}
                     isNew={isNew}
+                    saveLabel={isNew ? t("cr.submit") : t("cr.save_changes")}
+                    saving={saving}
                 >
                     <div className="p-4 border-b border-base-300 space-y-3">
                         {/* Title input */}

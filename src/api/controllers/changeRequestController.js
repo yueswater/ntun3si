@@ -117,25 +117,40 @@ export async function updateChangeRequest(req, res) {
             { new: true }
         ).populate("submittedBy", "name email");
 
-        // Send email on status change
-        if (status && status !== oldStatus) {
+        // Send email with PDF on any content/status change
+        const contentChanged = content_md !== undefined || title !== undefined;
+        const statusChanged = status && status !== oldStatus;
+
+        if (contentChanged || statusChanged) {
             const statusLabels = {
                 submitted: "已送出",
                 in_progress: "修改中",
                 completed: "修改完畢",
             };
             try {
+                const pdfPath = await generateChangeRequestPDF({
+                    title: updated.title,
+                    content_md: updated.content_md,
+                    submittedBy: updated.submittedBy?.name || "未知",
+                    status: statusLabels[updated.status],
+                    createdAt: updated.createdAt,
+                });
+                const emailSubject = statusChanged
+                    ? `【臺大國安社】修改需求狀態更新：${updated.title}`
+                    : `【臺大國安社】修改需求已更新：${updated.title}`;
+                const emailBody = statusChanged
+                    ? `修改需求狀態已變更，請查看附件 PDF。\n\n**標題：** ${updated.title}\n\n**狀態：** ${statusLabels[oldStatus]} → ${statusLabels[status]}`
+                    : `修改需求內容已更新，請查看附件 PDF。\n\n**標題：** ${updated.title}`;
                 await sendMail({
                     to: ADMIN_EMAIL,
-                    subject: `【臺大國安社】修改需求狀態更新：${updated.title}`,
-                    markdown:
-                        `## 修改需求狀態更新\n\n` +
-                        `**標題：** ${updated.title}\n\n` +
-                        `**狀態變更：** ${statusLabels[oldStatus]} → ${statusLabels[status]}\n\n` +
-                        `**更新時間：** ${new Date().toLocaleString("zh-TW")}\n\n`,
+                    subject: emailSubject,
+                    markdown: emailBody,
+                    attachments: [{ filename: `修改需求_${updated.title}.pdf`, path: pdfPath }],
                 });
+                fs.unlink(pdfPath, () => { });
+                console.log(`Change request update email with PDF sent to ${ADMIN_EMAIL}`);
             } catch (emailErr) {
-                console.error("Failed to send status update email:", emailErr);
+                console.error("Failed to send update email:", emailErr.message, emailErr.stack);
             }
         }
 

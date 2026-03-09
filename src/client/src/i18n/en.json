@@ -175,7 +175,8 @@
     "cr_title_required": "Please enter a title for the change request",
     "cr_content_required": "Please enter the change request content",
     "cr_status_updated": "Status updated",
-    "pdf_download_failed": "PDF download failed. Please try again later"
+    "pdf_download_failed": "PDF download failed. Please try again later",
+    "cr_saved": "Change request saved"
   },
   "cr": {
     "page_title": "Change Requests",
@@ -196,6 +197,8 @@
     "edit": "Edit",
     "delete": "Delete",
     "confirm_delete": "Are you sure you want to delete \"{{title}}\"?",
-    "pdf_generating": "Generating…"
+    "pdf_generating": "Generating…",
+    "submit": "Submit",
+    "save_changes": "Save Changes"
   }
 }
