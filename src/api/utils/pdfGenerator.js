@@ -1,9 +1,19 @@
 import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
+import os from "os";
 import { v4 as uuidv4 } from "uuid";
 
 const TMP_DIR = path.resolve("tmp");
+const HOME = os.homedir();
+
+// Extend PATH to include Render's Quarto/TinyTeX locations
+const extendedPATH = [
+    `${HOME}/quarto/bin`,
+    `${HOME}/bin`,
+    process.env.PATH,
+].join(":");
+
 
 /**
  * Generate a PDF from a change request using Quarto + XeLaTeX + cwTeX
@@ -64,6 +74,7 @@ ${content_md}
             cwd: TMP_DIR,
             timeout: 60000,
             stdio: "pipe",
+            env: { ...process.env, PATH: extendedPATH, HOME },
         });
     } catch (err) {
         // Clean up .qmd on failure
