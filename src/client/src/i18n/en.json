@@ -195,6 +195,7 @@
     "col_actions": "Actions",
     "edit": "Edit",
     "delete": "Delete",
-    "confirm_delete": "Are you sure you want to delete \"{{title}}\"?"
+    "confirm_delete": "Are you sure you want to delete \"{{title}}\"?",
+    "pdf_generating": "Generating…"
   }
 }

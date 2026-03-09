@@ -45,6 +45,7 @@ export default function ChangeRequestManagement() {
     const previewRef = useRef(null);
     const [content, setContent] = useState("");
     const [status, setStatus] = useState("submitted");
+    const [pdfLoading, setPdfLoading] = useState(null); // uid of the item currently generating PDF
 
     const {
         queue: queueAutoSave,
@@ -131,6 +132,7 @@ export default function ChangeRequestManagement() {
     };
 
     const handleDownloadPDF = async (cr) => {
+        setPdfLoading(cr.uid);
         try {
             const res = await axiosClient.get(`/change-requests/${cr.uid}/pdf`, {
                 responseType: "blob",
@@ -145,6 +147,8 @@ export default function ChangeRequestManagement() {
             window.URL.revokeObjectURL(url);
         } catch {
             toast.error(t("toast.pdf_download_failed"));
+        } finally {
+            setPdfLoading(null);
         }
     };
 
@@ -199,12 +203,22 @@ export default function ChangeRequestManagement() {
                     variant="primary"
                     onClick={() => handleEdit(cr)}
                 />
-                <AnimatedButton
-                    label="PDF"
-                    icon="faFilePdf"
-                    variant="ghost"
-                    onClick={() => handleDownloadPDF(cr)}
-                />
+                {pdfLoading === cr.uid ? (
+                    <button
+                        className="relative flex items-center justify-center gap-x-1 px-3 py-1.5 rounded-full font-medium border whitespace-nowrap text-white bg-[#03045E] border-[#03045E] opacity-70 cursor-not-allowed"
+                        disabled
+                    >
+                        <span className="loading loading-spinner loading-xs" />
+                        <span className="hidden sm:inline">{t("cr.pdf_generating")}</span>
+                    </button>
+                ) : (
+                    <AnimatedButton
+                        label="PDF"
+                        icon="faFilePdf"
+                        variant="ghost"
+                        onClick={() => handleDownloadPDF(cr)}
+                    />
+                )}
                 <AnimatedButton
                     label={t("cr.delete")}
                     icon="faTrash"

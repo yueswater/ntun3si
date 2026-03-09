@@ -36,6 +36,9 @@ export async function generateChangeRequestPDF({
     const qmdPath = path.join(TMP_DIR, `cr_${id}.qmd`);
     const pdfPath = path.join(TMP_DIR, `cr_${id}.pdf`);
 
+    // Resolve absolute font path for XeLaTeX (trailing slash required by fontspec Path option)
+    const fontsPath = path.join(VENDOR_DIR, "fonts") + "/";
+
     // Build the .qmd file with YAML front matter
     const qmdContent = `---
 title: "${title.replace(/"/g, '\\"')}"
@@ -50,9 +53,9 @@ format:
       text: |
         \\usepackage{fontspec}
         \\usepackage{xeCJK}
-        \\setCJKmainfont{cwTeXMing}
-        \\setCJKsansfont{cwTeXHei}
-        \\setCJKmonofont{cwTeXKai}
+        \\setCJKmainfont[Path=${fontsPath},Extension=.ttf]{cwTeXMing}
+        \\setCJKsansfont[Path=${fontsPath},Extension=.ttf]{cwTeXHei}
+        \\setCJKmonofont[Path=${fontsPath},Extension=.ttf]{cwTeXKai}
         \\usepackage{fancyhdr}
         \\pagestyle{fancy}
         \\fancyhead[L]{臺大國安社 — 修改需求單}
@@ -78,7 +81,7 @@ ${content_md}
             cwd: TMP_DIR,
             timeout: 60000,
             stdio: "pipe",
-            env: { ...process.env, PATH: extendedPATH, HOME },
+            env: { ...process.env, PATH: extendedPATH, HOME, OSFONTDIR: path.join(VENDOR_DIR, "fonts") },
         });
     } catch (err) {
         // Clean up .qmd on failure
