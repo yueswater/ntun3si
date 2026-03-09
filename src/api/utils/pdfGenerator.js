@@ -6,9 +6,12 @@ import { v4 as uuidv4 } from "uuid";
 
 const TMP_DIR = path.resolve("tmp");
 const HOME = os.homedir();
+const VENDOR_DIR = path.resolve("vendor");
 
-// Extend PATH to include Render's Quarto/TinyTeX locations
+// Extend PATH to include project-local vendor installs (Render-safe)
 const extendedPATH = [
+    `${VENDOR_DIR}/quarto/bin`,
+    `${VENDOR_DIR}/TinyTeX/bin/x86_64-linux`,
     `${HOME}/quarto/bin`,
     `${HOME}/bin`,
     `${HOME}/.TinyTeX/bin/x86_64-linux`,
