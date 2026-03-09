@@ -40,7 +40,7 @@ function loadTemplate(templateName, variables = {}) {
 /**
  * Send generic email
  */
-export async function sendMail({ to, subject, markdown }) {
+export async function sendMail({ to, subject, markdown, attachments }) {
   const html = marked.parse(markdown || "");
   const mailOptions = {
     from: process.env.MAIL_FROM,
@@ -48,6 +48,7 @@ export async function sendMail({ to, subject, markdown }) {
     subject,
     html,
   };
+  if (attachments) mailOptions.attachments = attachments;
   const info = await transporter.sendMail(mailOptions);
   return info;
 }

@@ -28,19 +28,25 @@ export async function createChangeRequest(req, res) {
         // Populate submittedBy for email
         await cr.populate("submittedBy", "name email");
 
-        // Send email notification
+        // Generate PDF and send as email attachment
         try {
+            const statusLabels = { submitted: "已送出", in_progress: "修改中", completed: "修改完畢" };
+            const pdfPath = await generateChangeRequestPDF({
+                title: cr.title,
+                content_md: cr.content_md,
+                submittedBy: user.name,
+                status: statusLabels[cr.status],
+                createdAt: cr.createdAt,
+            });
             await sendMail({
                 to: ADMIN_EMAIL,
                 subject: `【臺大國安社】新修改需求：${title}`,
-                markdown:
-                    `## 新修改需求單\n\n` +
-                    `**標題：** ${title}\n\n` +
-                    `**送出者：** ${user.name} (${user.email})\n\n` +
-                    `**送出時間：** ${new Date().toISOString()}\n\n` +
-                    `---\n\n${content_md}`,
+                markdown: `收到一份新的修改需求單，請查看附件 PDF。\n\n**標題：** ${title}\n\n**送出者：** ${user.name}`,
+                attachments: [{ filename: `修改需求_${title}.pdf`, path: pdfPath }],
             });
-            console.log(`Change request email sent to ${ADMIN_EMAIL}`);
+            // Clean up temp PDF after sending
+            fs.unlink(pdfPath, () => { });
+            console.log(`Change request email with PDF sent to ${ADMIN_EMAIL}`);
         } catch (emailErr) {
             console.error("Failed to send change request email:", emailErr.message, emailErr.stack);
         }
