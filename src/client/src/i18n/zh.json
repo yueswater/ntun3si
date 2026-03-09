@@ -169,6 +169,32 @@
     "event_slug_required": "請輸入活動網址代碼（slug）",
     "delete_failed": "刪除失敗，請稍後再試",
     "export_failed": "資料匯出失敗，請稍後再試",
-    "status_update_failed": "狀態更新失敗，請稍後再試"
+    "status_update_failed": "狀態更新失敗，請稍後再試",
+    "cr_deleted": "修改需求已刪除",
+    "cr_created": "修改需求已送出",
+    "cr_title_required": "請輸入修改需求標題",
+    "cr_content_required": "請輸入修改內容",
+    "cr_status_updated": "狀態已更新",
+    "pdf_download_failed": "PDF 下載失敗，請稍後再試"
+  },
+  "cr": {
+    "page_title": "修改需求管理",
+    "create": "新增需求",
+    "editor_title": "修改需求編輯",
+    "field_title": "需求標題",
+    "title_placeholder": "請輸入修改需求標題",
+    "field_status": "狀態",
+    "status_submitted": "已送出",
+    "status_in_progress": "修改中",
+    "status_completed": "修改完畢",
+    "col_title": "標題",
+    "col_submitter": "送出者",
+    "col_status": "狀態",
+    "col_created": "送出時間",
+    "col_updated": "更新時間",
+    "col_actions": "操作",
+    "edit": "編輯",
+    "delete": "刪除",
+    "confirm_delete": "確定要刪除「{{title}}」嗎？"
   }
 }

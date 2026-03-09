@@ -19,6 +19,7 @@ const getFolderPath = (type) => {
     avatar: "avatar",
     article: "article",
     event: "event",
+    "change-request": "change-request",
   };
 
   return folderMap[type] || "misc";

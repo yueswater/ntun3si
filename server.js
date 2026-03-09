@@ -16,6 +16,7 @@ import authRoutes from "./src/api/routes/authRoutes.js";
 import uploadRoutes from "./src/api/routes/uploadRoutes.js";
 import formRoutes from "./src/api/routes/formRoutes.js";
 import registrationRoutes from "./src/api/routes/registrationRoutes.js";
+import changeRequestRoutes from "./src/api/routes/changeRequestRoutes.js";
 
 dotenv.config();
 
@@ -76,6 +77,7 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/forms", formRoutes);
 app.use("/api/registrations", registrationRoutes);
 app.use("/api/mail", mailRoutes);
+app.use("/api/change-requests", changeRequestRoutes);
 
 // ------------------------------------------------------------
 // Static frontend (only in production)

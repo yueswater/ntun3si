@@ -7,6 +7,7 @@ import {
   faCalendarDays,
   faClipboardList,
   faBars,
+  faCodePullRequest,
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function Sidebar({ children }) {
@@ -57,14 +58,14 @@ export default function Sidebar({ children }) {
               { to: "/admin/articles", icon: faFileAlt, label: "文章管理" },
               { to: "/admin/events", icon: faCalendarDays, label: "活動管理" },
               { to: "/admin/forms", icon: faClipboardList, label: "表單管理" },
+              { to: "/admin/change-requests", icon: faCodePullRequest, label: "修改需求" },
             ].map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
                 onClick={closeSidebar}
                 className={`
-                  relative flex items-center ${
-                    collapsed ? "justify-center" : "justify-start"
+                  relative flex items-center ${collapsed ? "justify-center" : "justify-start"
                   } gap-3 p-2 rounded-lg overflow-hidden group transition-all duration-300
                   ${isActive(item.to) ? "bg-[#03045E]" : ""}
                 `}
@@ -76,19 +77,17 @@ export default function Sidebar({ children }) {
 
                 <FontAwesomeIcon
                   icon={item.icon}
-                  className={`text-lg z-10 transition-all duration-300 ${
-                    isActive(item.to)
+                  className={`text-lg z-10 transition-all duration-300 ${isActive(item.to)
                       ? "text-white"
                       : "text-[#4d4d4d] group-hover:text-white"
-                  }`}
+                    }`}
                 />
                 {!collapsed && (
                   <span
-                    className={`relative z-10 font-medium transition-all duration-300 ${
-                      isActive(item.to)
+                    className={`relative z-10 font-medium transition-all duration-300 ${isActive(item.to)
                         ? "text-white"
                         : "text-[#4d4d4d] group-hover:text-white"
-                    }`}
+                      }`}
                   >
                     {item.label}
                   </span>
@@ -100,9 +99,8 @@ export default function Sidebar({ children }) {
 
         {/* 下半區塊 */}
         <footer
-          className={`text-center text-gray-500 transition-all leading-snug mb-3 ${
-            collapsed ? "text-[8.5px]" : "text-[9.5px]"
-          }`}
+          className={`text-center text-gray-500 transition-all leading-snug mb-3 ${collapsed ? "text-[8.5px]" : "text-[9.5px]"
+            }`}
         >
           {collapsed
             ? "© 2025 臺大國安社"
@@ -130,9 +128,8 @@ export default function Sidebar({ children }) {
 
       {/* 主內容區 */}
       <main
-        className={`flex-1 transition-all duration-300 ${
-          collapsed ? "lg:ml-20" : "lg:ml-64"
-        }`}
+        className={`flex-1 transition-all duration-300 ${collapsed ? "lg:ml-20" : "lg:ml-64"
+          }`}
       >
         {children}
       </main>

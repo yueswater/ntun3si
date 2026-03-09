@@ -169,6 +169,32 @@
     "event_slug_required": "Please enter an event URL slug",
     "delete_failed": "Deletion failed. Please try again later",
     "export_failed": "Data export failed. Please try again later",
-    "status_update_failed": "Status update failed. Please try again later"
+    "status_update_failed": "Status update failed. Please try again later",
+    "cr_deleted": "Change request deleted",
+    "cr_created": "Change request submitted",
+    "cr_title_required": "Please enter a title for the change request",
+    "cr_content_required": "Please enter the change request content",
+    "cr_status_updated": "Status updated",
+    "pdf_download_failed": "PDF download failed. Please try again later"
+  },
+  "cr": {
+    "page_title": "Change Requests",
+    "create": "New Request",
+    "editor_title": "Change Request Editor",
+    "field_title": "Title",
+    "title_placeholder": "Enter change request title",
+    "field_status": "Status",
+    "status_submitted": "Submitted",
+    "status_in_progress": "In Progress",
+    "status_completed": "Completed",
+    "col_title": "Title",
+    "col_submitter": "Submitted By",
+    "col_status": "Status",
+    "col_created": "Created",
+    "col_updated": "Updated",
+    "col_actions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirm_delete": "Are you sure you want to delete \"{{title}}\"?"
   }
 }

@@ -9,6 +9,8 @@ import {
   faArrowLeft,
   faCamera,
   faFileExport,
+  faDownload,
+  faFilePdf,
 } from "@fortawesome/free-solid-svg-icons";
 
 /**
@@ -34,6 +36,8 @@ export default function AnimatedButton({
     faArrowLeft,
     faCamera,
     faFileExport,
+    faDownload,
+    faFilePdf,
   };
   const selectedIcon = iconMap[icon] || faPlus;
 
@@ -81,9 +85,8 @@ export default function AnimatedButton({
         className="text-xs relative z-10 transition-transform duration-300 group-hover:rotate-12"
       />
       <span
-        className={`relative z-10 ${
-          iconOnlyLabels.includes(label) ? "hidden sm:inline" : ""
-        }`}
+        className={`relative z-10 ${iconOnlyLabels.includes(label) ? "hidden sm:inline" : ""
+          }`}
       >
         {label}
       </span>

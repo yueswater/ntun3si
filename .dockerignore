@@ -1,0 +1,15 @@
+node_modules
+src/client/node_modules
+src/client/dist
+.git
+.gitignore
+.env
+.env.*
+*.md
+.vscode
+.idea
+.DS_Store
+tmp
+uploads
+coverage
+.cache
