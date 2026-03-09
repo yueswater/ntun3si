@@ -72,6 +72,7 @@ format:
         \\usepackage{xeCJK}
         \\usepackage{graphicx}
         \\usepackage{titlesec}
+        \\usepackage{titling}
         \\setCJKmainfont[Path=${fontsPath},Extension=.ttf]{cwTeXQMing-Medium}
         \\setCJKsansfont[Path=${fontsPath},Extension=.ttf]{cwTeXQHei-Bold}
         \\setCJKmonofont[Path=${fontsPath},Extension=.ttf]{cwTeXQKai-Medium}
