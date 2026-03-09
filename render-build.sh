@@ -25,14 +25,11 @@ export PATH="$QUARTO_DIR/bin:$PATH"
 
 if [ ! -d "$TINYTEX_DIR" ]; then
   echo "=== Installing TinyTeX (direct download)... ==="
-  export TINYTEX_DIR="$TINYTEX_DIR"
-  wget -q "https://yihui.org/tinytex/install-bin-unix.sh" -O /tmp/install-tinytex.sh
-  # Install TinyTeX to vendor directory
-  TINYTEX_INSTALLER_DIR="$HOME" sh /tmp/install-tinytex.sh
-  # Move from default location to vendor
-  if [ -d "$HOME/.TinyTeX" ]; then
-    mv "$HOME/.TinyTeX" "$TINYTEX_DIR"
-  fi
+  mkdir -p "$VENDOR_DIR"
+  wget -q "https://github.com/rstudio/tinytex-releases/releases/download/daily/TinyTeX-1-linux-x86_64.tar.xz"
+  tar -xJf TinyTeX-1-linux-x86_64.tar.xz -C "$VENDOR_DIR"
+  mv "$VENDOR_DIR/.TinyTeX" "$TINYTEX_DIR"
+  rm -f TinyTeX-1-linux-x86_64.tar.xz
   echo "TinyTeX installed to $TINYTEX_DIR"
 fi
 
