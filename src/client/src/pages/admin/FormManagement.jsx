@@ -5,7 +5,8 @@ import { create, update, remove } from "../../utils/api";
 import ManagementLayout from "../../components/ManagementLayout";
 import EditorModalShell from "../../components/EditorModalShell";
 import AnimatedButton from "../../components/AnimatedButton";
-import AppAlert from "../../components/AppAlert";
+import { useToast } from "../../contexts/ToastContext";
+import { useTranslation } from "react-i18next";
 import FormBuilder from "../../components/event/FormBuilder";
 import HelpButton from "../../components/HelpButton";
 
@@ -13,6 +14,8 @@ import HelpButton from "../../components/HelpButton";
  * Form Management - Admin interface for managing registration forms
  */
 export default function FormManagement() {
+  const toast = useToast();
+  const { t } = useTranslation();
   const { data: forms, loading, setData: setForms } = useFetchList("/forms");
   const { data: events } = useFetchList("/events");
   const navigate = useNavigate();
@@ -167,7 +170,7 @@ export default function FormManagement() {
               )
             );
           } catch {
-            alert("更新狀態失敗");
+            toast.error(t("toast.status_update_failed"));
           }
         }}
       />

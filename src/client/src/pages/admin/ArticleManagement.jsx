@@ -10,6 +10,8 @@ import useSelection from "../../hooks/useSelection";
 import useFileUpload from "../../hooks/useFileUpload";
 import { create, update, remove } from "../../utils/api";
 import { isValidSlug } from "../../utils/slugValidators";
+import { useToast } from "../../contexts/ToastContext";
+import { useTranslation } from "react-i18next";
 import ManagementLayout from "../../components/ManagementLayout";
 import EditorModalShell from "../../components/EditorModalShell";
 import AnimatedButton from "../../components/AnimatedButton";
@@ -17,6 +19,8 @@ import TagList from "../../components/TagList";
 import HelpButton from "../../components/HelpButton";
 
 export default function ArticleManagement() {
+  const toast = useToast();
+  const { t } = useTranslation();
   const {
     data: articles,
     loading,
@@ -75,9 +79,9 @@ export default function ArticleManagement() {
     try {
       await remove("/articles", article.uid);
       setArticles((prev) => prev.filter((a) => a.uid !== article.uid));
-      alert("文章已刪除");
+      toast.success(t("toast.article_deleted"));
     } catch {
-      alert("刪除失敗");
+      toast.error(t("toast.delete_failed"));
     }
   };
 
@@ -87,11 +91,11 @@ export default function ArticleManagement() {
 
     if (isNew) {
       if (!selected.title?.trim() || selected.title === "新文章") {
-        alert("請輸入文章標題");
+        toast.warning(t("toast.article_title_required"));
         return;
       }
       if (!isValidSlug(selected.slug)) {
-        alert("請輸入 slug");
+        toast.warning(t("toast.article_slug_required"));
         return;
       }
 
@@ -105,7 +109,7 @@ export default function ArticleManagement() {
       });
       setArticles((list) => [created, ...list]);
       open(created);
-      alert("文章創建成功!");
+      toast.success(t("toast.article_created"));
     } else {
       await update("/articles", selected.uid, {
         title: selected.title,

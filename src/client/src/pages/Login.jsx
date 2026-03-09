@@ -3,9 +3,13 @@ import axiosClient from "../api/axiosClient";
 import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { useAuth } from "../contexts/AuthContext";
+import { useToast } from "../contexts/ToastContext";
+import { useTranslation } from "react-i18next";
 
 export default function Login() {
   const { login } = useAuth();
+  const toast = useToast();
+  const { t } = useTranslation();
   const [isRegistering, setIsRegistering] = useState(false);
   const [form, setForm] = useState({
     username: "",
@@ -34,7 +38,7 @@ export default function Login() {
           email: form.email,
           password: form.password,
         });
-        alert("註冊成功！請到信箱收信驗證。");
+        toast.success(t("toast.register_success"));
         setIsRegistering(false);
       } else {
         const res = await axiosClient.post("/users/login", {

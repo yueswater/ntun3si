@@ -6,9 +6,11 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useTranslation } from "react-i18next";
+import { useToast } from "../contexts/ToastContext";
 
 export default function Footer() {
   const { t } = useTranslation();
+  const toast = useToast();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -38,10 +40,10 @@ export default function Footer() {
 
       if (!res.ok)
         throw new Error(data.message || t("footer.subscribe_failed"));
-      alert(t("footer.subscribe_success"));
+      toast.success(t("footer.subscribe_success"));
       setEmail("");
     } catch (err) {
-      alert(`${t("footer.subscribe_failed")}: ${err.message}`);
+      toast.error(`${t("footer.subscribe_failed")}: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -65,14 +67,6 @@ export default function Footer() {
           <a className="link link-hover block">
             {t("footer.services.members")}
           </a>
-        </nav>
-
-        {/* About section */}
-        <nav className="space-y-2">
-          <h6 className="footer-title">{t("footer.about.title")}</h6>
-          <a className="link link-hover block">{t("footer.about.intro")}</a>
-          <a className="link link-hover block">{t("footer.about.contact")}</a>
-          <a className="link link-hover block">{t("footer.about.partners")}</a>
         </nav>
 
         {/* Policy section */}
@@ -179,7 +173,7 @@ export default function Footer() {
 
       {/* ====== Copyright ====== */}
       <div className="mt-6 text-center text-sm opacity-70">
-        © {new Date().getFullYear()} 臺大國安社. {t("footer.all_rights")}
+        © {new Date().getFullYear()} {t("footer.clubName")}. {t("footer.all_rights")}
       </div>
     </footer>
   );

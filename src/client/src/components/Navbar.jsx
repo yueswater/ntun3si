@@ -133,24 +133,32 @@ export default function Navbar() {
           <div className="hidden lg:flex items-center gap-8 text-lg font-medium ml-4">
             <Link
               to="/articles"
-              className={`transition-colors duration-200 ${
-                isActive("/articles")
+              className={`transition-colors duration-200 ${isActive("/articles")
                   ? "text-[#03045E] font-semibold"
                   : "text-[#262626] hover:text-[#03045E]"
-              }`}
+                }`}
             >
               {t("navbar.articles")}
             </Link>
 
             <Link
               to="/events"
-              className={`transition-colors duration-200 ${
-                isActive("/events")
+              className={`transition-colors duration-200 ${isActive("/events")
                   ? "text-[#03045E] font-semibold"
                   : "text-[#262626] hover:text-[#03045E]"
-              }`}
+                }`}
             >
               {t("navbar.events")}
+            </Link>
+
+            <Link
+              to="/about"
+              className={`transition-colors duration-200 ${isActive("/about")
+                  ? "text-[#03045E] font-semibold"
+                  : "text-[#262626] hover:text-[#03045E]"
+                }`}
+            >
+              {t("navbar.about")}
             </Link>
 
             {/* 語言切換 toggle */}
@@ -241,11 +249,10 @@ export default function Navbar() {
             <Link
               to="/articles"
               onClick={() => setIsOpen(false)}
-              className={`${
-                isActive("/articles")
+              className={`${isActive("/articles")
                   ? "text-[#03045E] font-semibold"
                   : "text-[#262626]"
-              }`}
+                }`}
             >
               {t("navbar.articles")}
             </Link>
@@ -253,13 +260,23 @@ export default function Navbar() {
             <Link
               to="/events"
               onClick={() => setIsOpen(false)}
-              className={`${
-                isActive("/events")
+              className={`${isActive("/events")
                   ? "text-[#03045E] font-semibold"
                   : "text-[#262626]"
-              }`}
+                }`}
             >
               {t("navbar.events")}
+            </Link>
+
+            <Link
+              to="/about"
+              onClick={() => setIsOpen(false)}
+              className={`${isActive("/about")
+                  ? "text-[#03045E] font-semibold"
+                  : "text-[#262626]"
+                }`}
+            >
+              {t("navbar.about")}
             </Link>
           </div>
 

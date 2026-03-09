@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { useToast } from "../contexts/ToastContext";
+import { useTranslation } from "react-i18next";
 
 /**
  * HashtagEditor Component
@@ -10,13 +12,15 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
  */
 export default function HashtagEditor({ hashtags, setHashtags }) {
   const [input, setInput] = useState("");
+  const toast = useToast();
+  const { t } = useTranslation();
 
   // Add a new tag from input value
   const handleAddTag = () => {
     const value = input.trim();
     if (!value) return;
     if (hashtags.length >= 5) {
-      alert("最多只能新增 5 個標籤");
+      toast.warning(t("toast.tag_limit"));
       return;
     }
     setHashtags([...hashtags, value]);

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useToast } from "../../contexts/ToastContext";
+import { useTranslation } from "react-i18next";
 import TitleSlugHeader from "../../components/TitleSlugHeader";
 import PreviewImageUploader from "../../components/PreviewImageUploader";
 import EventFormFields from "../../components/event/EventFormFields";
@@ -15,6 +17,8 @@ import TagList from "../../components/TagList";
 import HelpButton from "../../components/HelpButton";
 
 export default function EventManagement() {
+  const toast = useToast();
+  const { t } = useTranslation();
   const { data: events, loading, setData: setEvents } = useFetchList("/events");
   const {
     selected,
@@ -89,9 +93,9 @@ export default function EventManagement() {
     try {
       await remove("/events", event.uid);
       setEvents((prev) => prev.filter((e) => e.uid !== event.uid));
-      alert("活動已刪除");
+      toast.success(t("toast.event_deleted"));
     } catch {
-      alert("刪除失敗");
+      toast.error(t("toast.delete_failed"));
     }
   };
 
@@ -102,15 +106,15 @@ export default function EventManagement() {
 
     if (isNew) {
       if (!form.title?.trim() || form.title === "新活動") {
-        alert("請輸入活動名稱");
+        toast.warning(t("toast.event_title_required"));
         return;
       }
       if (!form.date) {
-        alert("請選擇活動時間");
+        toast.warning(t("toast.event_date_required"));
         return;
       }
       if (!isValidSlug(selected.slug)) {
-        alert("請輸入 slug");
+        toast.warning(t("toast.event_slug_required"));
         return;
       }
 
@@ -122,7 +126,7 @@ export default function EventManagement() {
       });
       setEvents((list) => [created, ...list]);
       open(created);
-      alert("活動創建成功!");
+      toast.success(t("toast.event_created"));
     } else {
       await update("/events", selected.uid, { ...form, previewImg });
     }

@@ -1,7 +1,11 @@
 import { useState } from "react";
 import axiosClient from "../api/axiosClient";
+import { useToast } from "../contexts/ToastContext";
+import { useTranslation } from "react-i18next";
 
 export default function ImageUploader({ type, onUploaded }) {
+  const toast = useToast();
+  const { t } = useTranslation();
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -24,10 +28,10 @@ export default function ImageUploader({ type, onUploaded }) {
         headers: { "Content-Type": "multipart/form-data" },
       });
       onUploaded(res.data.url);
-      alert("上傳成功！");
+      toast.success(t("toast.upload_success"));
     } catch (err) {
       console.error("Upload failed:", err);
-      alert("上傳失敗，請稍後重試。");
+      toast.error(t("toast.upload_failed"));
     } finally {
       setUploading(false);
     }

@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { get, patch, del } from "../../utils/api";
 import DataTable from "../../components/DataTable";
 import AnimatedButton from "../../components/AnimatedButton";
-import AppAlert from "../../components/AppAlert";
+import { useToast } from "../../contexts/ToastContext";
+import { useTranslation } from "react-i18next";
 import HelpButton from "../../components/HelpButton";
 
 /**
@@ -12,6 +13,8 @@ import HelpButton from "../../components/HelpButton";
 export default function RegistrationManagement() {
   const { eventUid } = useParams();
   const navigate = useNavigate();
+  const toast = useToast();
+  const { t } = useTranslation();
 
   const [registrations, setRegistrations] = useState([]);
   const [event, setEvent] = useState(null);
@@ -99,7 +102,7 @@ export default function RegistrationManagement() {
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error(err);
-      alert("匯出失敗");
+      toast.error(t("toast.export_failed"));
     }
   };
 
@@ -239,7 +242,7 @@ export default function RegistrationManagement() {
             {(() => {
               const reg = JSON.parse(
                 document.getElementById("detail_modal")?.dataset.registration ||
-                  "{}"
+                "{}"
               );
               return (
                 <>

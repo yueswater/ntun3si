@@ -1,5 +1,7 @@
 import { useRef, useState } from "react";
 import axiosClient from "../api/axiosClient";
+import { useToast } from "../contexts/ToastContext";
+import { useTranslation } from "react-i18next";
 
 export default function PreviewImageUploader({
   value,
@@ -10,13 +12,15 @@ export default function PreviewImageUploader({
 }) {
   const inputRef = useRef(null);
   const [uploading, setUploading] = useState(false);
+  const toast = useToast();
+  const { t } = useTranslation();
 
   const handleUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (file.size > maxMB * 1024 * 1024) {
-      alert(`圖片大小不能超過 ${maxMB} MB`);
+      toast.warning(t("toast.upload_file_too_large", { max: maxMB }));
       return;
     }
 
@@ -31,7 +35,7 @@ export default function PreviewImageUploader({
       });
       onChange(res.data.url);
     } catch {
-      alert("上傳失敗");
+      toast.error(t("toast.upload_failed"));
     } finally {
       setUploading(false);
       if (inputRef.current) inputRef.current.value = "";

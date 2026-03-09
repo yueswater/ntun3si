@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import MarkdownToolbar from "../markdown/MarkdownToolbar";
 import MarkdownEditor from "../markdown/MarkdownEditor";
 import MarkdownPreview from "../markdown/MarkdownPreview";
+import { useToast } from "../../contexts/ToastContext";
+import { useTranslation } from "react-i18next";
 
 export default function ArticleFormFields({
   content,
@@ -14,6 +16,8 @@ export default function ArticleFormFields({
   const [showHeadingMenu, setShowHeadingMenu] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const syncTimer = useRef(null);
+  const toast = useToast();
+  const { t } = useTranslation();
 
   const insertMarkdown = (before, after = "") => {
     const textarea = textareaRef.current;
@@ -94,14 +98,14 @@ export default function ArticleFormFields({
 
     // 驗證文件類型
     if (!file.type.startsWith("image/")) {
-      alert("請選擇圖片檔案");
+      toast.warning(t("toast.upload_invalid_type"));
       return;
     }
 
     // 驗證文件大小 (5MB)
     const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
-      alert("圖片大小不能超過 5MB");
+      toast.warning(t("toast.upload_file_too_large", { max: 5 }));
       return;
     }
 
@@ -136,7 +140,7 @@ export default function ArticleFormFields({
       insertMarkdown(`![${file.name}](${imageUrl})`, "");
     } catch (error) {
       console.error("圖片上傳失敗:", error);
-      alert("圖片上傳失敗，請稍後重試");
+      toast.error(t("toast.upload_failed"));
     } finally {
       setUploadingImage(false);
       // 清空 input，允許重複上傳同一張圖片

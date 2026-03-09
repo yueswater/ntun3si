@@ -5,7 +5,12 @@
     "events": "活動總覽",
     "login": "註冊／登入",
     "logout": "登出",
-    "profile": "個人檔案"
+    "profile": "個人檔案",
+    "about": "關於我們"
+  },
+  "about": {
+    "title": "臺大國安社現任幹部",
+    "updated_date": "更新日期：2026 年 3 月 9 日"
   },
   "home": {
     "hot_articles": "熱門文章",
@@ -81,36 +86,29 @@
       "school": "學校",
       "department": "系級",
       "studentId": "學號",
-
       "default_nationality": "中華民國",
-
       "phone_placeholder": "範例：0912-345-678",
       "school_placeholder": "例：國立臺灣大學",
       "department_placeholder": "例：資訊工程學系 大二",
-
       "select_placeholder": "請選擇...",
       "required_hint": "* 為必填欄位",
       "deadline": "報名截止時間：",
       "max_limit": "名額限制："
     },
-
     "section": {
       "optional": "選填資訊",
       "custom": "其他問題"
     },
-
     "action": {
       "submit": "確認報名",
       "submitting": "報名中…",
       "back_to_events": "返回活動列表"
     },
-
     "success": {
       "title": "✓ 報名成功！",
       "default": "報名成功！",
       "check_email": "我們已將確認信寄至您的電子郵件，請查收。"
     },
-
     "error": {
       "name_required": "請輸入姓名",
       "email_invalid": "請輸入有效的電子郵件",
@@ -119,7 +117,6 @@
       "submit_failed": "報名失敗，請稍後再試",
       "closed": "報名已截止"
     },
-
     "email": {
       "subject": "【NTUN3SI 國安社】{{title}} 報名成功通知",
       "location_tba": "待通知",
@@ -128,7 +125,6 @@
   },
   "profile": {
     "title": "個人檔案",
-
     "uploading": "上傳中...",
     "change_avatar": "更換大頭貼",
     "avatar_updated": "大頭貼更新成功！",
@@ -136,30 +132,43 @@
     "file_hint": "支援 JPG、PNG，檔案大小 ≤ 5MB",
     "error_file_size": "檔案大小不能超過 5MB",
     "error_heic": "HEIC 檔案無法轉換",
-
     "basic_info": "基本資料",
     "username": "帳號",
     "username_hint": "帳號無法修改",
-
     "name": "姓名",
     "email": "電子郵件",
     "phone": "電話",
     "phone_placeholder": "請輸入電話號碼",
-
     "role": "身份",
     "role_admin": "管理員",
     "role_member": "會員",
-
     "email_verified": "Email 驗證",
     "verified": "已驗證",
     "unverified": "未驗證",
-
     "register_date": "註冊日期",
-
     "updated": "個人資料更新成功！",
     "update_failed": "更新失敗，請稍後重試",
-
     "back": "返回",
     "save": "儲存變更"
+  },
+  "toast": {
+    "upload_success": "圖片上傳成功",
+    "upload_failed": "圖片上傳失敗，請稍後再試",
+    "upload_file_too_large": "檔案大小超過 {{max}} MB，請壓縮後再上傳",
+    "upload_invalid_type": "僅支援圖片格式（JPG、PNG、GIF、WebP）",
+    "tag_limit": "標籤數量已達上限（5 個）",
+    "register_success": "註冊成功！請至信箱查收驗證信件",
+    "article_deleted": "文章已成功刪除",
+    "article_created": "文章已成功建立",
+    "article_title_required": "請輸入文章標題",
+    "article_slug_required": "請輸入文章網址代碼（slug）",
+    "event_deleted": "活動已成功刪除",
+    "event_created": "活動已成功建立",
+    "event_title_required": "請輸入活動名稱",
+    "event_date_required": "請選擇活動時間",
+    "event_slug_required": "請輸入活動網址代碼（slug）",
+    "delete_failed": "刪除失敗，請稍後再試",
+    "export_failed": "資料匯出失敗，請稍後再試",
+    "status_update_failed": "狀態更新失敗，請稍後再試"
   }
 }
