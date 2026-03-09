@@ -41,17 +41,18 @@ tlmgr install ctex xecjk fontspec fancyhdr ulem environ \
 
 echo "=== Installing cwTeX fonts... ==="
 mkdir -p "$FONTS_DIR"
-cd "$FONTS_DIR"
-for font in cwTeXMing cwTeXKai cwTeXYen cwTeXHei cwTeXFangSong; do
-  if [ ! -f "${font}.ttf" ]; then
-    wget -q "https://github.com/l10n-tw/cwtex-q-fonts/raw/master/${font}.ttf" || true
-  fi
-done
+if [ ! -f "$FONTS_DIR/cwTeXQMing-Medium.ttf" ]; then
+  wget -q "https://github.com/l10n-tw/cwtex-q-fonts-TTFs/archive/refs/tags/v0.42.zip" -O /tmp/cwtex.zip
+  unzip -o -q /tmp/cwtex.zip -d /tmp/cwtex
+  cp /tmp/cwtex/cwtex-q-fonts-TTFs-0.42/ttf/*.ttf "$FONTS_DIR/"
+  rm -rf /tmp/cwtex.zip /tmp/cwtex
+  echo "cwTeX fonts installed:"
+  ls "$FONTS_DIR"/*.ttf
+fi
 # Also link to system font location
 mkdir -p "$HOME/.fonts"
 ln -sf "$FONTS_DIR"/*.ttf "$HOME/.fonts/" 2>/dev/null || true
 fc-cache -f 2>/dev/null || true
-cd -
 
 # ── Step 2: Node.js build ──
 echo "=== Installing root dependencies... ==="

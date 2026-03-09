@@ -53,9 +53,9 @@ format:
       text: |
         \\usepackage{fontspec}
         \\usepackage{xeCJK}
-        \\setCJKmainfont[Path=${fontsPath},Extension=.ttf]{cwTeXMing}
-        \\setCJKsansfont[Path=${fontsPath},Extension=.ttf]{cwTeXHei}
-        \\setCJKmonofont[Path=${fontsPath},Extension=.ttf]{cwTeXKai}
+        \\setCJKmainfont[Path=${fontsPath},Extension=.ttf]{cwTeXQMing-Medium}
+        \\setCJKsansfont[Path=${fontsPath},Extension=.ttf]{cwTeXQHei-Bold}
+        \\setCJKmonofont[Path=${fontsPath},Extension=.ttf]{cwTeXQKai-Medium}
         \\usepackage{fancyhdr}
         \\pagestyle{fancy}
         \\fancyhead[L]{臺大國安社 — 修改需求單}
