@@ -59,9 +59,7 @@ export async function generateChangeRequestPDF({
     // Build the .qmd file with YAML front matter
     const qmdContent = `---
 title: "${title.replace(/"/g, '\\"')}"
-subtitle: "修改需求單"
 author: "${submittedBy}"
-date: "${dateStr}"
 format:
   pdf:
     documentclass: article
@@ -82,8 +80,9 @@ format:
         \\setkeys{Gin}{width=0.7\\textwidth}
         \\titleformat{\\section}{\\Large\\bfseries\\cwHei}{\\thesection}{1em}{}
         \\titleformat{\\subsection}{\\large\\bfseries\\cwYuan}{\\thesubsection}{1em}{}
-        \\renewcommand{\\maketitlehooka}{\\cwHei}
-        \\renewcommand{\\maketitlehookb}{\\normalfont}
+        \\pretitle{\\begin{center}\\huge\\bfseries\\cwHei}
+        \\posttitle{\\par\\vskip 0.3em{\\Large\\cwHei 修改需求單}\\par\\end{center}\\vskip 0.5em}
+        \\date{${dateStr}}
 ---
 
 | 欄位 | 內容 |

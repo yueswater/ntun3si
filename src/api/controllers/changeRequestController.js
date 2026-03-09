@@ -37,11 +37,12 @@ export async function createChangeRequest(req, res) {
                     `## 新修改需求單\n\n` +
                     `**標題：** ${title}\n\n` +
                     `**送出者：** ${user.name} (${user.email})\n\n` +
-                    `**送出時間：** ${new Date().toLocaleString("zh-TW")}\n\n` +
+                    `**送出時間：** ${new Date().toISOString()}\n\n` +
                     `---\n\n${content_md}`,
             });
+            console.log(`Change request email sent to ${ADMIN_EMAIL}`);
         } catch (emailErr) {
-            console.error("Failed to send change request email:", emailErr);
+            console.error("Failed to send change request email:", emailErr.message, emailErr.stack);
         }
 
         res.status(201).json(cr);
