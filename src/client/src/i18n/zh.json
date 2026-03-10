@@ -199,6 +199,8 @@
     "confirm_delete": "確定要刪除「{{title}}」嗎？",
     "pdf_generating": "產生中…",
     "submit": "送出修改",
-    "save_changes": "儲存變更"
+    "save_changes": "儲存變更",
+    "search_placeholder": "搜尋標題、送出者…",
+    "filter_all_status": "全部狀態"
   }
 }

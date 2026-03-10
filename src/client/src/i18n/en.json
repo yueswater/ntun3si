@@ -199,6 +199,8 @@
     "confirm_delete": "Are you sure you want to delete \"{{title}}\"?",
     "pdf_generating": "Generating…",
     "submit": "Submit",
-    "save_changes": "Save Changes"
+    "save_changes": "Save Changes",
+    "search_placeholder": "Search title, submitter…",
+    "filter_all_status": "All Statuses"
   }
 }

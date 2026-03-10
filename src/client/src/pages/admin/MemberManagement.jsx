@@ -8,6 +8,8 @@ export default function MemberManagement() {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+  const [filterVerified, setFilterVerified] = useState("");
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -53,7 +55,21 @@ export default function MemberManagement() {
   ];
 
   // 格式化資料
-  const data = members.map((m, i) => ({
+  const lowerSearch = search.toLowerCase();
+  const filtered = members.filter((m) => {
+    if (filterVerified === "verified" && !m.emailVerified) return false;
+    if (filterVerified === "unverified" && m.emailVerified) return false;
+    if (
+      search &&
+      !m.name?.toLowerCase().includes(lowerSearch) &&
+      !m.username?.toLowerCase().includes(lowerSearch) &&
+      !m.email?.toLowerCase().includes(lowerSearch)
+    )
+      return false;
+    return true;
+  });
+
+  const data = filtered.map((m, i) => ({
     "#": i + 1,
     姓名: m.name || "-",
     帳號: m.username,
@@ -66,6 +82,27 @@ export default function MemberManagement() {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">會員管理</h1>
+
+      {/* Search & Filter */}
+      <div className="flex flex-wrap items-center gap-3 mb-4">
+        <input
+          type="text"
+          className="input input-bordered input-sm w-full max-w-xs"
+          placeholder="搜尋姓名、帳號、Email…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <select
+          className="select select-bordered select-sm"
+          value={filterVerified}
+          onChange={(e) => setFilterVerified(e.target.value)}
+        >
+          <option value="">全部狀態</option>
+          <option value="verified">已驗證</option>
+          <option value="unverified">未驗證</option>
+        </select>
+      </div>
+
       <DataTable columns={columns} data={data} />
 
       {/* 幫助按鈕 - 使用 Markdown 文件 */}

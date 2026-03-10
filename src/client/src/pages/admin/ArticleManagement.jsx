@@ -41,6 +41,7 @@ export default function ArticleManagement() {
   const [content, setContent] = useState("");
   const [previewImg, setPreviewImg] = useState("");
   const [hashtags, setHashtags] = useState([]);
+  const [search, setSearch] = useState("");
 
   const { upload } = useFileUpload({ type: "article", maxMB: 5 });
   const {
@@ -137,7 +138,17 @@ export default function ArticleManagement() {
     "操作",
   ];
 
-  const tableData = articles.map((a, i) => ({
+  const lowerSearch = search.toLowerCase();
+  const filtered = search
+    ? articles.filter(
+      (a) =>
+        a.title?.toLowerCase().includes(lowerSearch) ||
+        a.slug?.toLowerCase().includes(lowerSearch) ||
+        a.hashtags?.some((h) => h.toLowerCase().includes(lowerSearch))
+    )
+    : articles;
+
+  const tableData = filtered.map((a, i) => ({
     "#": i + 1,
     文章標題: a.title,
     Slug: a.slug,
@@ -177,6 +188,9 @@ export default function ArticleManagement() {
         buttonLabel="新增文章"
         tableColumns={tableColumns}
         tableData={tableData}
+        searchValue={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="搜尋標題、Slug、標籤…"
       />
 
       {selected && (

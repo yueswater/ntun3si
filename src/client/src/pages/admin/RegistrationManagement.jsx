@@ -21,6 +21,8 @@ export default function RegistrationManagement() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [alert, setAlert] = useState({ type: "", message: "" });
+  const [search, setSearch] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
 
   useEffect(() => {
     fetchData();
@@ -135,7 +137,21 @@ export default function RegistrationManagement() {
     "操作",
   ];
 
-  const tableData = registrations.map((reg, i) => ({
+  const lowerSearch = search.toLowerCase();
+  const filteredRegs = registrations.filter((reg) => {
+    if (filterStatus && reg.status !== filterStatus) return false;
+    if (
+      search &&
+      !reg.name?.toLowerCase().includes(lowerSearch) &&
+      !reg.email?.toLowerCase().includes(lowerSearch) &&
+      !reg.phone?.toLowerCase().includes(lowerSearch) &&
+      !reg.school?.toLowerCase().includes(lowerSearch)
+    )
+      return false;
+    return true;
+  });
+
+  const tableData = filteredRegs.map((reg, i) => ({
     "#": i + 1,
     報名時間: new Date(reg.submittedAt).toLocaleString("zh-TW"),
     姓名: reg.name,
@@ -199,6 +215,27 @@ export default function RegistrationManagement() {
           variant="primary"
           onClick={handleExportCSV}
         />
+      </div>
+
+      {/* Search & Filter */}
+      <div className="flex flex-wrap items-center gap-3 mb-4">
+        <input
+          type="text"
+          className="input input-bordered input-sm w-full max-w-xs"
+          placeholder="搜尋姓名、Email、電話、學校…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <select
+          className="select select-bordered select-sm"
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+        >
+          <option value="">全部狀態</option>
+          <option value="pending">待確認</option>
+          <option value="confirmed">已確認</option>
+          <option value="cancelled">已取消</option>
+        </select>
       </div>
 
       {/* Statistics */}

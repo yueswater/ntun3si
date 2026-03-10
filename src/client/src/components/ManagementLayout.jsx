@@ -7,6 +7,10 @@ export default function ManagementLayout({
   buttonLabel,
   tableColumns,
   tableData,
+  searchValue,
+  onSearchChange,
+  searchPlaceholder = "搜尋…",
+  filterNode,
 }) {
   return (
     <div className="p-6">
@@ -19,6 +23,23 @@ export default function ManagementLayout({
           onClick={onCreate}
         />
       </div>
+
+      {/* Search & Filter bar */}
+      {(onSearchChange || filterNode) && (
+        <div className="flex flex-wrap items-center gap-3 mb-4">
+          {onSearchChange && (
+            <input
+              type="text"
+              className="input input-bordered input-sm w-full max-w-xs"
+              placeholder={searchPlaceholder}
+              value={searchValue || ""}
+              onChange={(e) => onSearchChange(e.target.value)}
+            />
+          )}
+          {filterNode}
+        </div>
+      )}
+
       <DataTable columns={tableColumns} data={tableData} />
     </div>
   );

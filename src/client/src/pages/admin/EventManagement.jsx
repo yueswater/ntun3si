@@ -40,6 +40,7 @@ export default function EventManagement() {
     hashtags: [],
   });
   const [previewImg, setPreviewImg] = useState("");
+  const [search, setSearch] = useState("");
 
   const {
     queue: queueAutoSave,
@@ -156,7 +157,18 @@ export default function EventManagement() {
     "操作",
   ];
 
-  const tableData = events.map((e, i) => ({
+  const lowerSearch = search.toLowerCase();
+  const filtered = search
+    ? events.filter(
+      (e) =>
+        e.title?.toLowerCase().includes(lowerSearch) ||
+        e.location?.toLowerCase().includes(lowerSearch) ||
+        e.speaker?.toLowerCase().includes(lowerSearch) ||
+        e.hashtags?.some((h) => h.toLowerCase().includes(lowerSearch))
+    )
+    : events;
+
+  const tableData = filtered.map((e, i) => ({
     "#": i + 1,
     活動名稱: e.title,
     時間: e.date ? new Date(e.date).toLocaleString() : "未設定",
@@ -197,6 +209,9 @@ export default function EventManagement() {
         buttonLabel="新增活動"
         tableColumns={tableColumns}
         tableData={tableData}
+        searchValue={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="搜尋名稱、地點、講者、標籤…"
       />
 
       {selected && (

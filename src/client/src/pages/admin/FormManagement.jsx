@@ -30,6 +30,8 @@ export default function FormManagement() {
     confirmationMessage: "感謝您的報名，我們會盡快與您聯繫。",
   });
   const [alert, setAlert] = useState({ type: "", message: "" });
+  const [search, setSearch] = useState("");
+  const [filterActive, setFilterActive] = useState("");
 
   // Handle Create
   const handleCreate = () => {
@@ -143,7 +145,16 @@ export default function FormManagement() {
   ];
 
   // Table data
-  const tableData = forms.map((f, i) => ({
+  const lowerSearch = search.toLowerCase();
+  const filtered = forms.filter((f) => {
+    if (filterActive === "active" && !f.isActive) return false;
+    if (filterActive === "inactive" && f.isActive) return false;
+    if (search && !getEventTitle(f.eventUid).toLowerCase().includes(lowerSearch))
+      return false;
+    return true;
+  });
+
+  const tableData = filtered.map((f, i) => ({
     "#": i + 1,
     活動名稱: getEventTitle(f.eventUid),
     自訂欄位數: f.customFields?.length || 0,
@@ -210,6 +221,20 @@ export default function FormManagement() {
         buttonLabel="新增表單"
         tableColumns={tableColumns}
         tableData={tableData}
+        searchValue={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="搜尋活動名稱…"
+        filterNode={
+          <select
+            className="select select-bordered select-sm"
+            value={filterActive}
+            onChange={(e) => setFilterActive(e.target.value)}
+          >
+            <option value="">全部狀態</option>
+            <option value="active">允許報名</option>
+            <option value="inactive">已關閉</option>
+          </select>
+        }
       />
 
       {/* Modal */}

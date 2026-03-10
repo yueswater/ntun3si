@@ -47,6 +47,9 @@ export default function ChangeRequestManagement() {
     const [status, setStatus] = useState("submitted");
     const [pdfLoading, setPdfLoading] = useState(null); // uid of the item currently generating PDF
     const [saving, setSaving] = useState(false);
+    const [statusUpdating, setStatusUpdating] = useState(null); // uid of item whose status is updating
+    const [search, setSearch] = useState("");
+    const [filterStatus, setFilterStatus] = useState("");
 
     const {
         queue: queueAutoSave,
@@ -126,7 +129,10 @@ export default function ChangeRequestManagement() {
         }
     };
 
+    const STATUS_ORDER = { submitted: 0, in_progress: 1, completed: 2 };
+
     const handleStatusChange = async (cr, newStatus) => {
+        setStatusUpdating(cr.uid);
         try {
             const updated = await update("/change-requests", cr.uid, {
                 status: newStatus,
@@ -137,6 +143,8 @@ export default function ChangeRequestManagement() {
             toast.success(t("toast.cr_status_updated"));
         } catch {
             toast.error(t("toast.status_update_failed"));
+        } finally {
+            setStatusUpdating(null);
         }
     };
 
@@ -185,7 +193,19 @@ export default function ChangeRequestManagement() {
         t("cr.col_actions"),
     ];
 
-    const tableData = requests.map((cr, i) => ({
+    const lowerSearch = search.toLowerCase();
+    const filtered = requests.filter((cr) => {
+        if (filterStatus && cr.status !== filterStatus) return false;
+        if (
+            search &&
+            !cr.title?.toLowerCase().includes(lowerSearch) &&
+            !cr.submittedBy?.name?.toLowerCase().includes(lowerSearch)
+        )
+            return false;
+        return true;
+    });
+
+    const tableData = filtered.map((cr, i) => ({
         "#": i + 1,
         [t("cr.col_title")]: cr.title,
         [t("cr.col_submitter")]: cr.submittedBy?.name || "-",
@@ -193,9 +213,12 @@ export default function ChangeRequestManagement() {
             <select
                 className="select select-sm select-bordered"
                 value={cr.status}
+                disabled={statusUpdating === cr.uid}
                 onChange={(e) => handleStatusChange(cr, e.target.value)}
             >
-                {STATUS_OPTIONS.map((opt) => (
+                {STATUS_OPTIONS.filter(
+                    (opt) => STATUS_ORDER[opt.value] >= STATUS_ORDER[cr.status]
+                ).map((opt) => (
                     <option key={opt.value} value={opt.value}>
                         {t(opt.labelKey)}
                     </option>
@@ -253,6 +276,23 @@ export default function ChangeRequestManagement() {
                 buttonLabel={t("cr.create")}
                 tableColumns={tableColumns}
                 tableData={tableData}
+                searchValue={search}
+                onSearchChange={setSearch}
+                searchPlaceholder={t("cr.search_placeholder")}
+                filterNode={
+                    <select
+                        className="select select-bordered select-sm"
+                        value={filterStatus}
+                        onChange={(e) => setFilterStatus(e.target.value)}
+                    >
+                        <option value="">{t("cr.filter_all_status")}</option>
+                        {STATUS_OPTIONS.map((opt) => (
+                            <option key={opt.value} value={opt.value}>
+                                {t(opt.labelKey)}
+                            </option>
+                        ))}
+                    </select>
+                }
             />
 
             {selected && (
