@@ -138,3 +138,6 @@ public/*
 # Temporary folders
 tmp/
 temp/
+
+# Reports
+report/

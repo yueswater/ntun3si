@@ -11,6 +11,8 @@ import {
   getParticipants,
 } from "../controllers/eventController.js";
 import { verifyToken, adminOnly } from "../middleware/authMiddleware.js";
+import { validate } from "../middleware/validate.js";
+import { createEventSchema, updateEventSchema } from "../validators/eventValidator.js";
 
 const router = express.Router();
 
@@ -20,8 +22,8 @@ router.get("/slug/:slug", getEventBySlug);
 router.get("/:uid", getEventByUid);
 
 // Admin
-router.post("/", verifyToken, adminOnly, createEvent);
-router.put("/:uid", verifyToken, adminOnly, updateEvent);
+router.post("/", verifyToken, adminOnly, validate(createEventSchema), createEvent);
+router.put("/:uid", verifyToken, adminOnly, validate(updateEventSchema), updateEvent);
 router.delete("/:uid", verifyToken, adminOnly, deleteEvent);
 router.get("/:uid/participants", verifyToken, adminOnly, getParticipants);
 

@@ -27,7 +27,7 @@ const getFolderPath = (type) => {
 
 export const uploadToR2 = async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+    if (!req.file) return res.status(400).json({ success: false, error: { code: "VALIDATION_ERROR", message: "No file uploaded" } });
 
     // Get file type from request body (sent from frontend)
     const fileType = req.body.type || "misc";
@@ -59,7 +59,7 @@ export const uploadToR2 = async (req, res) => {
 
     console.log(`File uploaded successfully to: ${key}`);
 
-    return res.json({ message: "Upload successful", url });
+    return res.json({ success: true, message: "Upload successful", url });
   } catch (error) {
     console.error("R2 upload failed:", error);
     if (error.$response) {
@@ -68,6 +68,6 @@ export const uploadToR2 = async (req, res) => {
     }
     return res
       .status(500)
-      .json({ message: "Upload failed", error: error.message });
+      .json({ success: false, error: { code: "UPLOAD_FAILED", message: "Upload failed" } });
   }
 };

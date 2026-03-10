@@ -6,7 +6,7 @@ import { generateChangeRequestPDF } from "../utils/pdfGenerator.js";
 import fs from "fs";
 import path from "path";
 
-const ADMIN_EMAIL = "sungpinyue@gmail.com";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 const PDF_CACHE_DIR = path.resolve("tmp/pdf_cache");
 if (!fs.existsSync(PDF_CACHE_DIR)) fs.mkdirSync(PDF_CACHE_DIR, { recursive: true });
 
@@ -41,7 +41,7 @@ export async function createChangeRequest(req, res) {
         const content_html = parseMarkdown(content_md);
 
         const user = await User.findOne({ uid: req.user.uid });
-        if (!user) return res.status(404).json({ message: "User not found" });
+        if (!user) return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "User not found" } });
 
         const cr = await ChangeRequest.create({
             title,
@@ -68,7 +68,7 @@ export async function createChangeRequest(req, res) {
 
         res.status(201).json(cr);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
     }
 }
 
@@ -82,7 +82,7 @@ export async function getChangeRequests(req, res) {
             .sort({ createdAt: -1 });
         res.json(list);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
     }
 }
 
@@ -96,10 +96,10 @@ export async function getChangeRequest(req, res) {
             "name email"
         );
         if (!cr)
-            return res.status(404).json({ message: "Change request not found" });
+            return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Change request not found" } });
         res.json(cr);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
     }
 }
 
@@ -113,7 +113,7 @@ export async function updateChangeRequest(req, res) {
 
         const existing = await ChangeRequest.findOne({ uid: id });
         if (!existing)
-            return res.status(404).json({ message: "Change request not found" });
+            return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Change request not found" } });
 
         const updateData = {};
         if (title !== undefined) updateData.title = title;
@@ -164,7 +164,7 @@ export async function updateChangeRequest(req, res) {
 
         res.json(updated);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
     }
 }
 
@@ -177,13 +177,13 @@ export async function deleteChangeRequest(req, res) {
             uid: req.params.id,
         });
         if (!deleted)
-            return res.status(404).json({ message: "Change request not found" });
+            return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Change request not found" } });
         // Remove cached PDF
         const cached = cachedPdfPath(deleted.uid);
         fs.unlink(cached, () => { });
-        res.json({ message: "Change request deleted successfully" });
+        res.json({ success: true, message: "Change request deleted successfully" });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
     }
 }
 
@@ -197,14 +197,14 @@ export async function downloadChangeRequestPDF(req, res) {
             "name email"
         );
         if (!cr)
-            return res.status(404).json({ message: "Change request not found" });
+            return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Change request not found" } });
 
         // Check cache first
         const cached = cachedPdfPath(cr.uid);
         if (fs.existsSync(cached)) {
             return res.download(cached, `修改需求_${cr.title}.pdf`, (err) => {
                 if (err && !res.headersSent) {
-                    res.status(500).json({ message: "PDF download failed" });
+                    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: "PDF download failed" } });
                 }
             });
         }
@@ -220,11 +220,11 @@ export async function downloadChangeRequestPDF(req, res) {
 
         res.download(pdfPath, `修改需求_${cr.title}.pdf`, (err) => {
             if (err && !res.headersSent) {
-                res.status(500).json({ message: "PDF download failed" });
+                res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: "PDF download failed" } });
             }
         });
     } catch (error) {
         console.error("PDF generation error:", error);
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
     }
 }

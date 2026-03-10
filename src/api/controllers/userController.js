@@ -12,7 +12,7 @@ export async function registerUser(req, res) {
   try {
     const { username, name, email, password } = req.body;
     if (!username || !name || !email || !password)
-      return res.status(400).json({ message: "All fields are required" });
+      return res.status(400).json({ success: false, error: { code: "VALIDATION_ERROR", message: "All fields are required" } });
 
     const normalizedEmail = email.toLowerCase();
 
@@ -20,9 +20,9 @@ export async function registerUser(req, res) {
     const existingEmail = await User.findOne({ email: normalizedEmail });
     const existingUsername = await User.findOne({ username });
     if (existingEmail)
-      return res.status(400).json({ message: "Email already registered" });
+      return res.status(400).json({ success: false, error: { code: "DUPLICATE", message: "Email already registered" } });
     if (existingUsername)
-      return res.status(400).json({ message: "Username already taken" });
+      return res.status(400).json({ success: false, error: { code: "DUPLICATE", message: "Username already taken" } });
 
     // Generate verification token (valid for 24 hours)
     const verificationToken = crypto.randomBytes(32).toString("hex");
@@ -50,11 +50,12 @@ export async function registerUser(req, res) {
     await sendRegistrationEmail(user, verifyUrl);
 
     res.status(201).json({
+      success: true,
       message:
         "Registration successful. Please check your email for a verification link (valid for 24 hours).",
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -69,7 +70,7 @@ export async function loginUser(req, res) {
     if (!email || !password)
       return res
         .status(400)
-        .json({ message: "Email/username and password are required" });
+        .json({ success: false, error: { code: "VALIDATION_ERROR", message: "Email/username and password are required" } });
 
     // Determine whether the login input is an email or username
     let user;
@@ -79,16 +80,16 @@ export async function loginUser(req, res) {
       user = await User.findOne({ username: email });
     }
 
-    if (!user) return res.status(400).json({ message: "Invalid credentials" });
+    if (!user) return res.status(400).json({ success: false, error: { code: "INVALID_CREDENTIALS", message: "Invalid credentials" } });
 
     if (!user.emailVerified)
       return res
         .status(403)
-        .json({ message: "Please verify your email before logging in." });
+        .json({ success: false, error: { code: "EMAIL_NOT_VERIFIED", message: "Please verify your email before logging in." } });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ success: false, error: { code: "INVALID_CREDENTIALS", message: "Invalid credentials" } });
 
     // Generate JWT token
     const token = jwt.sign(
@@ -98,6 +99,7 @@ export async function loginUser(req, res) {
     );
 
     res.json({
+      success: true,
       message: "Login successful",
       token,
       user: {
@@ -110,7 +112,7 @@ export async function loginUser(req, res) {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -120,16 +122,16 @@ export async function loginUser(req, res) {
 export async function verifyEmailToken(req, res) {
   try {
     const { token } = req.query;
-    if (!token) return res.status(400).json({ message: "Missing token" });
+    if (!token) return res.status(400).json({ success: false, error: { code: "VALIDATION_ERROR", message: "Missing token" } });
 
     const user = await User.findOne({ verificationToken: token });
     if (!user)
-      return res.status(400).json({ message: "Invalid or used token" });
+      return res.status(400).json({ success: false, error: { code: "INVALID_TOKEN", message: "Invalid or used token" } });
 
     if (user.tokenExpiresAt < Date.now()) {
       return res
         .status(400)
-        .json({ message: "Token expired, please re-register" });
+        .json({ success: false, error: { code: "TOKEN_EXPIRED", message: "Token expired, please re-register" } });
     }
 
     user.emailVerified = true;
@@ -139,7 +141,7 @@ export async function verifyEmailToken(req, res) {
 
     return res.redirect(302, `${process.env.FRONTEND_URL}/login`);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -149,10 +151,10 @@ export async function verifyEmailToken(req, res) {
 export async function getProfile(req, res) {
   try {
     const user = await User.findOne({ uid: req.user.uid }).select("-password");
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "User not found" } });
     res.json(user);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -175,10 +177,10 @@ export async function updateMyProfile(req, res) {
       new: true,
     }).select("-password");
 
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "User not found" } });
     res.json(user);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -189,20 +191,20 @@ export async function updateMyProfile(req, res) {
 export async function deleteMyAccount(req, res) {
   try {
     const user = await User.findOne({ uid: req.user.uid });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "User not found" } });
 
     if (user.role === "admin") {
       const adminCount = await User.countDocuments({ role: "admin" });
       if (adminCount <= 1)
         return res
           .status(400)
-          .json({ message: "Cannot delete the last remaining admin" });
+          .json({ success: false, error: { code: "LAST_ADMIN", message: "Cannot delete the last remaining admin" } });
     }
 
     await User.deleteOne({ uid: req.user.uid });
-    res.json({ message: "Account deleted successfully" });
+    res.json({ success: true, message: "Account deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -214,7 +216,7 @@ export async function getAllUsers(req, res) {
     const users = await User.find().select("-password").sort({ createdAt: -1 });
     res.json(users);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -225,10 +227,10 @@ export async function getUserByUid(req, res) {
   try {
     const { uid } = req.params;
     const user = await User.findOne({ uid }).select("-password");
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "User not found" } });
     res.json(user);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -247,15 +249,15 @@ export async function updateUserByUid(req, res) {
         if (adminCount <= 1)
           return res
             .status(400)
-            .json({ message: "Cannot demote the last remaining admin" });
+            .json({ success: false, error: { code: "LAST_ADMIN", message: "Cannot demote the last remaining admin" } });
       }
     }
 
     const user = await User.findOneAndUpdate({ uid }, updates, { new: true });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "User not found" } });
     res.json(user);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -266,19 +268,19 @@ export async function deleteUserByUid(req, res) {
   try {
     const { uid } = req.params;
     const target = await User.findOne({ uid });
-    if (!target) return res.status(404).json({ message: "User not found" });
+    if (!target) return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "User not found" } });
 
     if (target.role === "admin") {
       const adminCount = await User.countDocuments({ role: "admin" });
       if (adminCount <= 1)
         return res
           .status(400)
-          .json({ message: "Cannot delete the last remaining admin" });
+          .json({ success: false, error: { code: "LAST_ADMIN", message: "Cannot delete the last remaining admin" } });
     }
 
     await User.deleteOne({ uid });
-    res.json({ message: "User deleted successfully" });
+    res.json({ success: true, message: "User deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }

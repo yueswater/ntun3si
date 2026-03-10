@@ -10,6 +10,7 @@ import {
   unsubscribeNewsletter,
   unsubscribeByLink,
 } from "../controllers/newsletterController.js";
+import { newsletterLimiter } from "../middleware/rateLimiter.js";
 
 
 const router = express.Router();
@@ -48,7 +49,7 @@ router.post("/event", async (req, res) => {
 });
 
 // Newsletter email
-router.post("/newsletter", subscribeNewsletter);
+router.post("/newsletter", newsletterLimiter, subscribeNewsletter);
 router.post("/newsletter/unsubscribe", unsubscribeNewsletter);
 router.get("/newsletter/unsubscribe", unsubscribeByLink);
 

@@ -17,7 +17,7 @@ export async function createForm(req, res) {
     // Check if event exists
     const event = await Event.findOne({ uid: eventUid });
     if (!event) {
-      return res.status(404).json({ message: "Event not found" });
+      return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Event not found" } });
     }
 
     // Check if form already exists for this event
@@ -25,7 +25,7 @@ export async function createForm(req, res) {
     if (existing) {
       return res
         .status(400)
-        .json({ message: "Form already exists for this event" });
+        .json({ success: false, error: { code: "DUPLICATE", message: "Form already exists for this event" } });
     }
 
     const form = await RegistrationForm.create({
@@ -38,7 +38,7 @@ export async function createForm(req, res) {
 
     res.status(201).json(form);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -50,7 +50,7 @@ export async function getAllForms(req, res) {
     const forms = await RegistrationForm.find().sort({ createdAt: -1 });
     res.json(forms);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -63,12 +63,12 @@ export async function getFormByEventUid(req, res) {
     const form = await RegistrationForm.findOne({ eventUid, isActive: true });
 
     if (!form) {
-      return res.status(404).json({ message: "Form not found" });
+      return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Form not found" } });
     }
 
     res.json(form);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -81,12 +81,12 @@ export async function getFormByUid(req, res) {
     const form = await RegistrationForm.findOne({ uid });
 
     if (!form) {
-      return res.status(404).json({ message: "Form not found" });
+      return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Form not found" } });
     }
 
     res.json(form);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -106,12 +106,12 @@ export async function updateForm(req, res) {
     });
 
     if (!form) {
-      return res.status(404).json({ message: "Form not found" });
+      return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Form not found" } });
     }
 
     res.json(form);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -124,12 +124,12 @@ export async function deleteForm(req, res) {
     const form = await RegistrationForm.findOneAndDelete({ uid });
 
     if (!form) {
-      return res.status(404).json({ message: "Form not found" });
+      return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Form not found" } });
     }
 
-    res.json({ message: "Form deleted successfully" });
+    res.json({ success: true, message: "Form deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -142,17 +142,18 @@ export async function toggleFormStatus(req, res) {
     const form = await RegistrationForm.findOne({ uid });
 
     if (!form) {
-      return res.status(404).json({ message: "Form not found" });
+      return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Form not found" } });
     }
 
     form.isActive = !form.isActive;
     await form.save();
 
     res.json({
+      success: true,
       message: `Form ${form.isActive ? "activated" : "deactivated"}`,
       form,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }

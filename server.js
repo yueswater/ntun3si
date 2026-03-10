@@ -3,6 +3,7 @@ import cron from "node-cron";
 import cors from "cors";
 import path from "path";
 import dotenv from "dotenv";
+import morgan from "morgan";
 import { fileURLToPath } from "url";
 
 import User from "./src/api/models/User.js";
@@ -17,6 +18,8 @@ import uploadRoutes from "./src/api/routes/uploadRoutes.js";
 import formRoutes from "./src/api/routes/formRoutes.js";
 import registrationRoutes from "./src/api/routes/registrationRoutes.js";
 import changeRequestRoutes from "./src/api/routes/changeRequestRoutes.js";
+import errorHandler from "./src/api/middleware/errorHandler.js";
+import { apiLimiter } from "./src/api/middleware/rateLimiter.js";
 
 dotenv.config();
 
@@ -36,20 +39,31 @@ const app = express();
 // ------------------------------------------------------------
 
 // CORS configuration
-// Add all allowed frontend origins here
+// Allowed origins from CORS_ORIGINS env var (comma-separated) or defaults
+const defaultOrigins = [
+  "http://localhost:5173",
+  "https://ntun3si.space",
+  "https://www.ntun3si.space",
+  "https://ntun3si.onrender.com",
+];
+const corsOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(",").map((o) => o.trim())
+  : defaultOrigins;
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://ntun3si.space",
-      "https://www.ntun3si.space",
-      "https://ntun3si.onrender.com"
-    ],
+    origin: corsOrigins,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// Request logging
+app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
+
+// General API rate limiter
+app.use("/api", apiLimiter);
 
 
 // Parse JSON request bodies
@@ -78,6 +92,11 @@ app.use("/api/forms", formRoutes);
 app.use("/api/registrations", registrationRoutes);
 app.use("/api/mail", mailRoutes);
 app.use("/api/change-requests", changeRequestRoutes);
+
+// ------------------------------------------------------------
+// Global error handler (must be AFTER all routes)
+// ------------------------------------------------------------
+app.use(errorHandler);
 
 // ------------------------------------------------------------
 // Static frontend (only in production)

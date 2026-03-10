@@ -15,11 +15,13 @@ import {
   adminOnly,
   optionalAuth,
 } from "../middleware/authMiddleware.js";
+import { validate } from "../middleware/validate.js";
+import { submitRegistrationSchema, updateRegistrationStatusSchema } from "../validators/registrationValidator.js";
 
 const router = express.Router();
 
 // Public/User routes (optionalAuth allows both logged-in and anonymous)
-router.post("/event/:eventUid", optionalAuth, submitRegistration);
+router.post("/event/:eventUid", optionalAuth, validate(submitRegistrationSchema), submitRegistration);
 
 // User routes (requires login)
 router.get("/my", verifyToken, getMyRegistrations);
@@ -34,7 +36,7 @@ router.get(
 );
 router.get("/form/:formUid", verifyToken, adminOnly, getFormRegistrations);
 router.get("/:uid", verifyToken, adminOnly, getRegistration);
-router.patch("/:uid/status", verifyToken, adminOnly, updateRegistrationStatus);
+router.patch("/:uid/status", verifyToken, adminOnly, validate(updateRegistrationStatusSchema), updateRegistrationStatus);
 router.delete("/:uid", verifyToken, adminOnly, deleteRegistration);
 router.get(
   "/event/:eventUid/export",

@@ -6,7 +6,7 @@ export async function subscribeNewsletter(req, res) {
     const { email } = req.body;
 
     if (!email) {
-      return res.status(400).json({ message: "Email is required." });
+      return res.status(400).json({ success: false, error: { code: "VALIDATION_ERROR", message: "Email is required." } });
     }
 
     // Save to database (create or update)
@@ -26,10 +26,10 @@ export async function subscribeNewsletter(req, res) {
     // Send welcome email
     await sendNewsletterEmail(email);
 
-    return res.status(200).json({ message: "Subscription success" });
+    return res.status(200).json({ success: true, message: "Subscription success" });
   } catch (err) {
     console.error("Newsletter error:", err);
-    return res.status(500).json({ message: "Subscription failed" });
+    return res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: "Subscription failed" } });
   }
 }
 
@@ -39,16 +39,16 @@ export async function unsubscribeNewsletter(req, res) {
 
     const user = await Newsletter.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: "Email not found" });
+      return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Email not found" } });
     }
 
     user.subscribed = false;
     await user.save();
 
-    res.status(200).json({ message: "Unsubscribed successfully" });
+    res.status(200).json({ success: true, message: "Unsubscribed successfully" });
   } catch (err) {
     console.error("Unsubscribe error:", err);
-    res.status(500).json({ message: "Unsubscribe failed" });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: "Unsubscribe failed" } });
   }
 }
 

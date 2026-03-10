@@ -1,8 +1,10 @@
 import { marked } from "marked";
+import DOMPurify from "isomorphic-dompurify";
 
 /**
- * Convert markdown text to HTML
+ * Convert markdown text to sanitized HTML
  */
 export function parseMarkdown(markdownText) {
-  return marked.parse(markdownText || "");
+  const rawHtml = marked.parse(markdownText || "");
+  return DOMPurify.sanitize(rawHtml);
 }

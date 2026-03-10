@@ -13,7 +13,7 @@ export async function createArticle(req, res) {
     // Find author by token
     const authorUser = await User.findOne({ uid: req.user.uid });
     if (!authorUser)
-      return res.status(404).json({ message: "Author user not found" });
+      return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Author user not found" } });
 
     const newArticle = await Article.create({
       title,
@@ -27,7 +27,7 @@ export async function createArticle(req, res) {
 
     res.status(201).json(newArticle);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -39,7 +39,7 @@ export async function getArticles(req, res) {
     const articles = await Article.find().sort({ createdAt: -1 });
     res.json(articles);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -61,10 +61,10 @@ export async function getArticle(req, res) {
         { new: true }
       ));
 
-    if (!article) return res.status(404).json({ message: "Article not found" });
+    if (!article) return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Article not found" } });
     res.json(article);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -83,7 +83,7 @@ export async function getHotArticles(req, res) {
     const sorted = scored.sort((a, b) => b.hotScore - a.hotScore);
     res.json(sorted.slice(0, 5));
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -115,10 +115,10 @@ export async function updateArticle(req, res) {
       new: true,
     });
 
-    if (!updated) return res.status(404).json({ message: "Article not found" });
+    if (!updated) return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Article not found" } });
     res.json(updated);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -129,9 +129,9 @@ export async function deleteArticle(req, res) {
   try {
     const { id } = req.params;
     const deleted = await Article.findOneAndDelete({ uid: id });
-    if (!deleted) return res.status(404).json({ message: "Article not found" });
-    res.json({ message: "Article deleted successfully" });
+    if (!deleted) return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Article not found" } });
+    res.json({ success: true, message: "Article deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }

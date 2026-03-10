@@ -89,7 +89,7 @@ export async function sendEventRegistrationEmail(user, event) {
  * Newsletter (Markdown template)
  */
 export async function sendNewsletterEmail(email) {
-  const unsubscribeUrl = `https://ntun3si.space/api/mail/newsletter/unsubscribe?email=${encodeURIComponent(email)}`;
+  const unsubscribeUrl = `${process.env.BASE_URL}/api/mail/newsletter/unsubscribe?email=${encodeURIComponent(email)}`;
 
   const markdown = loadTemplate("newsletter_welcome", {
     unsubscribeUrl,

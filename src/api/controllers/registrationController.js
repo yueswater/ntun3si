@@ -26,13 +26,13 @@ export async function submitRegistration(req, res) {
     if (!form) {
       return res
         .status(404)
-        .json({ message: "Registration form not found or inactive" });
+        .json({ success: false, error: { code: "NOT_FOUND", message: "Registration form not found or inactive" } });
     }
 
     // Get event
     const event = await Event.findOne({ uid: eventUid });
     if (!event) {
-      return res.status(404).json({ message: "Event not found" });
+      return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Event not found" } });
     }
 
     // Check deadline
@@ -42,7 +42,7 @@ export async function submitRegistration(req, res) {
     ) {
       return res
         .status(400)
-        .json({ message: "Registration deadline has passed" });
+        .json({ success: false, error: { code: "DEADLINE_PASSED", message: "Registration deadline has passed" } });
     }
 
     // Check if already registered (by email)
@@ -50,14 +50,14 @@ export async function submitRegistration(req, res) {
     if (existing) {
       return res
         .status(400)
-        .json({ message: "This email has already registered for this event" });
+        .json({ success: false, error: { code: "ALREADY_REGISTERED", message: "This email has already registered for this event" } });
     }
 
     // Check max registrations
     if (form.maxRegistrations) {
       const count = await Registration.countDocuments({ eventUid });
       if (count >= form.maxRegistrations) {
-        return res.status(400).json({ message: "Registration limit reached" });
+        return res.status(400).json({ success: false, error: { code: "LIMIT_REACHED", message: "Registration limit reached" } });
       }
     }
 
@@ -96,12 +96,13 @@ export async function submitRegistration(req, res) {
     }
 
     res.status(201).json({
+      success: true,
       message: "Registration submitted successfully",
       registration,
       confirmationMessage: form.confirmationMessage,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -117,7 +118,7 @@ export async function getEventRegistrations(req, res) {
 
     res.json(registrations);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -133,7 +134,7 @@ export async function getFormRegistrations(req, res) {
 
     res.json(registrations);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -146,12 +147,12 @@ export async function getRegistration(req, res) {
     const registration = await Registration.findOne({ uid });
 
     if (!registration) {
-      return res.status(404).json({ message: "Registration not found" });
+      return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Registration not found" } });
     }
 
     res.json(registration);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -164,7 +165,7 @@ export async function updateRegistrationStatus(req, res) {
     const { status } = req.body;
 
     if (!["pending", "confirmed", "cancelled"].includes(status)) {
-      return res.status(400).json({ message: "Invalid status" });
+      return res.status(400).json({ success: false, error: { code: "INVALID_STATUS", message: "Invalid status" } });
     }
 
     const registration = await Registration.findOneAndUpdate(
@@ -174,12 +175,12 @@ export async function updateRegistrationStatus(req, res) {
     );
 
     if (!registration) {
-      return res.status(404).json({ message: "Registration not found" });
+      return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Registration not found" } });
     }
 
     res.json(registration);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -192,12 +193,12 @@ export async function deleteRegistration(req, res) {
     const registration = await Registration.findOneAndDelete({ uid });
 
     if (!registration) {
-      return res.status(404).json({ message: "Registration not found" });
+      return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Registration not found" } });
     }
 
-    res.json({ message: "Registration deleted successfully" });
+    res.json({ success: true, message: "Registration deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -213,7 +214,7 @@ export async function getMyRegistrations(req, res) {
 
     res.json(registrations);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -228,15 +229,15 @@ export async function cancelMyRegistration(req, res) {
     const registration = await Registration.findOne({ uid, userUid });
 
     if (!registration) {
-      return res.status(404).json({ message: "Registration not found" });
+      return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Registration not found" } });
     }
 
     registration.status = "cancelled";
     await registration.save();
 
-    res.json({ message: "Registration cancelled successfully", registration });
+    res.json({ success: true, message: "Registration cancelled successfully", registration });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -251,7 +252,7 @@ export async function exportRegistrations(req, res) {
     });
 
     if (registrations.length === 0) {
-      return res.status(404).json({ message: "No registrations found" });
+      return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "No registrations found" } });
     }
 
     // Build CSV
@@ -312,6 +313,6 @@ export async function exportRegistrations(req, res) {
     );
     res.send(bom + csv);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }

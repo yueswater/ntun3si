@@ -37,7 +37,7 @@ export async function createEvent(req, res) {
 
     res.status(201).json(newEvent);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -49,7 +49,7 @@ export async function getEvents(req, res) {
     const events = await Event.find().sort({ date: 1 });
     res.json(events);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -63,10 +63,10 @@ export async function getEventByUid(req, res) {
       "participants",
       "name email uid"
     );
-    if (!event) return res.status(404).json({ message: "Event not found" });
+    if (!event) return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Event not found" } });
     res.json(event);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -75,7 +75,7 @@ export async function getEventByUid(req, res) {
  */
 export const getEventBySlug = async (req, res) => {
   const event = await Event.findOne({ slug: req.params.slug });
-  if (!event) return res.status(404).json({ message: "活動不存在" });
+  if (!event) return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "活動不存在" } });
   res.json(event);
 };
 
@@ -90,10 +90,10 @@ export async function updateEvent(req, res) {
     const updated = await Event.findOneAndUpdate({ uid }, updates, {
       new: true,
     });
-    if (!updated) return res.status(404).json({ message: "Event not found" });
+    if (!updated) return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Event not found" } });
     res.json(updated);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -104,10 +104,10 @@ export async function deleteEvent(req, res) {
   try {
     const { uid } = req.params;
     const deleted = await Event.findOneAndDelete({ uid });
-    if (!deleted) return res.status(404).json({ message: "Event not found" });
-    res.json({ message: "Event deleted successfully" });
+    if (!deleted) return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Event not found" } });
+    res.json({ success: true, message: "Event deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -120,20 +120,20 @@ export async function registerForEvent(req, res) {
     const userId = req.user.uid;
 
     const event = await Event.findOne({ uid });
-    if (!event) return res.status(404).json({ message: "Event not found" });
+    if (!event) return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Event not found" } });
 
     const user = await User.findOne({ uid: userId });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "User not found" } });
 
     if (event.participants.includes(user._id)) {
-      return res.status(400).json({ message: "Already registered" });
+      return res.status(400).json({ success: false, error: { code: "ALREADY_REGISTERED", message: "Already registered" } });
     }
 
     if (
       event.maxParticipants &&
       event.participants.length >= event.maxParticipants
     ) {
-      return res.status(400).json({ message: "Event is full" });
+      return res.status(400).json({ success: false, error: { code: "EVENT_FULL", message: "Event is full" } });
     }
 
     event.participants.push(user._id);
@@ -141,9 +141,9 @@ export async function registerForEvent(req, res) {
 
     await sendEventRegistrationEmail(user, event);
 
-    res.json({ message: "Successfully registered", event });
+    res.json({ success: true, message: "Successfully registered", event });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -156,19 +156,19 @@ export async function cancelRegistration(req, res) {
     const userId = req.user.uid;
 
     const event = await Event.findOne({ uid });
-    if (!event) return res.status(404).json({ message: "Event not found" });
+    if (!event) return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Event not found" } });
 
     const user = await User.findOne({ uid: userId });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "User not found" } });
 
     event.participants = event.participants.filter(
       (p) => p.toString() !== user._id.toString()
     );
 
     await event.save();
-    res.json({ message: "Registration canceled" });
+    res.json({ success: true, message: "Registration canceled" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }
 
@@ -182,9 +182,9 @@ export async function getParticipants(req, res) {
       "participants",
       "name email uid"
     );
-    if (!event) return res.status(404).json({ message: "Event not found" });
+    if (!event) return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Event not found" } });
     res.json(event.participants);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
 }

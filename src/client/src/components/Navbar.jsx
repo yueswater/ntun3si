@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -10,9 +10,10 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import SearchBar from "./SearchBar";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Navbar() {
-  const [user, setUser] = useState(null);
+  const { user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [isAvatarOpen, setIsAvatarOpen] = useState(false);
@@ -37,29 +38,6 @@ export default function Navbar() {
       : "left-0 w-full");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
-    if (token && storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
-
-  useEffect(() => {
-    const updateUser = () => {
-      const token = localStorage.getItem("token");
-      const storedUser = localStorage.getItem("user");
-      if (token && storedUser) {
-        setUser(JSON.parse(storedUser));
-      } else {
-        setUser(null);
-      }
-    };
-
-    window.addEventListener("auth-updated", updateUser);
-    return () => window.removeEventListener("auth-updated", updateUser);
-  }, []);
-
-  useEffect(() => {
     const handleClickOutside = (e) => {
       if (avatarRef.current && !avatarRef.current.contains(e.target)) {
         setIsAvatarOpen(false);
@@ -70,12 +48,8 @@ export default function Navbar() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
+    logout();
     navigate("/");
-
-    window.dispatchEvent(new Event("auth-updated"));
   };
 
   const isActive = (path) => location.pathname.startsWith(path);
@@ -134,8 +108,8 @@ export default function Navbar() {
             <Link
               to="/articles"
               className={`transition-colors duration-200 ${isActive("/articles")
-                  ? "text-[#03045E] font-semibold"
-                  : "text-[#262626] hover:text-[#03045E]"
+                ? "text-[#03045E] font-semibold"
+                : "text-[#262626] hover:text-[#03045E]"
                 }`}
             >
               {t("navbar.articles")}
@@ -144,8 +118,8 @@ export default function Navbar() {
             <Link
               to="/events"
               className={`transition-colors duration-200 ${isActive("/events")
-                  ? "text-[#03045E] font-semibold"
-                  : "text-[#262626] hover:text-[#03045E]"
+                ? "text-[#03045E] font-semibold"
+                : "text-[#262626] hover:text-[#03045E]"
                 }`}
             >
               {t("navbar.events")}
@@ -154,8 +128,8 @@ export default function Navbar() {
             <Link
               to="/about"
               className={`transition-colors duration-200 ${isActive("/about")
-                  ? "text-[#03045E] font-semibold"
-                  : "text-[#262626] hover:text-[#03045E]"
+                ? "text-[#03045E] font-semibold"
+                : "text-[#262626] hover:text-[#03045E]"
                 }`}
             >
               {t("navbar.about")}
@@ -250,8 +224,8 @@ export default function Navbar() {
               to="/articles"
               onClick={() => setIsOpen(false)}
               className={`${isActive("/articles")
-                  ? "text-[#03045E] font-semibold"
-                  : "text-[#262626]"
+                ? "text-[#03045E] font-semibold"
+                : "text-[#262626]"
                 }`}
             >
               {t("navbar.articles")}
@@ -261,8 +235,8 @@ export default function Navbar() {
               to="/events"
               onClick={() => setIsOpen(false)}
               className={`${isActive("/events")
-                  ? "text-[#03045E] font-semibold"
-                  : "text-[#262626]"
+                ? "text-[#03045E] font-semibold"
+                : "text-[#262626]"
                 }`}
             >
               {t("navbar.events")}
@@ -272,8 +246,8 @@ export default function Navbar() {
               to="/about"
               onClick={() => setIsOpen(false)}
               className={`${isActive("/about")
-                  ? "text-[#03045E] font-semibold"
-                  : "text-[#262626]"
+                ? "text-[#03045E] font-semibold"
+                : "text-[#262626]"
                 }`}
             >
               {t("navbar.about")}
