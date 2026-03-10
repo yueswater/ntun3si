@@ -43,8 +43,8 @@ export default function Home() {
 
   // Featured + hot + others
   const featuredArticle = articles[0];
-  const hotArticles = articles.slice(1, 6);
-  const otherArticles = articles.slice(6);
+  const hotArticles = articles.slice(1, 4);
+  const otherArticles = articles.slice(4);
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-7xl">

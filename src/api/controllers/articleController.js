@@ -81,7 +81,7 @@ export async function getHotArticles(req, res) {
       return { ...a._doc, hotScore };
     });
     const sorted = scored.sort((a, b) => b.hotScore - a.hotScore);
-    res.json(sorted.slice(0, 5));
+    res.json(sorted.slice(0, 3));
   } catch (error) {
     res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
