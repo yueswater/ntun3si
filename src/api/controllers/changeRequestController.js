@@ -4,8 +4,33 @@ import { parseMarkdown } from "../utils/markdownParser.js";
 import { sendMail } from "../utils/emailService.js";
 import { generateChangeRequestPDF } from "../utils/pdfGenerator.js";
 import fs from "fs";
+import path from "path";
 
 const ADMIN_EMAIL = "sungpinyue@gmail.com";
+const PDF_CACHE_DIR = path.resolve("tmp/pdf_cache");
+if (!fs.existsSync(PDF_CACHE_DIR)) fs.mkdirSync(PDF_CACHE_DIR, { recursive: true });
+
+/** Return a stable cache path for a CR's PDF */
+function cachedPdfPath(uid) {
+    return path.join(PDF_CACHE_DIR, `cr_${uid}.pdf`);
+}
+
+/** Generate PDF, copy to cache, return cache path */
+async function generateAndCache(cr, statusLabels) {
+    const tmpPath = await generateChangeRequestPDF({
+        title: cr.title,
+        content_md: cr.content_md,
+        submittedBy: cr.submittedBy?.name || "未知",
+        status: statusLabels[cr.status],
+        createdAt: cr.createdAt,
+    });
+    const dest = cachedPdfPath(cr.uid);
+    fs.copyFileSync(tmpPath, dest);
+    fs.unlink(tmpPath, () => { });
+    // Update the pdfPath in DB (fire-and-forget)
+    ChangeRequest.updateOne({ uid: cr.uid }, { pdfPath: dest }).catch(() => { });
+    return dest;
+}
 
 /**
  * Create a new change request and email the admin
@@ -25,27 +50,17 @@ export async function createChangeRequest(req, res) {
             submittedBy: user._id,
         });
 
-        // Populate submittedBy for email
-        await cr.populate("submittedBy", "name email");
-
-        // Generate PDF and send as email attachment
+        // Generate PDF, cache it, and send as email attachment
         try {
             const statusLabels = { submitted: "已送出", in_progress: "修改中", completed: "修改完畢" };
-            const pdfPath = await generateChangeRequestPDF({
-                title: cr.title,
-                content_md: cr.content_md,
-                submittedBy: user.name,
-                status: statusLabels[cr.status],
-                createdAt: cr.createdAt,
-            });
+            await cr.populate("submittedBy", "name email");
+            const pdfPath = await generateAndCache(cr, statusLabels);
             await sendMail({
                 to: ADMIN_EMAIL,
                 subject: `【臺大國安社】新修改需求：${title}`,
                 markdown: `收到一份新的修改需求單，請查看附件 PDF。\n\n**標題：** ${title}\n\n**送出者：** ${user.name}`,
                 attachments: [{ filename: `修改需求_${title}.pdf`, path: pdfPath }],
             });
-            // Clean up temp PDF after sending
-            fs.unlink(pdfPath, () => { });
             console.log(`Change request email with PDF sent to ${ADMIN_EMAIL}`);
         } catch (emailErr) {
             console.error("Failed to send change request email:", emailErr.message, emailErr.stack);
@@ -128,13 +143,7 @@ export async function updateChangeRequest(req, res) {
                 completed: "修改完畢",
             };
             try {
-                const pdfPath = await generateChangeRequestPDF({
-                    title: updated.title,
-                    content_md: updated.content_md,
-                    submittedBy: updated.submittedBy?.name || "未知",
-                    status: statusLabels[updated.status],
-                    createdAt: updated.createdAt,
-                });
+                const pdfPath = await generateAndCache(updated, statusLabels);
                 const emailSubject = statusChanged
                     ? `【臺大國安社】修改需求狀態更新：${updated.title}`
                     : `【臺大國安社】修改需求已更新：${updated.title}`;
@@ -147,7 +156,6 @@ export async function updateChangeRequest(req, res) {
                     markdown: emailBody,
                     attachments: [{ filename: `修改需求_${updated.title}.pdf`, path: pdfPath }],
                 });
-                fs.unlink(pdfPath, () => { });
                 console.log(`Change request update email with PDF sent to ${ADMIN_EMAIL}`);
             } catch (emailErr) {
                 console.error("Failed to send update email:", emailErr.message, emailErr.stack);
@@ -170,6 +178,9 @@ export async function deleteChangeRequest(req, res) {
         });
         if (!deleted)
             return res.status(404).json({ message: "Change request not found" });
+        // Remove cached PDF
+        const cached = cachedPdfPath(deleted.uid);
+        fs.unlink(cached, () => { });
         res.json({ message: "Change request deleted successfully" });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -177,7 +188,7 @@ export async function deleteChangeRequest(req, res) {
 }
 
 /**
- * Download change request as PDF (generated via Quarto)
+ * Download change request as PDF – serve cached version if available
  */
 export async function downloadChangeRequestPDF(req, res) {
     try {
@@ -188,23 +199,26 @@ export async function downloadChangeRequestPDF(req, res) {
         if (!cr)
             return res.status(404).json({ message: "Change request not found" });
 
+        // Check cache first
+        const cached = cachedPdfPath(cr.uid);
+        if (fs.existsSync(cached)) {
+            return res.download(cached, `修改需求_${cr.title}.pdf`, (err) => {
+                if (err && !res.headersSent) {
+                    res.status(500).json({ message: "PDF download failed" });
+                }
+            });
+        }
+
+        // Cache miss — regenerate
         const statusLabels = {
             submitted: "已送出",
             in_progress: "修改中",
             completed: "修改完畢",
         };
 
-        const pdfPath = await generateChangeRequestPDF({
-            title: cr.title,
-            content_md: cr.content_md,
-            submittedBy: cr.submittedBy?.name || "未知",
-            status: statusLabels[cr.status],
-            createdAt: cr.createdAt,
-        });
+        const pdfPath = await generateAndCache(cr, statusLabels);
 
         res.download(pdfPath, `修改需求_${cr.title}.pdf`, (err) => {
-            // Clean up temp file after download
-            fs.unlink(pdfPath, () => { });
             if (err && !res.headersSent) {
                 res.status(500).json({ message: "PDF download failed" });
             }

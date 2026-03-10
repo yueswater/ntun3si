@@ -17,6 +17,7 @@ const changeRequestSchema = new mongoose.Schema(
             default: "submitted",
         },
         submittedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        pdfPath: { type: String, default: null },
     },
     { timestamps: true }
 );
