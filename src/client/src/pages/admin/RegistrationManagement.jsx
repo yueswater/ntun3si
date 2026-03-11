@@ -145,7 +145,7 @@ export default function RegistrationManagement() {
       !reg.name?.toLowerCase().includes(lowerSearch) &&
       !reg.email?.toLowerCase().includes(lowerSearch) &&
       !reg.phone?.toLowerCase().includes(lowerSearch) &&
-      !reg.school?.toLowerCase().includes(lowerSearch)
+      !reg.affiliation?.toLowerCase().includes(lowerSearch)
     )
       return false;
     return true;
@@ -158,7 +158,7 @@ export default function RegistrationManagement() {
     Email: reg.email,
     電話: reg.phone,
     國籍: reg.nationality,
-    學校系級: `${reg.school || ""} ${reg.department || ""}`.trim() || "-",
+    所屬單位: reg.affiliation || "-",
     接受報名: (
       <select
         value={reg.status}
@@ -300,22 +300,12 @@ export default function RegistrationManagement() {
                       <p className="text-sm text-gray-500">國籍</p>
                       <p className="font-medium">{reg.nationality}</p>
                     </div>
-                    {reg.school && (
+                    {reg.affiliation && (
                       <div>
-                        <p className="text-sm text-gray-500">學校</p>
-                        <p className="font-medium">{reg.school}</p>
-                      </div>
-                    )}
-                    {reg.department && (
-                      <div>
-                        <p className="text-sm text-gray-500">系級</p>
-                        <p className="font-medium">{reg.department}</p>
-                      </div>
-                    )}
-                    {reg.studentId && (
-                      <div>
-                        <p className="text-sm text-gray-500">學號</p>
-                        <p className="font-medium">{reg.studentId}</p>
+                        <p className="text-sm text-gray-500">
+                          {reg.affiliationType === "school" ? "學校" : "任職單位"}
+                        </p>
+                        <p className="font-medium">{reg.affiliation}</p>
                       </div>
                     )}
                     <div>

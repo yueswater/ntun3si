@@ -13,9 +13,8 @@ export default function EventRegistrationForm({ event, form }) {
     email: "",
     phone: "",
     nationality: t("event.form.default_nationality"),
-    school: "",
-    department: "",
-    studentId: "",
+    affiliationType: "school",
+    affiliation: "",
     customResponses: [],
   });
 
@@ -160,9 +159,8 @@ export default function EventRegistrationForm({ event, form }) {
         email: user?.email || "",
         phone: "",
         nationality: t("event.form.default_nationality"),
-        school: "",
-        department: "",
-        studentId: "",
+        affiliationType: "school",
+        affiliation: "",
         customResponses: form.customFields.map((field) => ({
           fieldId: field.fieldId,
           label: field.label,
@@ -289,47 +287,45 @@ export default function EventRegistrationForm({ event, form }) {
         </div>
       </div>
 
-      {/* Optional Fields */}
+      {/* Affiliation */}
       <div className="divider">{t("event.section.optional")}</div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">{t("event.form.school")}</span>
+      <div className="space-y-4">
+        <div className="flex gap-4">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="affiliationType"
+              value="school"
+              checked={formData.affiliationType === "school"}
+              onChange={handleChange}
+              className="radio radio-primary"
+            />
+            <span>{t("event.form.school")}</span>
           </label>
-          <input
-            type="text"
-            name="school"
-            value={formData.school}
-            onChange={handleChange}
-            className="input input-bordered"
-            placeholder={t("event.form.school_placeholder")}
-          />
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="affiliationType"
+              value="organization"
+              checked={formData.affiliationType === "organization"}
+              onChange={handleChange}
+              className="radio radio-primary"
+            />
+            <span>{t("event.form.organization")}</span>
+          </label>
         </div>
-
         <div className="form-control">
-          <label className="label">
-            <span className="label-text">{t("event.form.department")}</span>
-          </label>
           <input
             type="text"
-            name="department"
-            value={formData.department}
+            name="affiliation"
+            value={formData.affiliation}
             onChange={handleChange}
             className="input input-bordered"
-            placeholder={t("event.form.department_placeholder")}
-          />
-        </div>
-
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">{t("event.form.studentId")}</span>
-          </label>
-          <input
-            type="text"
-            name="studentId"
-            value={formData.studentId}
-            onChange={handleChange}
-            className="input input-bordered"
+            placeholder={
+              formData.affiliationType === "school"
+                ? t("event.form.school_placeholder")
+                : t("event.form.organization_placeholder")
+            }
           />
         </div>
       </div>

@@ -11,9 +11,8 @@ export const submitRegistrationSchema = z.object({
             .email("Invalid email format"),
         phone: z.string().max(20).optional().default(""),
         nationality: z.string().max(50).optional().default("中華民國"),
-        school: z.string().max(100).optional().default(""),
-        department: z.string().max(100).optional().default(""),
-        studentId: z.string().max(30).optional().default(""),
+        affiliationType: z.enum(["school", "organization"]).optional().default("school"),
+        affiliation: z.string().max(100).optional().default(""),
         customResponses: z.array(z.object({
             label: z.string(),
             value: z.union([z.string(), z.array(z.string())]),

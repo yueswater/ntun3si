@@ -50,15 +50,12 @@ const registrationSchema = new mongoose.Schema(
       default: "中華民國",
     },
     // Optional fields
-    school: {
+    affiliationType: {
       type: String,
-      trim: true,
+      enum: ["school", "organization"],
+      default: "school",
     },
-    department: {
-      type: String,
-      trim: true,
-    },
-    studentId: {
+    affiliation: {
       type: String,
       trim: true,
     },

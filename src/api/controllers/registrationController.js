@@ -15,9 +15,8 @@ export async function submitRegistration(req, res) {
       email,
       phone,
       nationality,
-      school,
-      department,
-      studentId,
+      affiliationType,
+      affiliation,
       customResponses,
     } = req.body;
 
@@ -76,9 +75,8 @@ export async function submitRegistration(req, res) {
       email,
       phone,
       nationality: nationality || "中華民國",
-      school,
-      department,
-      studentId,
+      affiliationType: affiliationType || "school",
+      affiliation,
       customResponses: customResponses || [],
       submittedAt: new Date(),
     });
@@ -262,8 +260,8 @@ export async function exportRegistrations(req, res) {
       "Email",
       "電話",
       "國籍",
-      "學校系級",
-      "學號",
+      "身份類別",
+      "所屬單位",
       "允許報名",
     ];
 
@@ -283,8 +281,8 @@ export async function exportRegistrations(req, res) {
         reg.email,
         reg.phone,
         reg.nationality,
-        `${reg.school || ""} ${reg.department || ""}`.trim() || "-",
-        reg.studentId || "-",
+        reg.affiliationType === "school" ? "學校" : "任職單位",
+        reg.affiliation || "-",
         reg.status,
       ];
 
