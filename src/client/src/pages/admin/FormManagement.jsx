@@ -79,6 +79,7 @@ export default function FormManagement() {
       const payload = {
         eventUid: selectedEventUid,
         ...formConfig,
+        maxRegistrations: formConfig.maxRegistrations === "" ? null : Number(formConfig.maxRegistrations),
       };
 
       if (selected) {

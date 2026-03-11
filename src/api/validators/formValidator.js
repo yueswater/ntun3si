@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+const numericOrNull = z.preprocess(
+    (val) => (val === "" || val === null || val === undefined ? null : Number(val)),
+    z.number().int().positive().nullable(),
+);
+
 export const createFormSchema = z.object({
     body: z.object({
         eventUid: z
@@ -11,7 +16,7 @@ export const createFormSchema = z.object({
             required: z.boolean().optional(),
             options: z.array(z.string()).optional(),
         })).optional().default([]),
-        maxRegistrations: z.number().int().positive().optional().nullable(),
+        maxRegistrations: numericOrNull.optional(),
         registrationDeadline: z.string().optional().nullable(),
         confirmationMessage: z.string().optional().default(""),
     }),
@@ -25,7 +30,7 @@ export const updateFormSchema = z.object({
             required: z.boolean().optional(),
             options: z.array(z.string()).optional(),
         })).optional(),
-        maxRegistrations: z.number().int().positive().optional().nullable(),
+        maxRegistrations: numericOrNull.optional(),
         registrationDeadline: z.string().optional().nullable(),
         confirmationMessage: z.string().optional(),
         isActive: z.boolean().optional(),
