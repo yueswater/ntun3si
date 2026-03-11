@@ -128,15 +128,23 @@ export default function EventRegistrationForm({ event, form }) {
     dragOverItem.current = null;
   };
 
-  const handleDrop = (fieldId, currentOrder) => {
-    if (dragItem.current === null || dragOverItem.current === null || dragItem.current === dragOverItem.current) {
+  const handleDrop = (fieldId) => {
+    const from = dragItem.current;
+    const to = dragOverItem.current;
+    if (from === null || to === null || from === to) {
       handleDragEnd();
       return;
     }
-    const newOrder = [...currentOrder];
-    const [removed] = newOrder.splice(dragItem.current, 1);
-    newOrder.splice(dragOverItem.current, 0, removed);
-    handleCustomFieldChange(fieldId, newOrder);
+    setFormData((prev) => ({
+      ...prev,
+      customResponses: prev.customResponses.map((resp) => {
+        if (resp.fieldId !== fieldId) return resp;
+        const newOrder = [...resp.value];
+        const [removed] = newOrder.splice(from, 1);
+        newOrder.splice(to, 0, removed);
+        return { ...resp, value: newOrder };
+      }),
+    }));
     handleDragEnd();
   };
 
@@ -161,7 +169,7 @@ export default function EventRegistrationForm({ event, form }) {
     }, 350);
   };
 
-  const handleTouchMove = (e, fieldId, currentOrder) => {
+  const handleTouchMove = (e, fieldId) => {
     const touch = e.touches[0];
     const dx = Math.abs(touch.clientX - touchStartPos.current.x);
     const dy = Math.abs(touch.clientY - touchStartPos.current.y);
@@ -186,18 +194,21 @@ export default function EventRegistrationForm({ event, form }) {
     }
   };
 
-  const handleTouchEnd = (fieldId, currentOrder) => {
+  const handleTouchEnd = (fieldId) => {
     clearTimeout(touchTimer.current);
-    if (
-      touchDragging.current &&
-      dragItem.current !== null &&
-      dragOverItem.current !== null &&
-      dragItem.current !== dragOverItem.current
-    ) {
-      const newOrder = [...currentOrder];
-      const [removed] = newOrder.splice(dragItem.current, 1);
-      newOrder.splice(dragOverItem.current, 0, removed);
-      handleCustomFieldChange(fieldId, newOrder);
+    const from = dragItem.current;
+    const to = dragOverItem.current;
+    if (touchDragging.current && from !== null && to !== null && from !== to) {
+      setFormData((prev) => ({
+        ...prev,
+        customResponses: prev.customResponses.map((resp) => {
+          if (resp.fieldId !== fieldId) return resp;
+          const newOrder = [...resp.value];
+          const [removed] = newOrder.splice(from, 1);
+          newOrder.splice(to, 0, removed);
+          return { ...resp, value: newOrder };
+        }),
+      }));
     }
     touchDragging.current = false;
     dragItem.current = null;
@@ -616,10 +627,10 @@ export default function EventRegistrationForm({ event, form }) {
                             onDragEnter={() => handleDragEnter(field.fieldId, idx)}
                             onDragOver={(e) => e.preventDefault()}
                             onDragEnd={handleDragEnd}
-                            onDrop={() => handleDrop(field.fieldId, currentOrder)}
+                            onDrop={() => handleDrop(field.fieldId)}
                             onTouchStart={(e) => handleTouchStart(e, field.fieldId, idx, option)}
-                            onTouchMove={(e) => handleTouchMove(e, field.fieldId, currentOrder)}
-                            onTouchEnd={() => handleTouchEnd(field.fieldId, currentOrder)}
+                            onTouchMove={(e) => handleTouchMove(e, field.fieldId)}
+                            onTouchEnd={() => handleTouchEnd(field.fieldId)}
                             style={{ touchAction: "none" }}
                             className={[
                               "flex items-center gap-3 px-3 py-2.5 rounded cursor-grab active:cursor-grabbing select-none transition-all duration-150",

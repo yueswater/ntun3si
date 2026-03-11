@@ -10,6 +10,7 @@ export async function createForm(req, res) {
       eventUid,
       customFields,
       maxRegistrations,
+      registrationStartDate,
       registrationDeadline,
       confirmationMessage,
     } = req.body;
@@ -32,6 +33,7 @@ export async function createForm(req, res) {
       eventUid,
       customFields: customFields || [],
       maxRegistrations,
+      registrationStartDate: registrationStartDate || null,
       registrationDeadline,
       confirmationMessage,
     });

@@ -42,6 +42,7 @@ const registrationFormSchema = new mongoose.Schema(
     ],
     // Settings
     maxRegistrations: Number, // Optional limit
+    registrationStartDate: Date, // Optional open date
     registrationDeadline: Date, // Optional deadline
     confirmationMessage: {
       type: String,

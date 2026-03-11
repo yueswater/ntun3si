@@ -26,6 +26,7 @@ export default function FormManagement() {
   const [formConfig, setFormConfig] = useState({
     customFields: [],
     maxRegistrations: "",
+    registrationStartDate: "",
     registrationDeadline: "",
     confirmationMessage: "感謝您的報名，我們會盡快與您聯繫。",
   });
@@ -39,6 +40,7 @@ export default function FormManagement() {
     setFormConfig({
       customFields: [],
       maxRegistrations: "",
+      registrationStartDate: "",
       registrationDeadline: "",
       confirmationMessage: "感謝您的報名，我們會盡快與您聯繫。",
     });
@@ -52,6 +54,9 @@ export default function FormManagement() {
     setFormConfig({
       customFields: form.customFields || [],
       maxRegistrations: form.maxRegistrations || "",
+      registrationStartDate: form.registrationStartDate
+        ? new Date(form.registrationStartDate).toISOString().slice(0, 16)
+        : "",
       registrationDeadline: form.registrationDeadline
         ? new Date(form.registrationDeadline).toISOString().slice(0, 16)
         : "",
@@ -271,19 +276,18 @@ export default function FormManagement() {
             <div className="grid grid-cols-2 gap-4">
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">報名人數上限</span>
+                  <span className="label-text">報名開始時間</span>
                 </label>
                 <input
-                  type="number"
-                  value={formConfig.maxRegistrations}
+                  type="datetime-local"
+                  value={formConfig.registrationStartDate}
                   onChange={(e) =>
                     setFormConfig((prev) => ({
                       ...prev,
-                      maxRegistrations: e.target.value,
+                      registrationStartDate: e.target.value,
                     }))
                   }
                   className="input input-bordered"
-                  placeholder="不限制則留空"
                 />
               </div>
 
@@ -301,6 +305,26 @@ export default function FormManagement() {
                     }))
                   }
                   className="input input-bordered"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">報名人數上限</span>
+                </label>
+                <input
+                  type="number"
+                  value={formConfig.maxRegistrations}
+                  onChange={(e) =>
+                    setFormConfig((prev) => ({
+                      ...prev,
+                      maxRegistrations: e.target.value,
+                    }))
+                  }
+                  className="input input-bordered"
+                  placeholder="不限制則留空"
                 />
               </div>
             </div>
