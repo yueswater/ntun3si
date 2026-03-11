@@ -12,8 +12,12 @@ export const createEventSchema = z.object({
             .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase alphanumeric with hyphens"),
         description: z.string().optional().default(""),
         date: z.string().optional(),
+        endDate: z.string().optional().nullable(),
         location: z.string().max(200).optional().default(""),
-        maxParticipants: z.number().int().positive().optional().nullable(),
+        maxParticipants: z.preprocess(
+            (val) => (val === "" || val === null || val === undefined ? null : Number(val)),
+            z.number().int().positive().optional().nullable()
+        ),
         speaker: z.string().max(100).optional().default(""),
         speakerBio: z.string().max(500).optional().default(""),
         notes: z.string().optional().default(""),
@@ -31,8 +35,12 @@ export const updateEventSchema = z.object({
             .optional(),
         description: z.string().optional(),
         date: z.string().optional(),
+        endDate: z.string().optional().nullable(),
         location: z.string().max(200).optional(),
-        maxParticipants: z.number().int().positive().optional().nullable(),
+        maxParticipants: z.preprocess(
+            (val) => (val === "" || val === null || val === undefined ? null : Number(val)),
+            z.number().int().positive().optional().nullable()
+        ),
         speaker: z.string().max(100).optional(),
         speakerBio: z.string().max(500).optional(),
         notes: z.string().optional(),

@@ -59,6 +59,14 @@ const registrationSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    department: {
+      type: String,
+      trim: true,
+    },
+    jobTitle: {
+      type: String,
+      trim: true,
+    },
     // Custom field responses
     customResponses: [
       {

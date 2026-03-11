@@ -213,7 +213,30 @@ export default function EventPage() {
       {/* Registration */}
       {form && !isPastEvent && (
         <div id="registration-form" className="border-t pt-12">
-          <h2 className="text-3xl font-bold mb-6">{t("event.registration")}</h2>
+          <h2 className="text-3xl font-bold mb-4">{t("event.registration")}</h2>
+
+          {/* Registration period info */}
+          {(form.registrationStartDate || form.registrationDeadline) && (
+            <div className="flex flex-wrap gap-4 mb-6 text-sm text-gray-500">
+              {form.registrationStartDate && (
+                <span>
+                  {t("event.form.registration_start")}：
+                  <span className="font-medium text-base-content">
+                    {new Date(form.registrationStartDate).toLocaleString("zh-TW")}
+                  </span>
+                </span>
+              )}
+              {form.registrationDeadline && (
+                <span>
+                  {t("event.form.deadline")}
+                  <span className="font-medium text-base-content">
+                    {new Date(form.registrationDeadline).toLocaleString("zh-TW")}
+                  </span>
+                </span>
+              )}
+            </div>
+          )}
+
           <EventRegistrationForm event={event} form={form} />
         </div>
       )}

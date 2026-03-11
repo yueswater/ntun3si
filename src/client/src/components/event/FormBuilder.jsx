@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import AnimatedButton from "../AnimatedButton";
 
 /**
@@ -6,6 +6,8 @@ import AnimatedButton from "../AnimatedButton";
  */
 export default function FormBuilder({ fields, onChange }) {
   const [editingIndex, setEditingIndex] = useState(null);
+  const [optionInput, setOptionInput] = useState("");
+  const optionInputRef = useRef(null);
 
   const fieldTypes = [
     { value: "text", label: "單行文字" },
@@ -27,6 +29,7 @@ export default function FormBuilder({ fields, onChange }) {
     };
     onChange([...fields, newField]);
     setEditingIndex(fields.length);
+    setOptionInput("");
   };
 
   // Update a field
@@ -59,6 +62,23 @@ export default function FormBuilder({ fields, onChange }) {
     const updated = [...fields];
     [updated[index], updated[index + 1]] = [updated[index + 1], updated[index]];
     onChange(updated);
+  };
+
+  const addOption = (index) => {
+    const trimmed = optionInput.trim();
+    if (!trimmed) return;
+    const field = fields[index];
+    if ((field.options || []).includes(trimmed)) return;
+    handleUpdateField(index, { options: [...(field.options || []), trimmed] });
+    setOptionInput("");
+    optionInputRef.current?.focus();
+  };
+
+  const removeOption = (index, optIdx) => {
+    const field = fields[index];
+    handleUpdateField(index, {
+      options: (field.options || []).filter((_, i) => i !== optIdx),
+    });
   };
 
   return (
@@ -126,21 +146,50 @@ export default function FormBuilder({ fields, onChange }) {
                 {["select", "radio", "checkbox", "priority_ranking"].includes(field.type) && (
                   <div className="form-control">
                     <label className="label">
-                      <span className="label-text">選項（每行一個）</span>
+                      <span className="label-text">選項</span>
                     </label>
-                    <textarea
-                      value={(field.options || []).join("\n")}
-                      onChange={(e) =>
-                        handleUpdateField(index, {
-                          options: e.target.value
-                            .split("\n")
-                            .filter((o) => o.trim()),
-                        })
-                      }
-                      className="textarea textarea-bordered textarea-sm rounded-sm"
-                      rows={4}
-                      placeholder="選項1&#10;選項2&#10;選項3"
-                    />
+                    {/* Existing option tags */}
+                    <div className="flex flex-wrap gap-2 mb-2 min-h-[2rem]">
+                      {(field.options || []).map((opt, optIdx) => (
+                        <span
+                          key={optIdx}
+                          className="flex items-center gap-1 bg-base-300 text-sm px-2 py-1 rounded-full"
+                        >
+                          {opt}
+                          <button
+                            type="button"
+                            onClick={() => removeOption(index, optIdx)}
+                            className="text-gray-400 hover:text-error leading-none"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                    {/* New option input */}
+                    <div className="flex gap-2">
+                      <input
+                        ref={editingIndex === index ? optionInputRef : null}
+                        type="text"
+                        value={optionInput}
+                        onChange={(e) => setOptionInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            addOption(index);
+                          }
+                        }}
+                        className="input input-bordered input-sm flex-1"
+                        placeholder="輸入選項，按 Enter 新增"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => addOption(index)}
+                        className="btn btn-sm btn-outline"
+                      >
+                        新增
+                      </button>
+                    </div>
                   </div>
                 )}
 
@@ -161,10 +210,10 @@ export default function FormBuilder({ fields, onChange }) {
                 {/* Action buttons */}
                 <div className="flex gap-2 justify-end">
                   <AnimatedButton
-                    label="新增"
+                    label="完成"
                     icon="faPlus"
                     variant="primary"
-                    onClick={() => setEditingIndex(null)}
+                    onClick={() => { setEditingIndex(null); setOptionInput(""); }}
                   />
                   <AnimatedButton
                     label="刪除"
@@ -213,7 +262,7 @@ export default function FormBuilder({ fields, onChange }) {
                   </button>
                   <button
                     className="btn btn-xs btn-outline"
-                    onClick={() => setEditingIndex(index)}
+                    onClick={() => { setEditingIndex(index); setOptionInput(""); }}
                   >
                     編輯
                   </button>

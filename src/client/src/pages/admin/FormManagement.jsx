@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useFetchList from "../../hooks/useFetchList";
-import { create, update, remove } from "../../utils/api";
+import { create, update, remove, get } from "../../utils/api";
 import ManagementLayout from "../../components/ManagementLayout";
 import EditorModalShell from "../../components/EditorModalShell";
 import AnimatedButton from "../../components/AnimatedButton";
@@ -18,6 +18,26 @@ export default function FormManagement() {
   const { t } = useTranslation();
   const { data: forms, loading, setData: setForms, refresh } = useFetchList("/forms");
   const { data: events } = useFetchList("/events");
+  const [counts, setCounts] = useState({});
+
+  // Fetch confirmed registration counts for all forms
+  useEffect(() => {
+    if (!forms || forms.length === 0) return;
+    const fetchCounts = async () => {
+      const entries = await Promise.all(
+        forms.map(async (f) => {
+          try {
+            const data = await get(`/registrations/event/${f.eventUid}/count`);
+            return [f.eventUid, data.confirmedCount ?? 0];
+          } catch {
+            return [f.eventUid, 0];
+          }
+        })
+      );
+      setCounts(Object.fromEntries(entries));
+    };
+    fetchCounts();
+  }, [forms]);
   const navigate = useNavigate();
 
   const [selected, setSelected] = useState(null);
@@ -137,6 +157,7 @@ export default function FormManagement() {
     "#",
     "活動名稱",
     "自訂欄位數",
+    "已確認報名",
     "報名狀況",
     "允許報名",
     "建立時間",
@@ -157,6 +178,11 @@ export default function FormManagement() {
     "#": i + 1,
     活動名稱: getEventTitle(f.eventUid),
     自訂欄位數: f.customFields?.length || 0,
+    已確認報名: (() => {
+      const confirmed = counts[f.eventUid] ?? "—";
+      const max = f.maxRegistrations;
+      return max ? `${confirmed} / ${max}` : String(confirmed);
+    })(),
     報名狀況: (
       <AnimatedButton
         label="查看報名"

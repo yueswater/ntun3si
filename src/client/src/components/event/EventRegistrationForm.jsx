@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { post, get } from "../../utils/api";
+import { post } from "../../utils/api";
 import { useAuth } from "../../contexts/AuthContext";
 import CountrySelect from "../../components/CountrySelect";
 import { useTranslation } from "react-i18next";
@@ -15,6 +15,8 @@ export default function EventRegistrationForm({ event, form }) {
     nationality: t("event.form.default_nationality"),
     affiliationType: "school",
     affiliation: "",
+    department: "",
+    jobTitle: "",
     customResponses: [],
   });
 
@@ -22,7 +24,6 @@ export default function EventRegistrationForm({ event, form }) {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const [confirmationMsg, setConfirmationMsg] = useState("");
-  const [confirmedCount, setConfirmedCount] = useState(0);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const dragItem = useRef(null);
@@ -45,19 +46,6 @@ export default function EventRegistrationForm({ event, form }) {
       }));
     }
   }, [user]);
-
-  // Fetch confirmed registration count
-  useEffect(() => {
-    const fetchCount = async () => {
-      try {
-        const data = await get(`/registrations/event/${event.uid}/count`);
-        setConfirmedCount(data.confirmedCount ?? 0);
-      } catch {
-        // ignore
-      }
-    };
-    fetchCount();
-  }, [event.uid]);
 
   // Init custom fields
   useEffect(() => {
@@ -301,6 +289,8 @@ export default function EventRegistrationForm({ event, form }) {
         nationality: t("event.form.default_nationality"),
         affiliationType: "school",
         affiliation: "",
+        department: "",
+        jobTitle: "",
         customResponses: form.customFields.map((field) => ({
           fieldId: field.fieldId,
           label: field.label,
@@ -473,6 +463,34 @@ export default function EventRegistrationForm({ event, form }) {
             }
           />
         </div>
+
+        {/* Department (only for school) */}
+        {formData.affiliationType === "school" && (
+          <div className="form-control">
+            <input
+              type="text"
+              name="department"
+              value={formData.department}
+              onChange={handleChange}
+              className="input input-bordered"
+              placeholder={t("event.form.department_placeholder")}
+            />
+          </div>
+        )}
+
+        {/* Job title (only for organization) */}
+        {formData.affiliationType === "organization" && (
+          <div className="form-control">
+            <input
+              type="text"
+              name="jobTitle"
+              value={formData.jobTitle}
+              onChange={handleChange}
+              className="input input-bordered"
+              placeholder={t("event.form.job_title_placeholder")}
+            />
+          </div>
+        )}
       </div>
 
       {/* Custom Fields */}
@@ -680,14 +698,6 @@ export default function EventRegistrationForm({ event, form }) {
         {deadline && (
           <p>
             {t("event.form.deadline")} {deadline.toLocaleString("zh-TW")}
-          </p>
-        )}
-        {form.maxRegistrations && (
-          <p>
-            {t("event.form.confirmed_count", {
-              confirmed: confirmedCount,
-              max: form.maxRegistrations,
-            })}
           </p>
         )}
       </div>

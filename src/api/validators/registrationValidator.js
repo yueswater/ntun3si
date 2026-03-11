@@ -13,6 +13,8 @@ export const submitRegistrationSchema = z.object({
         nationality: z.string().max(50).optional().default("中華民國"),
         affiliationType: z.enum(["school", "organization"]).optional().default("school"),
         affiliation: z.string().max(100).optional().default(""),
+        department: z.string().max(100).optional().default(""),
+        jobTitle: z.string().max(100).optional().default(""),
         customResponses: z.array(z.object({
             label: z.string(),
             value: z.union([z.string(), z.array(z.string())]),

@@ -17,6 +17,8 @@ export async function submitRegistration(req, res) {
       nationality,
       affiliationType,
       affiliation,
+      department,
+      jobTitle,
       customResponses,
     } = req.body;
 
@@ -77,6 +79,8 @@ export async function submitRegistration(req, res) {
       nationality: nationality || "中華民國",
       affiliationType: affiliationType || "school",
       affiliation,
+      department: department || "",
+      jobTitle: jobTitle || "",
       customResponses: customResponses || [],
       submittedAt: new Date(),
     });

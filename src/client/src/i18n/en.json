@@ -90,9 +90,12 @@
       "phone_placeholder": "Example: 0912-345-678",
       "school_placeholder": "e.g., National Taiwan University",
       "organization_placeholder": "e.g., National Security Bureau",
+      "department_placeholder": "e.g., Political Science",
+      "job_title_placeholder": "e.g., Analyst",
       "select_placeholder": "Please select...",
       "required_hint": "* indicates required fields",
       "deadline": "Registration deadline:",
+      "registration_start": "Registration opens",
       "max_limit": "Capacity:",
       "confirmed_count": "Confirmed: {{confirmed}} / {{max}}",
       "drag_to_rank": "On mobile, long-press to drag and reorder. On desktop, drag directly."

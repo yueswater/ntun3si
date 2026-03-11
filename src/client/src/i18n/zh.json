@@ -90,9 +90,12 @@
       "phone_placeholder": "範例：0912-345-678",
       "school_placeholder": "例：國立臺灣大學",
       "organization_placeholder": "例：國家安全局",
+      "department_placeholder": "例：政治學系",
+      "job_title_placeholder": "例：分析師",
       "select_placeholder": "請選擇...",
       "required_hint": "* 為必填欄位",
       "deadline": "報名截止時間：",
+      "registration_start": "報名開始時間",
       "max_limit": "名額限制：",
       "confirmed_count": "已確認報名：{{confirmed}} / {{max}} 人",
       "drag_to_rank": "手機請長按進行拖曳，桌機可直接拖曳排序"
