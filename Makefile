@@ -1,4 +1,6 @@
-.PHONY: install dev-server dev-client build clean
+.PHONY: install dev-server dev-client build clean logs deploys
+
+RENDER_SERVICE_ID = srv-d41qqhbe5dus73f648pg
 
 # 安裝前後端所有相依套件（含 devDependencies）
 install:
@@ -24,3 +26,11 @@ build:
 clean:
 	rm -rf node_modules
 	rm -rf src/client/node_modules
+
+# 查看 Render 即時 logs
+logs:
+	render logs $(RENDER_SERVICE_ID)
+
+# 查看最近部署紀錄
+deploys:
+	render deploys list $(RENDER_SERVICE_ID)
