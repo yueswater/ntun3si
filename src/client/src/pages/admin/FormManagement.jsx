@@ -16,7 +16,7 @@ import HelpButton from "../../components/HelpButton";
 export default function FormManagement() {
   const toast = useToast();
   const { t } = useTranslation();
-  const { data: forms, loading, setData: setForms } = useFetchList("/forms");
+  const { data: forms, loading, setData: setForms, refresh } = useFetchList("/forms");
   const { data: events } = useFetchList("/events");
   const navigate = useNavigate();
 
@@ -83,18 +83,15 @@ export default function FormManagement() {
       };
 
       if (selected) {
-        const updated = await update("/forms", selected.uid, payload);
-        setForms((list) =>
-          list.map((f) => (f.uid === selected.uid ? updated : f))
-        );
+        await update("/forms", selected.uid, payload);
         setAlert({ type: "success", message: "表單更新成功！" });
       } else {
-        const created = await create("/forms", payload);
-        setForms((list) => [created, ...list]);
+        await create("/forms", payload);
         setAlert({ type: "success", message: "表單建立成功！" });
       }
 
       handleClose();
+      await refresh();
     } catch (err) {
       setAlert({
         type: "error",
