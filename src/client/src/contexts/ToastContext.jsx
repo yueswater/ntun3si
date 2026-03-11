@@ -44,8 +44,8 @@ export function ToastProvider({ children }) {
 
 const typeStyles = {
     info: {
-        border: "border-blue-400/40",
-        text: "text-blue-300",
+        border: "border-black/20",
+        text: "text-black",
         icon: (
             <path
                 strokeLinecap="round"
@@ -56,8 +56,8 @@ const typeStyles = {
         ),
     },
     success: {
-        border: "border-green-400/40",
-        text: "text-green-300",
+        border: "border-black/20",
+        text: "text-black",
         icon: (
             <path
                 strokeLinecap="round"
@@ -68,8 +68,8 @@ const typeStyles = {
         ),
     },
     error: {
-        border: "border-red-400/40",
-        text: "text-red-300",
+        border: "border-black/20",
+        text: "text-black",
         icon: (
             <path
                 strokeLinecap="round"
@@ -80,8 +80,8 @@ const typeStyles = {
         ),
     },
     warning: {
-        border: "border-yellow-400/40",
-        text: "text-yellow-300",
+        border: "border-black/20",
+        text: "text-black",
         icon: (
             <path
                 strokeLinecap="round"
@@ -112,7 +112,7 @@ function ToastItem({ toast, onClose }) {
             <span className={`text-sm flex-1 ${style.text}`}>{toast.message}</span>
             <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-white transition-colors shrink-0"
+                className="text-black/50 hover:text-black transition-colors shrink-0"
                 aria-label="close"
             >
                 <svg
