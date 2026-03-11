@@ -168,6 +168,7 @@
     "event_slug_required": "Please enter an event URL slug",
     "delete_failed": "Deletion failed. Please try again later",
     "export_failed": "Data export failed. Please try again later",
+    "status_updated": "Status updated",
     "status_update_failed": "Status update failed. Please try again later",
     "cr_deleted": "Change request deleted",
     "cr_created": "Change request submitted",

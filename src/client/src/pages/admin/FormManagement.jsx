@@ -178,6 +178,7 @@ export default function FormManagement() {
                 item.uid === f.uid ? { ...item, isActive: newStatus } : item
               )
             );
+            toast.success(t("toast.status_updated"));
           } catch {
             toast.error(t("toast.status_update_failed"));
           }

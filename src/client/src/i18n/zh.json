@@ -168,6 +168,7 @@
     "event_slug_required": "請輸入活動網址代碼（slug）",
     "delete_failed": "刪除失敗，請稍後再試",
     "export_failed": "資料匯出失敗，請稍後再試",
+    "status_updated": "狀態已更新",
     "status_update_failed": "狀態更新失敗，請稍後再試",
     "cr_deleted": "修改需求已刪除",
     "cr_created": "修改需求已送出",
