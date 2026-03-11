@@ -94,7 +94,7 @@
       "deadline": "報名截止時間：",
       "max_limit": "名額限制：",
       "confirmed_count": "已確認報名：{{confirmed}} / {{max}} 人",
-      "drag_to_rank": "拖曳項目來排序志願"
+      "drag_to_rank": "手機請長按進行拖曳，桌機可直接拖曳排序"
     },
     "section": {
       "optional": "選填資訊",

@@ -94,7 +94,7 @@
       "deadline": "Registration deadline:",
       "max_limit": "Capacity:",
       "confirmed_count": "Confirmed: {{confirmed}} / {{max}}",
-      "drag_to_rank": "Drag items to rank your preferences"
+      "drag_to_rank": "On mobile, long-press to drag and reorder. On desktop, drag directly."
     },
     "section": {
       "optional": "Optional Information",

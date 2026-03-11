@@ -27,6 +27,9 @@ export default function EventRegistrationForm({ event, form }) {
 
   const dragItem = useRef(null);
   const dragOverItem = useRef(null);
+  const touchTimer = useRef(null);
+  const touchDragging = useRef(false);
+  const touchStartPos = useRef({ x: 0, y: 0 });
 
   // Pre-fill user data
   useEffect(() => {
@@ -104,7 +107,7 @@ export default function EventRegistrationForm({ event, form }) {
     }));
   };
 
-  // Priority ranking drag handlers
+  // Priority ranking drag handlers (mouse)
   const handleDragStart = (index) => {
     dragItem.current = index;
   };
@@ -123,6 +126,50 @@ export default function EventRegistrationForm({ event, form }) {
     dragItem.current = null;
     dragOverItem.current = null;
     handleCustomFieldChange(fieldId, newOrder);
+  };
+
+  // Priority ranking touch handlers (mobile long-press drag)
+  const handleTouchStart = (e, index) => {
+    touchStartPos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    dragItem.current = index;
+    touchDragging.current = false;
+    touchTimer.current = setTimeout(() => {
+      touchDragging.current = true;
+    }, 350);
+  };
+
+  const handleTouchMove = (e, fieldId, currentOrder) => {
+    const dx = Math.abs(e.touches[0].clientX - touchStartPos.current.x);
+    const dy = Math.abs(e.touches[0].clientY - touchStartPos.current.y);
+    if (!touchDragging.current) {
+      if (dx > 8 || dy > 8) clearTimeout(touchTimer.current);
+      return;
+    }
+    const touch = e.touches[0];
+    const el = document.elementFromPoint(touch.clientX, touch.clientY);
+    const itemEl = el?.closest("[data-rank-index]");
+    if (itemEl) {
+      const idx = parseInt(itemEl.dataset.rankIndex, 10);
+      if (!isNaN(idx)) dragOverItem.current = idx;
+    }
+  };
+
+  const handleTouchEnd = (fieldId, currentOrder) => {
+    clearTimeout(touchTimer.current);
+    if (
+      touchDragging.current &&
+      dragItem.current !== null &&
+      dragOverItem.current !== null &&
+      dragItem.current !== dragOverItem.current
+    ) {
+      const newOrder = [...currentOrder];
+      const [removed] = newOrder.splice(dragItem.current, 1);
+      newOrder.splice(dragOverItem.current, 0, removed);
+      handleCustomFieldChange(fieldId, newOrder);
+    }
+    touchDragging.current = false;
+    dragItem.current = null;
+    dragOverItem.current = null;
   };
 
   // Validation (i18n)
@@ -511,27 +558,31 @@ export default function EventRegistrationForm({ event, form }) {
                       {(Array.isArray(response?.value) && response.value.length > 0
                         ? response.value
                         : field.options || []
-                      ).map((option, idx) => (
-                        <div
-                          key={option}
-                          draggable
-                          onDragStart={() => handleDragStart(idx)}
-                          onDragOver={(e) => handleDragOver(e, idx)}
-                          onDrop={() =>
-                            handleDrop(
-                              field.fieldId,
-                              Array.isArray(response?.value) && response.value.length > 0
-                                ? response.value
-                                : field.options || []
-                            )
-                          }
-                          className="flex items-center gap-3 bg-base-200 px-3 py-2 rounded cursor-grab active:cursor-grabbing select-none"
-                        >
-                          <span className="text-gray-400">☰</span>
-                          <span className="font-medium text-sm w-5 shrink-0">{idx + 1}.</span>
-                          <span>{option}</span>
-                        </div>
-                      ))}
+                      ).map((option, idx) => {
+                        const currentOrder =
+                          Array.isArray(response?.value) && response.value.length > 0
+                            ? response.value
+                            : field.options || [];
+                        return (
+                          <div
+                            key={option}
+                            data-rank-index={idx}
+                            draggable
+                            onDragStart={() => handleDragStart(idx)}
+                            onDragOver={(e) => handleDragOver(e, idx)}
+                            onDrop={() => handleDrop(field.fieldId, currentOrder)}
+                            onTouchStart={(e) => handleTouchStart(e, idx)}
+                            onTouchMove={(e) => handleTouchMove(e, field.fieldId, currentOrder)}
+                            onTouchEnd={() => handleTouchEnd(field.fieldId, currentOrder)}
+                            style={{ touchAction: "none" }}
+                            className="flex items-center gap-3 bg-base-200 px-3 py-2.5 rounded cursor-grab active:cursor-grabbing select-none"
+                          >
+                            <span className="text-gray-400 text-lg leading-none">☰</span>
+                            <span className="font-medium text-sm w-5 shrink-0">{idx + 1}.</span>
+                            <span>{option}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
