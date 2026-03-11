@@ -20,7 +20,6 @@ export default function RegistrationManagement() {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [alert, setAlert] = useState({ type: "", message: "" });
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
 
@@ -52,9 +51,9 @@ export default function RegistrationManagement() {
           reg.uid === uid ? { ...reg, status: newStatus } : reg
         )
       );
-      setAlert({ type: "success", message: "狀態已更新" });
-    } catch (err) {
-      setAlert({ type: "error", message: "更新失敗" });
+      toast.success(t("toast.status_updated"));
+    } catch {
+      toast.error(t("toast.status_update_failed"));
     }
   };
 
@@ -65,9 +64,9 @@ export default function RegistrationManagement() {
     try {
       await del(`/registrations/${uid}`);
       setRegistrations((prev) => prev.filter((reg) => reg.uid !== uid));
-      setAlert({ type: "success", message: "報名資料已刪除" });
-    } catch (err) {
-      setAlert({ type: "error", message: "刪除失敗" });
+      toast.success("報名資料已刪除");
+    } catch {
+      toast.error("刪除失敗");
     }
   };
 
@@ -132,7 +131,7 @@ export default function RegistrationManagement() {
     "Email",
     "電話",
     "國籍",
-    "學校系級",
+    "所屬單位",
     "接受報名",
     "操作",
   ];
@@ -339,15 +338,6 @@ export default function RegistrationManagement() {
           <button>close</button>
         </form>
       </dialog>
-
-      {/* Alert */}
-      {alert.message && (
-        <AppAlert
-          type={alert.type}
-          message={alert.message}
-          onClose={() => setAlert({ type: "", message: "" })}
-        />
-      )}
 
       <HelpButton
         title="報名管理使用說明"
