@@ -105,6 +105,19 @@ export async function submitRegistration(req, res) {
 }
 
 /**
+ * Get confirmed registration count for an event (public)
+ */
+export async function getEventRegistrationCount(req, res) {
+  try {
+    const { eventUid } = req.params;
+    const confirmedCount = await Registration.countDocuments({ eventUid, status: "confirmed" });
+    res.json({ confirmedCount });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
+  }
+}
+
+/**
  * Get all registrations for an event (admin only)
  */
 export async function getEventRegistrations(req, res) {

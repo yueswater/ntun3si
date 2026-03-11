@@ -22,6 +22,7 @@ export default function RegistrationManagement() {
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [selectedUids, setSelectedUids] = useState(new Set());
 
   useEffect(() => {
     fetchData();
@@ -64,9 +65,32 @@ export default function RegistrationManagement() {
     try {
       await del(`/registrations/${uid}`);
       setRegistrations((prev) => prev.filter((reg) => reg.uid !== uid));
+      setSelectedUids((prev) => { const next = new Set(prev); next.delete(uid); return next; });
       toast.success("報名資料已刪除");
     } catch {
       toast.error("刪除失敗");
+    }
+  };
+
+  // Batch confirm
+  const handleBatchConfirm = async () => {
+    if (selectedUids.size === 0) return;
+    if (!window.confirm(`確定要批次確認 ${selectedUids.size} 筆報名？`)) return;
+    try {
+      await Promise.all(
+        [...selectedUids].map((uid) =>
+          patch(`/registrations/${uid}/status`, { status: "confirmed" })
+        )
+      );
+      setRegistrations((prev) =>
+        prev.map((reg) =>
+          selectedUids.has(reg.uid) ? { ...reg, status: "confirmed" } : reg
+        )
+      );
+      setSelectedUids(new Set());
+      toast.success(`已確認 ${selectedUids.size} 筆報名`);
+    } catch {
+      toast.error("批次確認失敗");
     }
   };
 
@@ -125,6 +149,7 @@ export default function RegistrationManagement() {
 
   // Table columns
   const tableColumns = [
+    "選取",
     "#",
     "報名時間",
     "姓名",
@@ -150,7 +175,41 @@ export default function RegistrationManagement() {
     return true;
   });
 
+  const allFilteredSelected =
+    filteredRegs.length > 0 &&
+    filteredRegs.every((reg) => selectedUids.has(reg.uid));
+
+  const toggleSelectAll = () => {
+    if (allFilteredSelected) {
+      setSelectedUids((prev) => {
+        const next = new Set(prev);
+        filteredRegs.forEach((reg) => next.delete(reg.uid));
+        return next;
+      });
+    } else {
+      setSelectedUids((prev) => {
+        const next = new Set(prev);
+        filteredRegs.forEach((reg) => next.add(reg.uid));
+        return next;
+      });
+    }
+  };
+
   const tableData = filteredRegs.map((reg, i) => ({
+    選取: (
+      <input
+        type="checkbox"
+        className="checkbox checkbox-sm"
+        checked={selectedUids.has(reg.uid)}
+        onChange={(e) => {
+          setSelectedUids((prev) => {
+            const next = new Set(prev);
+            e.target.checked ? next.add(reg.uid) : next.delete(reg.uid);
+            return next;
+          });
+        }}
+      />
+    ),
     "#": i + 1,
     報名時間: new Date(reg.submittedAt).toLocaleString("zh-TW"),
     姓名: reg.name,
@@ -218,6 +277,15 @@ export default function RegistrationManagement() {
 
       {/* Search & Filter */}
       <div className="flex flex-wrap items-center gap-3 mb-4">
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            className="checkbox checkbox-sm"
+            checked={allFilteredSelected}
+            onChange={toggleSelectAll}
+          />
+          <span className="text-sm">全選</span>
+        </label>
         <input
           type="text"
           className="input input-bordered input-sm w-full max-w-xs"
@@ -235,6 +303,17 @@ export default function RegistrationManagement() {
           <option value="confirmed">已確認</option>
           <option value="cancelled">已取消</option>
         </select>
+        {selectedUids.size > 0 && (
+          <button
+            className="btn btn-success btn-sm gap-2"
+            onClick={handleBatchConfirm}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            批次確認報名（{selectedUids.size}）
+          </button>
+        )}
       </div>
 
       {/* Statistics */}

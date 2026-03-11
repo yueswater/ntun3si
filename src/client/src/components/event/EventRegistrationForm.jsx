@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { post } from "../../utils/api";
+import { useState, useEffect, useRef } from "react";
+import { post, get } from "../../utils/api";
 import { useAuth } from "../../contexts/AuthContext";
 import CountrySelect from "../../components/CountrySelect";
 import { useTranslation } from "react-i18next";
@@ -22,6 +22,11 @@ export default function EventRegistrationForm({ event, form }) {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const [confirmationMsg, setConfirmationMsg] = useState("");
+  const [confirmedCount, setConfirmedCount] = useState(0);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  const dragItem = useRef(null);
+  const dragOverItem = useRef(null);
 
   // Pre-fill user data
   useEffect(() => {
@@ -35,6 +40,19 @@ export default function EventRegistrationForm({ event, form }) {
     }
   }, [user]);
 
+  // Fetch confirmed registration count
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const data = await get(`/registrations/event/${event.uid}/count`);
+        setConfirmedCount(data.confirmedCount ?? 0);
+      } catch {
+        // ignore
+      }
+    };
+    fetchCount();
+  }, [event.uid]);
+
   // Init custom fields
   useEffect(() => {
     if (form?.customFields) {
@@ -43,7 +61,12 @@ export default function EventRegistrationForm({ event, form }) {
         customResponses: form.customFields.map((field) => ({
           fieldId: field.fieldId,
           label: field.label,
-          value: field.type === "checkbox" ? [] : "",
+          value:
+            field.type === "checkbox"
+              ? []
+              : field.type === "priority_ranking"
+                ? [...(field.options || [])]
+                : "",
         })),
       }));
     }
@@ -81,6 +104,27 @@ export default function EventRegistrationForm({ event, form }) {
     }));
   };
 
+  // Priority ranking drag handlers
+  const handleDragStart = (index) => {
+    dragItem.current = index;
+  };
+
+  const handleDragOver = (e, index) => {
+    e.preventDefault();
+    dragOverItem.current = index;
+  };
+
+  const handleDrop = (fieldId, currentOrder) => {
+    if (dragItem.current === null || dragOverItem.current === null) return;
+    if (dragItem.current === dragOverItem.current) return;
+    const newOrder = [...currentOrder];
+    const [removed] = newOrder.splice(dragItem.current, 1);
+    newOrder.splice(dragOverItem.current, 0, removed);
+    dragItem.current = null;
+    dragOverItem.current = null;
+    handleCustomFieldChange(fieldId, newOrder);
+  };
+
   // Validation (i18n)
   const validateForm = () => {
     if (!formData.name.trim()) {
@@ -112,12 +156,15 @@ export default function EventRegistrationForm({ event, form }) {
     return true;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError("");
-
     if (!validateForm()) return;
+    setShowConfirmModal(true);
+  };
 
+  const handleConfirmedSubmit = async () => {
+    setShowConfirmModal(false);
     setSubmitting(true);
 
     try {
@@ -164,7 +211,12 @@ export default function EventRegistrationForm({ event, form }) {
         customResponses: form.customFields.map((field) => ({
           fieldId: field.fieldId,
           label: field.label,
-          value: field.type === "checkbox" ? [] : "",
+          value:
+            field.type === "checkbox"
+              ? []
+              : field.type === "priority_ranking"
+                ? [...(field.options || [])]
+                : "",
         })),
       });
     } catch (err) {
@@ -449,6 +501,39 @@ export default function EventRegistrationForm({ event, form }) {
                       ))}
                     </div>
                   )}
+
+                  {/* Priority Ranking */}
+                  {field.type === "priority_ranking" && (
+                    <div className="space-y-2">
+                      <p className="text-xs text-gray-400 mb-1">
+                        {t("event.form.drag_to_rank")}
+                      </p>
+                      {(Array.isArray(response?.value) && response.value.length > 0
+                        ? response.value
+                        : field.options || []
+                      ).map((option, idx) => (
+                        <div
+                          key={option}
+                          draggable
+                          onDragStart={() => handleDragStart(idx)}
+                          onDragOver={(e) => handleDragOver(e, idx)}
+                          onDrop={() =>
+                            handleDrop(
+                              field.fieldId,
+                              Array.isArray(response?.value) && response.value.length > 0
+                                ? response.value
+                                : field.options || []
+                            )
+                          }
+                          className="flex items-center gap-3 bg-base-200 px-3 py-2 rounded cursor-grab active:cursor-grabbing select-none"
+                        >
+                          <span className="text-gray-400">☰</span>
+                          <span className="font-medium text-sm w-5 shrink-0">{idx + 1}.</span>
+                          <span>{option}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -484,10 +569,87 @@ export default function EventRegistrationForm({ event, form }) {
         )}
         {form.maxRegistrations && (
           <p>
-            {t("event.form.max_limit")} {form.maxRegistrations}
+            {t("event.form.confirmed_count", {
+              confirmed: confirmedCount,
+              max: form.maxRegistrations,
+            })}
           </p>
         )}
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirmModal && (
+        <dialog open className="modal modal-open">
+          <div className="modal-box max-w-lg">
+            <h3 className="font-bold text-lg mb-4">
+              {t("event.confirm_modal.title")}
+            </h3>
+            <div className="space-y-2 text-sm">
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <p className="text-gray-500">{t("event.form.name")}</p>
+                  <p className="font-medium">{formData.name}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500">{t("event.form.email")}</p>
+                  <p className="font-medium">{formData.email}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500">{t("event.form.phone")}</p>
+                  <p className="font-medium">{formData.phone}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500">{t("event.form.nationality")}</p>
+                  <p className="font-medium">{formData.nationality}</p>
+                </div>
+              </div>
+              {formData.affiliation && (
+                <div>
+                  <p className="text-gray-500">
+                    {formData.affiliationType === "school"
+                      ? t("event.form.school")
+                      : t("event.form.organization")}
+                  </p>
+                  <p className="font-medium">{formData.affiliation}</p>
+                </div>
+              )}
+              {formData.customResponses.length > 0 && (
+                <>
+                  <div className="divider my-2"></div>
+                  {formData.customResponses.map((resp) => (
+                    <div key={resp.fieldId}>
+                      <p className="text-gray-500">{resp.label}</p>
+                      <p className="font-medium">
+                        {Array.isArray(resp.value)
+                          ? resp.value.join(" > ")
+                          : resp.value || "-"}
+                      </p>
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
+            <div className="modal-action mt-6">
+              <button
+                className="btn btn-ghost"
+                onClick={() => setShowConfirmModal(false)}
+              >
+                {t("event.confirm_modal.edit")}
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={handleConfirmedSubmit}
+              >
+                {t("event.confirm_modal.submit")}
+              </button>
+            </div>
+          </div>
+          <div
+            className="modal-backdrop"
+            onClick={() => setShowConfirmModal(false)}
+          />
+        </dialog>
+      )}
     </form>
   );
 }

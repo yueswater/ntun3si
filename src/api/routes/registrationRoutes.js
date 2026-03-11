@@ -9,6 +9,7 @@ import {
   getMyRegistrations,
   cancelMyRegistration,
   exportRegistrations,
+  getEventRegistrationCount,
 } from "../controllers/registrationController.js";
 import {
   verifyToken,
@@ -22,6 +23,7 @@ const router = express.Router();
 
 // Public/User routes (optionalAuth allows both logged-in and anonymous)
 router.post("/event/:eventUid", optionalAuth, validate(submitRegistrationSchema), submitRegistration);
+router.get("/event/:eventUid/count", getEventRegistrationCount);
 
 // User routes (requires login)
 router.get("/my", verifyToken, getMyRegistrations);

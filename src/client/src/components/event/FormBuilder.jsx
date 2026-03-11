@@ -13,6 +13,7 @@ export default function FormBuilder({ fields, onChange }) {
     { value: "select", label: "下拉選單" },
     { value: "radio", label: "單選按鈕" },
     { value: "checkbox", label: "多選框" },
+    { value: "priority_ranking", label: "志願排序" },
   ];
 
   // Add a new field
@@ -122,7 +123,7 @@ export default function FormBuilder({ fields, onChange }) {
                   </div>
                 )}
 
-                {["select", "radio", "checkbox"].includes(field.type) && (
+                {["select", "radio", "checkbox", "priority_ranking"].includes(field.type) && (
                   <div className="form-control">
                     <label className="label">
                       <span className="label-text">選項（每行一個）</span>
@@ -136,7 +137,7 @@ export default function FormBuilder({ fields, onChange }) {
                             .filter((o) => o.trim()),
                         })
                       }
-                      className="textarea textarea-bordered textarea-sm"
+                      className="textarea textarea-bordered textarea-sm rounded-sm"
                       rows={4}
                       placeholder="選項1&#10;選項2&#10;選項3"
                     />

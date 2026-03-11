@@ -92,7 +92,9 @@
       "select_placeholder": "請選擇...",
       "required_hint": "* 為必填欄位",
       "deadline": "報名截止時間：",
-      "max_limit": "名額限制："
+      "max_limit": "名額限制：",
+      "confirmed_count": "已確認報名：{{confirmed}} / {{max}} 人",
+      "drag_to_rank": "拖曳項目來排序志願"
     },
     "section": {
       "optional": "選填資訊",
@@ -101,7 +103,13 @@
     "action": {
       "submit": "確認報名",
       "submitting": "報名中…",
-      "back_to_events": "返回活動列表"
+      "back_to_events": "返回活動列表",
+      "register_now": "立即報名"
+    },
+    "confirm_modal": {
+      "title": "確認報名資訊",
+      "edit": "繼續編輯",
+      "submit": "送出報名"
     },
     "success": {
       "title": "✓ 報名成功！",

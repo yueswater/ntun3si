@@ -61,6 +61,10 @@ export default function EventPage() {
   const eventDate = new Date(event.date);
   const isPastEvent = eventDate < new Date();
 
+  const scrollToForm = () => {
+    document.getElementById("registration-form")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <div className="container mx-auto px-6 py-10">
       {/* Top Section */}
@@ -182,11 +186,26 @@ export default function EventPage() {
             ))}
           </div>
         )}
+
+        {/* Scroll to form button */}
+        {form && !isPastEvent && (
+          <div className="mt-6">
+            <button
+              onClick={scrollToForm}
+              className="btn btn-primary btn-lg gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-1.414.828l-3.5 1 1-3.5a4 4 0 01.828-1.414z" />
+              </svg>
+              {t("event.action.register_now")}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Registration */}
       {form && !isPastEvent && (
-        <div className="border-t pt-12">
+        <div id="registration-form" className="border-t pt-12">
           <h2 className="text-3xl font-bold mb-6">{t("event.registration")}</h2>
           <EventRegistrationForm event={event} form={form} />
         </div>

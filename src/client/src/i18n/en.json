@@ -92,7 +92,9 @@
       "select_placeholder": "Please select...",
       "required_hint": "* indicates required fields",
       "deadline": "Registration deadline:",
-      "max_limit": "Capacity:"
+      "max_limit": "Capacity:",
+      "confirmed_count": "Confirmed: {{confirmed}} / {{max}}",
+      "drag_to_rank": "Drag items to rank your preferences"
     },
     "section": {
       "optional": "Optional Information",
@@ -101,7 +103,13 @@
     "action": {
       "submit": "Submit Registration",
       "submitting": "Submitting…",
-      "back_to_events": "Back to Events"
+      "back_to_events": "Back to Events",
+      "register_now": "Register Now"
+    },
+    "confirm_modal": {
+      "title": "Confirm Registration",
+      "edit": "Continue Editing",
+      "submit": "Submit Registration"
     },
     "success": {
       "title": "✓ Registration Successful!",
