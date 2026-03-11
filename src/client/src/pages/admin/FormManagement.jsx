@@ -29,7 +29,6 @@ export default function FormManagement() {
     registrationDeadline: "",
     confirmationMessage: "感謝您的報名，我們會盡快與您聯繫。",
   });
-  const [alert, setAlert] = useState({ type: "", message: "" });
   const [search, setSearch] = useState("");
   const [filterActive, setFilterActive] = useState("");
 
@@ -71,7 +70,7 @@ export default function FormManagement() {
   // Save form
   const handleSave = async () => {
     if (!selectedEventUid) {
-      setAlert({ type: "warning", message: "請選擇活動" });
+      toast.error("請選擇活動");
       return;
     }
 
@@ -84,19 +83,16 @@ export default function FormManagement() {
 
       if (selected) {
         await update("/forms", selected.uid, payload);
-        setAlert({ type: "success", message: "表單更新成功！" });
+        toast.success("表單更新成功！");
       } else {
         await create("/forms", payload);
-        setAlert({ type: "success", message: "表單建立成功！" });
+        toast.success("表單建立成功！");
       }
 
       handleClose();
       await refresh();
     } catch (err) {
-      setAlert({
-        type: "error",
-        message: err.response?.data?.message || "操作失敗",
-      });
+      toast.error(err.response?.data?.message || "操作失敗");
     }
   };
 
@@ -107,9 +103,9 @@ export default function FormManagement() {
     try {
       await remove("/forms", uid);
       setForms((list) => list.filter((f) => f.uid !== uid));
-      setAlert({ type: "success", message: "表單已刪除" });
+      toast.success("表單已刪除");
     } catch {
-      setAlert({ type: "error", message: "刪除失敗" });
+      toast.error("刪除失敗");
     }
   };
 
@@ -336,15 +332,6 @@ export default function FormManagement() {
             />
           </div>
         </EditorModalShell>
-      )}
-
-      {/* Alert */}
-      {alert.message && (
-        <AppAlert
-          type={alert.type}
-          message={alert.message}
-          onClose={() => setAlert({ type: "", message: "" })}
-        />
       )}
 
       <HelpButton
