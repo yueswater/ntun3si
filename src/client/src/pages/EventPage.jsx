@@ -82,28 +82,8 @@ export default function EventPage() {
         <h1 className="text-4xl font-bold mb-4">{event.title}</h1>
 
         {/* Event Meta */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div className="flex items-center gap-3">
-            <svg
-              className="w-6 h-6 text-primary"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
-            <div>
-              <p className="text-sm text-gray-500">{t("event.time")}</p>
-              <p className="font-medium">{eventDate.toLocaleString("zh-TW")}</p>
-            </div>
-          </div>
-
-          {event.location && (
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
             <div className="flex items-center gap-3">
               <svg
                 className="w-6 h-6 text-primary"
@@ -115,19 +95,56 @@ export default function EventPage() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                 />
               </svg>
               <div>
-                <p className="text-sm text-gray-500">{t("event.location")}</p>
-                <p className="font-medium">{event.location}</p>
+                <p className="text-sm text-gray-500">{t("event.time")}</p>
+                <p className="font-medium">{eventDate.toLocaleString("zh-TW")}</p>
               </div>
+            </div>
+
+            {event.location && (
+              <div className="flex items-center gap-3">
+                <svg
+                  className="w-6 h-6 text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+                <div>
+                  <p className="text-sm text-gray-500">{t("event.location")}</p>
+                  <p className="font-medium">{event.location}</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Register Now button — beside location on desktop, below on mobile */}
+          {form && !isPastEvent && (
+            <div className="shrink-0">
+              <button
+                onClick={scrollToForm}
+                className="btn btn-primary gap-2 w-full md:w-auto"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-1.414.828l-3.5 1 1-3.5a4 4 0 01.828-1.414z" />
+                </svg>
+                {t("event.action.register_now")}
+              </button>
             </div>
           )}
         </div>
@@ -184,21 +201,6 @@ export default function EventPage() {
                 #{tag}
               </span>
             ))}
-          </div>
-        )}
-
-        {/* Scroll to form button */}
-        {form && !isPastEvent && (
-          <div className="mt-6">
-            <button
-              onClick={scrollToForm}
-              className="btn btn-primary btn-lg gap-2"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-1.414.828l-3.5 1 1-3.5a4 4 0 01.828-1.414z" />
-              </svg>
-              {t("event.action.register_now")}
-            </button>
           </div>
         )}
       </div>
