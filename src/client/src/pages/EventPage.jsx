@@ -101,6 +101,11 @@ export default function EventPage() {
               <div>
                 <p className="text-sm text-gray-500">{t("event.time")}</p>
                 <p className="font-medium">{eventDate.toLocaleString("zh-TW")}</p>
+                {event.endDate && (
+                  <p className="text-sm text-gray-500 mt-0.5">
+                    {t("event.end_time")}：{new Date(event.endDate).toLocaleString("zh-TW")}
+                  </p>
+                )}
               </div>
             </div>
 

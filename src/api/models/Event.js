@@ -12,6 +12,7 @@ const eventSchema = new mongoose.Schema(
     slug: { type: String, required: true, unique: true },
     description: { type: String },
     date: { type: Date, required: true },
+    endDate: { type: Date },
     location: { type: String },
     maxParticipants: { type: Number },
     speaker: { type: String, default: "" },

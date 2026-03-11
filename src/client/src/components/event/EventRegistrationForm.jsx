@@ -30,6 +30,9 @@ export default function EventRegistrationForm({ event, form }) {
   const touchTimer = useRef(null);
   const touchDragging = useRef(false);
   const touchStartPos = useRef({ x: 0, y: 0 });
+  const [draggingState, setDraggingState] = useState({ fieldId: null, idx: null });
+  const [overState, setOverState] = useState({ fieldId: null, idx: null });
+  const [ghost, setGhost] = useState({ visible: false, x: 0, y: 0, text: "", width: 200 });
 
   // Pre-fill user data
   useEffect(() => {
@@ -107,50 +110,79 @@ export default function EventRegistrationForm({ event, form }) {
     }));
   };
 
-  // Priority ranking drag handlers (mouse)
-  const handleDragStart = (index) => {
+  // Priority ranking drag handlers (mouse/desktop)
+  const handleDragStart = (fieldId, index) => {
     dragItem.current = index;
+    setDraggingState({ fieldId, idx: index });
   };
 
-  const handleDragOver = (e, index) => {
-    e.preventDefault();
+  const handleDragEnter = (fieldId, index) => {
     dragOverItem.current = index;
+    setOverState({ fieldId, idx: index });
+  };
+
+  const handleDragEnd = () => {
+    setDraggingState({ fieldId: null, idx: null });
+    setOverState({ fieldId: null, idx: null });
+    dragItem.current = null;
+    dragOverItem.current = null;
   };
 
   const handleDrop = (fieldId, currentOrder) => {
-    if (dragItem.current === null || dragOverItem.current === null) return;
-    if (dragItem.current === dragOverItem.current) return;
+    if (dragItem.current === null || dragOverItem.current === null || dragItem.current === dragOverItem.current) {
+      handleDragEnd();
+      return;
+    }
     const newOrder = [...currentOrder];
     const [removed] = newOrder.splice(dragItem.current, 1);
     newOrder.splice(dragOverItem.current, 0, removed);
-    dragItem.current = null;
-    dragOverItem.current = null;
     handleCustomFieldChange(fieldId, newOrder);
+    handleDragEnd();
   };
 
-  // Priority ranking touch handlers (mobile long-press drag)
-  const handleTouchStart = (e, index) => {
-    touchStartPos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  // Priority ranking touch handlers (mobile long-press drag with ghost)
+  const handleTouchStart = (e, fieldId, index, optionText) => {
+    const touch = e.touches[0];
+    touchStartPos.current = { x: touch.clientX, y: touch.clientY };
     dragItem.current = index;
     touchDragging.current = false;
+    const rect = e.currentTarget.getBoundingClientRect();
     touchTimer.current = setTimeout(() => {
       touchDragging.current = true;
+      setDraggingState({ fieldId, idx: index });
+      if (navigator.vibrate) navigator.vibrate(50);
+      setGhost({
+        visible: true,
+        x: touch.clientX - rect.width / 2,
+        y: touch.clientY - 60,
+        text: optionText,
+        width: rect.width,
+      });
     }, 350);
   };
 
   const handleTouchMove = (e, fieldId, currentOrder) => {
-    const dx = Math.abs(e.touches[0].clientX - touchStartPos.current.x);
-    const dy = Math.abs(e.touches[0].clientY - touchStartPos.current.y);
+    const touch = e.touches[0];
+    const dx = Math.abs(touch.clientX - touchStartPos.current.x);
+    const dy = Math.abs(touch.clientY - touchStartPos.current.y);
     if (!touchDragging.current) {
       if (dx > 8 || dy > 8) clearTimeout(touchTimer.current);
       return;
     }
-    const touch = e.touches[0];
+    setGhost((prev) => ({
+      ...prev,
+      x: touch.clientX - prev.width / 2,
+      y: touch.clientY - 60,
+    }));
     const el = document.elementFromPoint(touch.clientX, touch.clientY);
     const itemEl = el?.closest("[data-rank-index]");
     if (itemEl) {
       const idx = parseInt(itemEl.dataset.rankIndex, 10);
-      if (!isNaN(idx)) dragOverItem.current = idx;
+      const fid = itemEl.dataset.rankFieldId;
+      if (!isNaN(idx) && fid === fieldId) {
+        dragOverItem.current = idx;
+        setOverState({ fieldId, idx });
+      }
     }
   };
 
@@ -170,6 +202,9 @@ export default function EventRegistrationForm({ event, form }) {
     touchDragging.current = false;
     dragItem.current = null;
     dragOverItem.current = null;
+    setDraggingState({ fieldId: null, idx: null });
+    setOverState({ fieldId: null, idx: null });
+    setGhost({ visible: false, x: 0, y: 0, text: "", width: 200 });
   };
 
   // Validation (i18n)
@@ -563,19 +598,37 @@ export default function EventRegistrationForm({ event, form }) {
                           Array.isArray(response?.value) && response.value.length > 0
                             ? response.value
                             : field.options || [];
+                        const isDragging =
+                          draggingState.fieldId === field.fieldId &&
+                          draggingState.idx === idx;
+                        const isOver =
+                          overState.fieldId === field.fieldId &&
+                          overState.idx === idx &&
+                          draggingState.fieldId === field.fieldId &&
+                          draggingState.idx !== idx;
                         return (
                           <div
                             key={option}
                             data-rank-index={idx}
+                            data-rank-field-id={field.fieldId}
                             draggable
-                            onDragStart={() => handleDragStart(idx)}
-                            onDragOver={(e) => handleDragOver(e, idx)}
+                            onDragStart={() => handleDragStart(field.fieldId, idx)}
+                            onDragEnter={() => handleDragEnter(field.fieldId, idx)}
+                            onDragOver={(e) => e.preventDefault()}
+                            onDragEnd={handleDragEnd}
                             onDrop={() => handleDrop(field.fieldId, currentOrder)}
-                            onTouchStart={(e) => handleTouchStart(e, idx)}
+                            onTouchStart={(e) => handleTouchStart(e, field.fieldId, idx, option)}
                             onTouchMove={(e) => handleTouchMove(e, field.fieldId, currentOrder)}
                             onTouchEnd={() => handleTouchEnd(field.fieldId, currentOrder)}
                             style={{ touchAction: "none" }}
-                            className="flex items-center gap-3 bg-base-200 px-3 py-2.5 rounded cursor-grab active:cursor-grabbing select-none"
+                            className={[
+                              "flex items-center gap-3 px-3 py-2.5 rounded cursor-grab active:cursor-grabbing select-none transition-all duration-150",
+                              isDragging
+                                ? "opacity-30 scale-95 bg-base-300"
+                                : isOver
+                                  ? "border-2 border-primary bg-primary/10"
+                                  : "bg-base-200",
+                            ].join(" ")}
                           >
                             <span className="text-gray-400 text-lg leading-none">☰</span>
                             <span className="font-medium text-sm w-5 shrink-0">{idx + 1}.</span>
@@ -627,6 +680,25 @@ export default function EventRegistrationForm({ event, form }) {
           </p>
         )}
       </div>
+
+      {/* Touch drag ghost — floats above finger while dragging */}
+      {ghost.visible && (
+        <div
+          style={{
+            position: "fixed",
+            left: ghost.x,
+            top: ghost.y,
+            width: ghost.width,
+            zIndex: 9999,
+            pointerEvents: "none",
+            transform: "rotate(-2deg) scale(1.06)",
+          }}
+          className="flex items-center gap-3 bg-base-100 border-2 border-primary px-3 py-2.5 rounded shadow-2xl"
+        >
+          <span className="text-primary text-lg leading-none">☰</span>
+          <span className="font-medium text-sm">{ghost.text}</span>
+        </div>
+      )}
 
       {/* Confirmation Modal */}
       {showConfirmModal && (

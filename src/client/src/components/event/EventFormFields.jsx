@@ -13,7 +13,7 @@ export default function EventFormFields({ form, onChange }) {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="label font-semibold">時間</label>
+          <label className="label font-semibold">開始時間</label>
           <input
             type="datetime-local"
             name="date"
@@ -23,6 +23,19 @@ export default function EventFormFields({ form, onChange }) {
           />
         </div>
         <div>
+          <label className="label font-semibold">結束時間</label>
+          <input
+            type="datetime-local"
+            name="endDate"
+            className="input input-bordered w-full"
+            value={form.endDate || ""}
+            onChange={onChange}
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="col-span-2">
           <label className="label font-semibold">地點</label>
           <input
             type="text"
