@@ -10,6 +10,13 @@ import { useTranslation } from "react-i18next";
 import FormBuilder from "../../components/event/FormBuilder";
 import HelpButton from "../../components/HelpButton";
 
+/** "YYYY-MM-DDTHH:mm" in local timezone — for <input type="datetime-local"> */
+const toLocalDatetime = (d) => {
+  const dt = new Date(d);
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+};
+
 /**
  * Form Management - Admin interface for managing registration forms
  */
@@ -75,10 +82,10 @@ export default function FormManagement() {
       customFields: form.customFields || [],
       maxRegistrations: form.maxRegistrations || "",
       registrationStartDate: form.registrationStartDate
-        ? new Date(form.registrationStartDate).toISOString().slice(0, 16)
+        ? toLocalDatetime(form.registrationStartDate)
         : "",
       registrationDeadline: form.registrationDeadline
-        ? new Date(form.registrationDeadline).toISOString().slice(0, 16)
+        ? toLocalDatetime(form.registrationDeadline)
         : "",
       confirmationMessage:
         form.confirmationMessage || "感謝您的報名，我們會盡快與您聯繫。",
@@ -104,6 +111,12 @@ export default function FormManagement() {
         eventUid: selectedEventUid,
         ...formConfig,
         maxRegistrations: formConfig.maxRegistrations === "" ? null : Number(formConfig.maxRegistrations),
+        registrationStartDate: formConfig.registrationStartDate
+          ? new Date(formConfig.registrationStartDate).toISOString()
+          : null,
+        registrationDeadline: formConfig.registrationDeadline
+          ? new Date(formConfig.registrationDeadline).toISOString()
+          : null,
       };
 
       if (selected) {

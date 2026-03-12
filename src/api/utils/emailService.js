@@ -75,12 +75,46 @@ export async function sendEventRegistrationEmail(user, event) {
   const markdown = loadTemplate("event_registration", {
     name: user.name,
     event_title: event.title,
-    event_date: new Date(event.date).toLocaleString("zh-TW"),
+    event_date: new Date(event.date).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }),
     event_location: event.location,
   });
   await sendMail({
     to: user.email,
     subject: `【臺大國安社】${event.title} 報名成功 | Event Registration Confirmed`,
+    markdown,
+  });
+}
+
+/**
+ * Event accepted notification (正取通知)
+ */
+export async function sendEventAcceptedEmail(user, event) {
+  const markdown = loadTemplate("event_accepted", {
+    name: user.name,
+    event_title: event.title,
+    event_date: new Date(event.date).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }),
+    event_location: event.location || "待通知",
+  });
+  await sendMail({
+    to: user.email,
+    subject: `【臺大國安社】${event.title} 正取通知 | Event Acceptance Notification`,
+    markdown,
+  });
+}
+
+/**
+ * Event cancellation notification (取消通知)
+ */
+export async function sendEventCancelledEmail(user, event) {
+  const markdown = loadTemplate("event_cancelled", {
+    name: user.name,
+    event_title: event.title,
+    event_date: new Date(event.date).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }),
+    event_location: event.location || "待通知",
+  });
+  await sendMail({
+    to: user.email,
+    subject: `【臺大國安社】${event.title} 報名取消通知 | Registration Cancellation Notice`,
     markdown,
   });
 }

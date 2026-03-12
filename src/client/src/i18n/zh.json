@@ -94,6 +94,7 @@
       "job_title_placeholder": "例：分析師",
       "select_placeholder": "請選擇...",
       "required_hint": "* 為必填欄位",
+      "registration_notice": "完成報名程序後，系統將先行發送報名成功信件。請注意，該信件不代表已獲得錄取資格，實際名額以發送「正取通知」為準。",
       "deadline": "報名截止時間：",
       "registration_start": "報名開始時間",
       "max_limit": "名額限制：",

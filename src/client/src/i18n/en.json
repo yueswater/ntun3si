@@ -94,6 +94,7 @@
       "job_title_placeholder": "e.g., Analyst",
       "select_placeholder": "Please select...",
       "required_hint": "* indicates required fields",
+      "registration_notice": "After completing the registration, a confirmation email will be sent. Please note that this email does not guarantee acceptance. Actual enrollment is subject to the \"Acceptance Notification\".",
       "deadline": "Registration deadline:",
       "registration_start": "Registration opens",
       "max_limit": "Capacity:",

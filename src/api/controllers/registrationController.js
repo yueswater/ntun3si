@@ -8,7 +8,7 @@ import Registration from "../models/Registration.js";
 import RegistrationForm from "../models/RegistrationForm.js";
 import Event from "../models/Event.js";
 import User from "../models/User.js";
-import { sendEventRegistrationEmail } from "../utils/emailService.js";
+import { sendEventRegistrationEmail, sendEventAcceptedEmail, sendEventCancelledEmail } from "../utils/emailService.js";
 
 // ─── Sign-in sheet helpers ────────────────────────────────────────────────────
 
@@ -318,17 +318,33 @@ export async function updateRegistrationStatus(req, res) {
       return res.status(400).json({ success: false, error: { code: "INVALID_STATUS", message: "Invalid status" } });
     }
 
-    const registration = await Registration.findOneAndUpdate(
-      { uid },
-      { status },
-      { new: true }
-    );
-
-    if (!registration) {
+    const oldRegistration = await Registration.findOne({ uid });
+    if (!oldRegistration) {
       return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Registration not found" } });
     }
 
-    res.json(registration);
+    const oldStatus = oldRegistration.status;
+    oldRegistration.status = status;
+    await oldRegistration.save();
+
+    // Send notification emails on status transitions
+    if (oldStatus !== status) {
+      try {
+        const event = await Event.findOne({ uid: oldRegistration.eventUid });
+        if (event) {
+          const user = { name: oldRegistration.name, email: oldRegistration.email };
+          if (status === "confirmed" && oldStatus === "pending") {
+            await sendEventAcceptedEmail(user, event);
+          } else if (status === "cancelled" && oldStatus === "confirmed") {
+            await sendEventCancelledEmail(user, event);
+          }
+        }
+      } catch (emailErr) {
+        console.error("Failed to send status change email:", emailErr);
+      }
+    }
+
+    res.json(oldRegistration);
   } catch (error) {
     res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
@@ -428,7 +444,7 @@ export async function exportRegistrations(req, res) {
 
     registrations.forEach((reg) => {
       const row = [
-        new Date(reg.submittedAt).toLocaleString("zh-TW"),
+        new Date(reg.submittedAt).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }),
         reg.name,
         reg.email,
         reg.phone,
