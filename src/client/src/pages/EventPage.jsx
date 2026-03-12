@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import { get } from "../utils/api";
 import EventRegistrationForm from "../components/event/EventRegistrationForm";
 import { useTranslation } from "react-i18next";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 
 export default function EventPage() {
   const { slug } = useParams();
@@ -144,11 +146,9 @@ export default function EventPage() {
             <div className="shrink-0">
               <button
                 onClick={scrollToForm}
-                className="btn btn-primary gap-2 w-full md:w-auto"
+                className="btn btn-outline btn-primary rounded-3xl gap-2 w-full md:w-auto hover:btn-primary"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-1.414.828l-3.5 1 1-3.5a4 4 0 01.828-1.414z" />
-                </svg>
+                <FontAwesomeIcon icon={faPenToSquare} className="w-5 h-5" />
                 {t("event.action.register_now")}
               </button>
             </div>
