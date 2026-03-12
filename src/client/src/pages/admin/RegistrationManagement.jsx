@@ -6,6 +6,7 @@ import AnimatedButton from "../../components/AnimatedButton";
 import { useToast } from "../../contexts/ToastContext";
 import { useTranslation } from "react-i18next";
 import HelpButton from "../../components/HelpButton";
+import html2pdf from "html2pdf.js";
 
 /**
  * Registration Management - Admin view for event registrations
@@ -100,11 +101,7 @@ export default function RegistrationManagement() {
       ? import.meta.env.VITE_BASE_URL.replace("/api", "")
       : "http://localhost:5050";
 
-    const win = window.open("", "_blank");
-    if (!win) {
-      toast.error("請允許瀏覽器彈出視窗後重試");
-      return;
-    }
+    const fetchId = toast.loading("正在產生 PDF,請稍候...");
 
     try {
       const response = await fetch(
@@ -119,13 +116,30 @@ export default function RegistrationManagement() {
       if (!response.ok) throw new Error("匯出失敗");
 
       const html = await response.text();
-      win.document.open();
-      win.document.write(html);
-      win.document.close();
+
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = html;
+
+      // Remove print button
+      const printBtn = wrapper.querySelector('.print-btn');
+      if (printBtn) printBtn.remove();
+
+      // Configure html2pdf to split pages properly based on the template's .sheet class
+      const opt = {
+        margin: 0,
+        filename: `${event?.title || '活動'} - 簽到表.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['css', 'legacy'], before: '.page-break' }
+      };
+
+      await html2pdf().from(wrapper).set(opt).save();
+
+      toast.success("成功匯出 PDF", { id: fetchId });
     } catch (err) {
-      win.close();
       console.error(err);
-      toast.error("匯出簽到表失敗");
+      toast.error("匯出 PDF 失敗", { id: fetchId });
     }
   };
 
