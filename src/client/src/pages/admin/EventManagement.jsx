@@ -16,6 +16,13 @@ import AnimatedButton from "../../components/AnimatedButton";
 import TagList from "../../components/TagList";
 import HelpButton from "../../components/HelpButton";
 
+/** "YYYY-MM-DDTHH:mm" in local timezone — for <input type="datetime-local"> */
+const toLocalDatetime = (d) => {
+  const dt = new Date(d);
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+};
+
 export default function EventManagement() {
   const toast = useToast();
   const { t } = useTranslation();
@@ -49,8 +56,11 @@ export default function EventManagement() {
     isPending,
   } = useDebouncedSave(async (payload) => {
     if (!selected || isNew) return;
+    const f = payload.form;
     await update("/events", selected.uid, {
-      ...payload.form,
+      ...f,
+      date: f.date ? new Date(f.date).toISOString() : undefined,
+      endDate: f.endDate ? new Date(f.endDate).toISOString() : null,
       previewImg: payload.previewImg,
     });
   }, 5000);
@@ -60,8 +70,8 @@ export default function EventManagement() {
     setForm({
       title: e.title || "",
       description: e.description || "",
-      date: e.date ? new Date(e.date).toISOString().slice(0, 16) : "",
-      endDate: e.endDate ? new Date(e.endDate).toISOString().slice(0, 16) : "",
+      date: e.date ? toLocalDatetime(e.date) : "",
+      endDate: e.endDate ? toLocalDatetime(e.endDate) : "",
       location: e.location || "",
       maxParticipants: e.maxParticipants || "",
       speaker: e.speaker || "",
@@ -80,7 +90,7 @@ export default function EventManagement() {
     setForm({
       title: "新活動",
       description: "",
-      date: d.toISOString().slice(0, 16),
+      date: toLocalDatetime(d),
       endDate: "",
       location: "",
       maxParticipants: "",
@@ -124,6 +134,8 @@ export default function EventManagement() {
 
       const created = await create("/events", {
         ...form,
+        date: form.date ? new Date(form.date).toISOString() : undefined,
+        endDate: form.endDate ? new Date(form.endDate).toISOString() : null,
         slug: selected.slug,
         previewImg,
         hashtags: form.hashtags.filter((t) => t.trim() !== ""),
@@ -132,7 +144,12 @@ export default function EventManagement() {
       open(created);
       toast.success(t("toast.event_created"));
     } else {
-      await update("/events", selected.uid, { ...form, previewImg });
+      await update("/events", selected.uid, {
+        ...form,
+        date: form.date ? new Date(form.date).toISOString() : undefined,
+        endDate: form.endDate ? new Date(form.endDate).toISOString() : null,
+        previewImg,
+      });
     }
   };
 
