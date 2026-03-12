@@ -181,12 +181,15 @@ export async function submitRegistration(req, res) {
         .json({ success: false, error: { code: "DEADLINE_PASSED", message: "Registration deadline has passed" } });
     }
 
-    // Check if already registered (by email)
-    const existing = await Registration.findOne({ eventUid, email });
+    // Check if already registered (by email or phone)
+    const existing = await Registration.findOne({
+      eventUid,
+      $or: [{ email }, { phone }],
+    });
     if (existing) {
       return res
         .status(400)
-        .json({ success: false, error: { code: "ALREADY_REGISTERED", message: "This email has already registered for this event" } });
+        .json({ success: false, error: { code: "ALREADY_REGISTERED", message: "您已報名過此活動！" } });
     }
 
     // Check max registrations

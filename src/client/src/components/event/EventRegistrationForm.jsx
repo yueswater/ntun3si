@@ -315,7 +315,7 @@ export default function EventRegistrationForm({ event, form }) {
         })),
       });
     } catch (err) {
-      setError(err.response?.data?.message || t("event.error.submit_failed"));
+      setError(err.response?.data?.error?.message || err.response?.data?.message || t("event.error.submit_failed"));
     } finally {
       setSubmitting(false);
     }
