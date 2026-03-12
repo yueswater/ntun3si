@@ -33,6 +33,8 @@ export default function EventRegistrationForm({ event, form }) {
   const touchStartPos = useRef({ x: 0, y: 0 });
   const [draggingState, setDraggingState] = useState({ fieldId: null, idx: null });
   const [overState, setOverState] = useState({ fieldId: null, idx: null });
+  // Tracks whether each radio_with_other field has "其他" selected
+  const [otherSelected, setOtherSelected] = useState({});
   const [ghost, setGhost] = useState({ visible: false, x: 0, y: 0, text: "", width: 200 });
 
   // Pre-fill user data
@@ -584,6 +586,54 @@ export default function EventRegistrationForm({ event, form }) {
                           <span>{option}</span>
                         </label>
                       ))}
+                    </div>
+                  )}
+
+                  {/* Radio with Other */}
+                  {field.type === "radio_with_other" && (
+                    <div className="space-y-2">
+                      {field.options?.map((option, idx) => (
+                        <label key={idx} className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name={field.fieldId}
+                            value={option}
+                            checked={response?.value === option}
+                            onChange={() => {
+                              setOtherSelected((prev) => ({ ...prev, [field.fieldId]: false }));
+                              handleCustomFieldChange(field.fieldId, option);
+                            }}
+                            className="radio radio-primary"
+                            required={field.required && !otherSelected[field.fieldId] && !response?.value}
+                          />
+                          <span>{option}</span>
+                        </label>
+                      ))}
+                      {/* 其他 option */}
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          name={field.fieldId}
+                          checked={!!otherSelected[field.fieldId]}
+                          onChange={() => {
+                            setOtherSelected((prev) => ({ ...prev, [field.fieldId]: true }));
+                            handleCustomFieldChange(field.fieldId, "");
+                          }}
+                          className="radio radio-primary"
+                        />
+                        <span>其他</span>
+                      </label>
+                      {otherSelected[field.fieldId] && (
+                        <input
+                          type="text"
+                          value={response?.value || ""}
+                          onChange={(e) => handleCustomFieldChange(field.fieldId, e.target.value)}
+                          className="input input-bordered input-sm w-full mt-1"
+                          placeholder="請說明…"
+                          autoFocus
+                          required={field.required}
+                        />
+                      )}
                     </div>
                   )}
 

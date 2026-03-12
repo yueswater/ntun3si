@@ -16,6 +16,7 @@ export default function FormBuilder({ fields, onChange }) {
     { value: "radio", label: "單選按鈕" },
     { value: "checkbox", label: "多選框" },
     { value: "priority_ranking", label: "志願排序" },
+    { value: "radio_with_other", label: "單選（含其他請說明）" },
   ];
 
   // Add a new field
