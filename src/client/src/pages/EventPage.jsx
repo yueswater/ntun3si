@@ -59,7 +59,8 @@ export default function EventPage() {
   }
 
   const eventDate = new Date(event.date);
-  const isPastEvent = eventDate < new Date();
+  const eventEndDate = event.endDate ? new Date(event.endDate) : eventDate;
+  const isPastEvent = eventEndDate < new Date();
 
   const scrollToForm = () => {
     document.getElementById("registration-form")?.scrollIntoView({ behavior: "smooth" });
