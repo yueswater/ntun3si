@@ -18,7 +18,6 @@ let _tplCache = null;
 function getSignInAssets() {
   if (!_tplCache) {
     _tplCache = {
-      css: fs.readFileSync(path.join(__dirname, "../templates/signin-sheet.css"), "utf-8"),
       html: fs.readFileSync(path.join(__dirname, "../templates/signin-sheet.html"), "utf-8"),
     };
   }
@@ -68,13 +67,13 @@ function formatEventTime(date) {
 }
 
 function buildSignInSheetHTML(event, registrations) {
-  const { css, html: template } = getSignInAssets();
+  const { html: template } = getSignInAssets();
 
   const title = escapeHtml(event.title);
   const startTime = formatEventTime(event.date);
   const endTime = event.endDate ? ` ～ ${formatEventTime(event.endDate)}` : "";
   const timeStr = startTime + endTime;
-  const nowStr = formatEventTime(new Date());
+  const location = event.location ? escapeHtml(event.location) : "—";
 
   const PAGE_SIZE = 20;
   const totalPages = Math.max(1, Math.ceil(registrations.length / PAGE_SIZE));
@@ -87,58 +86,71 @@ function buildSignInSheetHTML(event, registrations) {
       : pageRegs.map((reg, ri) => {
         const no = pi * PAGE_SIZE + ri + 1;
         return `<tr>
-            <td class="col-no">${no}</td>
+            <td>${no}</td>
             <td class="col-name">${escapeHtml(reg.name)}</td>
             <td class="col-email">${escapeHtml(maskEmail(reg.email))}</td>
             <td class="col-phone">${escapeHtml(maskPhone(reg.phone))}</td>
-            <td class="col-sign"><span class="sign-line"></span></td>
-            <td class="col-sign"><span class="sign-line"></span></td>
+            <td class="sign-cell"></td>
+            <td class="sign-cell"></td>
           </tr>`;
       }).join("");
 
-    const locationMeta = event.location
-      ? `<div class="meta-row"><span class="meta-label">活動地點&nbsp;</span><span class="meta-value">${escapeHtml(event.location)}</span></div>`
-      : "";
+    const pageInfo = `第 ${pi + 1} 頁 ／ 共 ${totalPages} 頁`;
 
-    const isLast = pi === totalPages - 1;
-    return `<div class="page${isLast ? "" : " page-break"}">
-  <div class="sheet-header">
-    <div class="header-left">
-      <div class="sheet-badge">出席簽到表</div>
-      <div class="event-title">${title}</div>
-      <div class="event-meta">
-        <div class="meta-row"><span class="meta-label">活動時間&nbsp;</span><span class="meta-value">${escapeHtml(timeStr)}</span></div>
-        ${locationMeta}
+    return `<div class="sheet">
+  <div class="header">
+    <div class="header-top">
+      <div class="logo-mark">簽</div>
+      <div class="badge"><i class="fa-solid fa-clipboard-check"></i> 出席簽到表</div>
+    </div>
+    <div class="event-title">${title}</div>
+    <div class="meta-row">
+      <div class="meta-item">
+        <div class="meta-icon"><i class="fa-regular fa-calendar"></i></div>
+        <div><div class="meta-label">活動時間</div><div class="meta-value">${escapeHtml(timeStr)}</div></div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-icon"><i class="fa-solid fa-location-dot"></i></div>
+        <div><div class="meta-label">活動地點</div><div class="meta-value">${location}</div></div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-icon"><i class="fa-solid fa-users"></i></div>
+        <div><div class="meta-label">報名人數</div><div class="meta-value">${registrations.length} 人</div></div>
       </div>
     </div>
-    <div class="header-right">
-      <div class="page-number">第 ${pi + 1} 頁 ／ 共 ${totalPages} 頁</div>
-      <div class="print-time">列印時間：${escapeHtml(nowStr)}</div>
+  </div>
+  <div class="divider"></div>
+  <div class="table-section">
+    <div class="section-label"><i class="fa-solid fa-list-check"></i> 簽到名單</div>
+    <table>
+      <thead>
+        <tr>
+          <th class="col-no">#</th>
+          <th class="col-name">姓名</th>
+          <th class="col-email">電子郵件</th>
+          <th class="col-phone">電話</th>
+          <th class="col-sign">簽到</th>
+          <th class="col-sign">簽退</th>
+        </tr>
+      </thead>
+      <tbody>${rowsHTML}</tbody>
+    </table>
+  </div>
+  <div class="footer">
+    <div class="footer-note">
+      <i class="fa-solid fa-shield-halved"></i> 機密文件 — 請妥善保管，活動結束後依規定銷毀
+    </div>
+    <div class="footer-stamp">
+      <div class="label">承辦人簽章</div>
+      <div class="stamp-line"></div>
     </div>
   </div>
-  <table class="signin-table">
-    <thead>
-      <tr>
-        <th class="col-no">#</th>
-        <th class="col-name">姓名</th>
-        <th class="col-email">電子郵件</th>
-        <th class="col-phone">電話</th>
-        <th class="col-sign">簽到</th>
-        <th class="col-sign">簽退</th>
-      </tr>
-    </thead>
-    <tbody>${rowsHTML}</tbody>
-  </table>
-  <div class="sheet-footer">
-    <span class="footer-left">機密文件 — 請妥善保管，活動結束後依規定銷毀</span>
-    <span class="footer-right">第 ${pi + 1} 頁 ／ 共 ${totalPages} 頁</span>
-  </div>
+  <div class="page-info">${pageInfo}</div>
 </div>`;
-  }).join("");
+  }).join("\n");
 
   return template
-    .replace("{{CSS}}", css)
-    .replace("{{TITLE}}", title)
+    .replace(/\{\{EVENT_TITLE\}\}/g, title)
     .replace("{{PAGES}}", pagesHTML);
 }
 
