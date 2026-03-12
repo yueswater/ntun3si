@@ -356,7 +356,7 @@ export default function Profile() {
                         {t("profile.register_date")}:
                       </span>
                       <span className="ml-2">
-                        {new Date(user?.createdAt).toLocaleDateString()}
+                        {new Date(user?.createdAt).toLocaleDateString("zh-TW", { timeZone: "Asia/Taipei" })}
                       </span>
                     </div>
                   </div>

@@ -11,6 +11,7 @@ export default function EventCard({ event, variant = "default" }) {
   const formatDate = (date) => {
     if (!date) return t("event.date_pending");
     return new Date(date).toLocaleDateString("zh-TW", {
+      timeZone: "Asia/Taipei",
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
@@ -20,6 +21,7 @@ export default function EventCard({ event, variant = "default" }) {
   const formatDateTime = (date) => {
     if (!date) return t("event.date_pending");
     return new Date(date).toLocaleString("zh-TW", {
+      timeZone: "Asia/Taipei",
       year: "numeric",
       month: "2-digit",
       day: "2-digit",

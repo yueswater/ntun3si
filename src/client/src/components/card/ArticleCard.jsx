@@ -11,6 +11,7 @@ export default function ArticleCard({ article, variant = "default" }) {
   // Format date
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString("zh-TW", {
+      timeZone: "Asia/Taipei",
       year: "numeric",
       month: "2-digit",
       day: "2-digit",

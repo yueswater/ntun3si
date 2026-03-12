@@ -101,10 +101,10 @@ export default function EventPage() {
               </svg>
               <div>
                 <p className="text-sm text-gray-500">{t("event.time")}</p>
-                <p className="font-medium">{eventDate.toLocaleString("zh-TW")}</p>
+                <p className="font-medium">{eventDate.toLocaleString("zh-TW", { timeZone: "Asia/Taipei" })}</p>
                 {event.endDate && (
                   <p className="text-sm text-gray-500 mt-0.5">
-                    {t("event.end_time")}：{new Date(event.endDate).toLocaleString("zh-TW")}
+                    {t("event.end_time")}：{new Date(event.endDate).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" })}
                   </p>
                 )}
               </div>
@@ -223,7 +223,7 @@ export default function EventPage() {
                 <span>
                   {t("event.form.registration_start")}：
                   <span className="font-medium text-base-content">
-                    {new Date(form.registrationStartDate).toLocaleString("zh-TW")}
+                    {new Date(form.registrationStartDate).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" })}
                   </span>
                 </span>
               )}
@@ -231,7 +231,7 @@ export default function EventPage() {
                 <span>
                   {t("event.form.deadline")}
                   <span className="font-medium text-base-content">
-                    {new Date(form.registrationDeadline).toLocaleString("zh-TW")}
+                    {new Date(form.registrationDeadline).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" })}
                   </span>
                 </span>
               )}

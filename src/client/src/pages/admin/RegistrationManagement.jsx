@@ -251,7 +251,7 @@ export default function RegistrationManagement() {
       />
     ),
     "#": i + 1,
-    報名時間: new Date(reg.submittedAt).toLocaleString("zh-TW"),
+    報名時間: new Date(reg.submittedAt).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }),
     姓名: reg.name,
     Email: reg.email,
     電話: reg.phone,
@@ -438,7 +438,7 @@ export default function RegistrationManagement() {
                     <div>
                       <p className="text-sm text-gray-500">報名時間</p>
                       <p className="font-medium">
-                        {new Date(reg.submittedAt).toLocaleString("zh-TW")}
+                        {new Date(reg.submittedAt).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" })}
                       </p>
                     </div>
                   </div>

@@ -191,11 +191,11 @@ export default function EventManagement() {
   const tableData = filtered.map((e, i) => ({
     "#": i + 1,
     活動名稱: e.title,
-    時間: e.date ? new Date(e.date).toLocaleString() : "未設定",
+    時間: e.date ? new Date(e.date).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }) : "未設定",
     地點: e.location,
     人數上限: e.maxParticipants,
     標籤: <TagList tags={e.hashtags} />,
-    建立時間: new Date(e.createdAt).toLocaleDateString(),
+    建立時間: new Date(e.createdAt).toLocaleDateString("zh-TW", { timeZone: "Asia/Taipei" }),
     操作: (
       <div className="flex gap-2">
         <AnimatedButton

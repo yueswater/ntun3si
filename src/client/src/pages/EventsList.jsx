@@ -70,10 +70,11 @@ export default function EventsList() {
                     />
                     {event.date
                       ? new Date(event.date).toLocaleDateString("zh-TW", {
-                          year: "numeric",
-                          month: "2-digit",
-                          day: "2-digit",
-                        })
+                        timeZone: "Asia/Taipei",
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })
                       : "日期未定"}
                   </span>
 
@@ -98,11 +99,10 @@ export default function EventsList() {
             <button
               key={num}
               onClick={() => setCurrentPage(num)}
-              className={`btn btn-sm rounded-full ${
-                currentPage === num
+              className={`btn btn-sm rounded-full ${currentPage === num
                   ? "bg-[#03045E] text-white"
                   : "bg-gray-200 text-[#03045E] hover:bg-gray-300"
-              }`}
+                }`}
             >
               {num}
             </button>

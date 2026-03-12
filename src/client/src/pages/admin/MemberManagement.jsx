@@ -74,8 +74,8 @@ export default function MemberManagement() {
     姓名: m.name || "-",
     帳號: m.username,
     電子郵件: m.email,
-    加入日期: new Date(m.createdAt).toLocaleDateString(),
-    更新日期: new Date(m.updatedAt).toLocaleDateString(),
+    加入日期: new Date(m.createdAt).toLocaleDateString("zh-TW", { timeZone: "Asia/Taipei" }),
+    更新日期: new Date(m.updatedAt).toLocaleDateString("zh-TW", { timeZone: "Asia/Taipei" }),
     "Email 驗證": <ResponsiveVerifyTag verified={m.emailVerified} />,
   }));
 

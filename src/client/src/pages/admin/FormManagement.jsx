@@ -225,7 +225,7 @@ export default function FormManagement() {
         }}
       />
     ),
-    建立時間: new Date(f.createdAt).toLocaleDateString(),
+    建立時間: new Date(f.createdAt).toLocaleDateString("zh-TW", { timeZone: "Asia/Taipei" }),
     操作: (
       <div className="flex gap-2">
         <AnimatedButton

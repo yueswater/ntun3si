@@ -287,7 +287,7 @@ export default function EventRegistrationForm({ event, form }) {
           content: t("event.email.content", {
             name: formData.name,
             title: event.title,
-            date: new Date(event.date).toLocaleString("zh-TW"),
+            date: new Date(event.date).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }),
             location: event.location || t("event.email.location_tba"),
           }),
         }),
@@ -763,7 +763,7 @@ export default function EventRegistrationForm({ event, form }) {
         <p>{t("event.form.required_hint")}</p>
         {deadline && (
           <p>
-            {t("event.form.deadline")} {deadline.toLocaleString("zh-TW")}
+            {t("event.form.deadline")} {deadline.toLocaleString("zh-TW", { timeZone: "Asia/Taipei" })}
           </p>
         )}
       </div>

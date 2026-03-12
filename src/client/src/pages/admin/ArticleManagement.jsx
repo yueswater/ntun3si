@@ -153,8 +153,8 @@ export default function ArticleManagement() {
     文章標題: a.title,
     Slug: a.slug,
     標籤: <TagList tags={a.hashtags} />,
-    建立時間: new Date(a.createdAt).toLocaleDateString(),
-    更新時間: new Date(a.updatedAt).toLocaleDateString(),
+    建立時間: new Date(a.createdAt).toLocaleDateString("zh-TW", { timeZone: "Asia/Taipei" }),
+    更新時間: new Date(a.updatedAt).toLocaleDateString("zh-TW", { timeZone: "Asia/Taipei" }),
     操作: (
       <div className="flex gap-2">
         <AnimatedButton

@@ -225,8 +225,8 @@ export default function ChangeRequestManagement() {
                 ))}
             </select>
         ),
-        [t("cr.col_created")]: new Date(cr.createdAt).toLocaleString("zh-TW"),
-        [t("cr.col_updated")]: new Date(cr.updatedAt).toLocaleString("zh-TW"),
+        [t("cr.col_created")]: new Date(cr.createdAt).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }),
+        [t("cr.col_updated")]: new Date(cr.updatedAt).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }),
         [t("cr.col_actions")]: (
             <div className="flex gap-2">
                 <AnimatedButton
