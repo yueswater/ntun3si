@@ -9,6 +9,7 @@ import {
   getMyRegistrations,
   cancelMyRegistration,
   exportRegistrations,
+  exportSignInSheet,
   getEventRegistrationCount,
 } from "../controllers/registrationController.js";
 import {
@@ -45,6 +46,12 @@ router.get(
   verifyToken,
   adminOnly,
   exportRegistrations
+);
+router.get(
+  "/event/:eventUid/signin",
+  verifyToken,
+  adminOnly,
+  exportSignInSheet
 );
 
 export default router;

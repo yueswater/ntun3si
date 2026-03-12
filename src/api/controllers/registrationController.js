@@ -4,6 +4,180 @@ import Event from "../models/Event.js";
 import User from "../models/User.js";
 import { sendEventRegistrationEmail } from "../utils/emailService.js";
 
+// ─── Sign-in sheet helpers ────────────────────────────────────────────────────
+
+const signInSheetCache = new Map();
+const SIGNIN_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function maskEmail(email) {
+  const at = email.indexOf("@");
+  if (at <= 0) return "***";
+  const local = email.slice(0, at);
+  const domain = email.slice(at);
+  if (local.length <= 2) return "*".repeat(local.length) + domain;
+  const keepStart = Math.min(2, Math.floor(local.length / 3));
+  const keepEnd = Math.min(1, Math.floor(local.length / 4));
+  const masked =
+    local.slice(0, keepStart) +
+    "*".repeat(local.length - keepStart - keepEnd) +
+    local.slice(local.length - keepEnd);
+  return masked + domain;
+}
+
+function maskPhone(phone) {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length < 7) return phone;
+  return digits.slice(0, 4) + "-***-" + digits.slice(-3);
+}
+
+function formatEventTime(date) {
+  if (!date) return "—";
+  const d = new Date(date);
+  const taipei = new Date(d.getTime() + 8 * 60 * 60 * 1000);
+  const y = taipei.getUTCFullYear();
+  const m = String(taipei.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(taipei.getUTCDate()).padStart(2, "0");
+  const h = String(taipei.getUTCHours()).padStart(2, "0");
+  const min = String(taipei.getUTCMinutes()).padStart(2, "0");
+  return `${y}/${m}/${day} ${h}:${min}`;
+}
+
+function buildSignInSheetHTML(event, registrations) {
+  const title = escapeHtml(event.title);
+  const startTime = formatEventTime(event.date);
+  const endTime = event.endDate ? ` ～ ${formatEventTime(event.endDate)}` : "";
+  const timeStr = startTime + endTime;
+
+  const PAGE_SIZE = 20;
+  const pages = [];
+  for (let i = 0; i < Math.max(registrations.length, 1); i += PAGE_SIZE) {
+    pages.push(registrations.slice(i, i + PAGE_SIZE));
+  }
+  const totalPages = pages.length;
+
+  const pagesHTML = pages
+    .map((regs, pi) => {
+      const rows = regs
+        .map((reg, ri) => {
+          const no = pi * PAGE_SIZE + ri + 1;
+          return `<tr>
+          <td style="text-align:center;">${no}</td>
+          <td>${escapeHtml(reg.name)}</td>
+          <td class="masked-cell">${escapeHtml(maskEmail(reg.email))}</td>
+          <td class="masked-cell">${escapeHtml(maskPhone(reg.phone))}</td>
+          <td class="sign-col"></td>
+          <td class="sign-col"></td>
+        </tr>`;
+        })
+        .join("");
+
+      const isLast = pi === pages.length - 1;
+      return `<div class="page${isLast ? "" : " page-break"}">
+      <div class="page-header">
+        <h1>${title}</h1>
+        <p class="event-time">活動時間：${escapeHtml(timeStr)}</p>
+        <p class="sheet-label">簽到表</p>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30pt;">#</th>
+            <th>姓名</th>
+            <th>電子郵件</th>
+            <th>電話</th>
+            <th class="sign-col">簽到</th>
+            <th class="sign-col">簽退</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="page-footer">第 ${pi + 1} 頁 / 共 ${totalPages} 頁</div>
+    </div>`;
+    })
+    .join("");
+
+  return `<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>${title} - 簽到表</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", "Arial", sans-serif;
+    font-size: 11pt;
+    color: #000;
+    background: #fff;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 18mm 15mm 22mm 15mm;
+  }
+  .page {
+    position: relative;
+    min-height: calc(297mm - 40mm);
+    padding-bottom: 14mm;
+  }
+  .page-break { page-break-after: always; }
+  .page-header {
+    text-align: center;
+    margin-bottom: 6mm;
+    padding-bottom: 4mm;
+    border-bottom: 2px solid #000;
+  }
+  .page-header h1 { font-size: 17pt; font-weight: 700; margin-bottom: 2mm; }
+  .event-time { font-size: 10.5pt; margin-bottom: 1.5mm; }
+  .sheet-label { font-size: 13pt; font-weight: 700; margin-top: 1.5mm; }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    background: #e5e7eb;
+    border: 1px solid #374151;
+    padding: 4pt 6pt;
+    text-align: center;
+    font-weight: 700;
+    font-size: 10.5pt;
+  }
+  td {
+    border: 1px solid #374151;
+    padding: 3pt 6pt;
+    height: 22pt;
+    vertical-align: middle;
+  }
+  .masked-cell { font-size: 9.5pt; }
+  .sign-col { width: 68pt; text-align: center; }
+  .page-footer {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    text-align: right;
+    font-size: 9pt;
+    color: #555;
+    padding-top: 3mm;
+    border-top: 1px solid #d1d5db;
+  }
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .page-footer { position: fixed; bottom: 8mm; right: 15mm; border-top: none; width: auto; }
+  }
+</style>
+</head>
+<body>
+${pagesHTML}
+<script>window.onload = function() { setTimeout(function() { window.print(); }, 400); };</script>
+</body>
+</html>`;
+}
+
 /**
  * Submit a registration (public)
  */
@@ -327,6 +501,40 @@ export async function exportRegistrations(req, res) {
       `attachment; filename="registrations-${eventUid}-${Date.now()}.csv"`
     );
     res.send(bom + csv);
+  } catch (error) {
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
+  }
+}
+
+/**
+ * Export sign-in sheet as HTML (admin only)
+ * Returns a print-ready HTML page; cached for 5 minutes per event.
+ */
+export async function exportSignInSheet(req, res) {
+  try {
+    const { eventUid } = req.params;
+
+    // Serve from cache if available and fresh
+    const cached = signInSheetCache.get(eventUid);
+    if (cached && Date.now() - cached.ts < SIGNIN_CACHE_TTL) {
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      return res.send(cached.html);
+    }
+
+    const [event, registrations] = await Promise.all([
+      Event.findOne({ uid: eventUid }),
+      Registration.find({ eventUid, status: "confirmed" }).sort({ submittedAt: 1 }),
+    ]);
+
+    if (!event) {
+      return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Event not found" } });
+    }
+
+    const html = buildSignInSheetHTML(event, registrations);
+    signInSheetCache.set(eventUid, { html, ts: Date.now() });
+
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.send(html);
   } catch (error) {
     res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }

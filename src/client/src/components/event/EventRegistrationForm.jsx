@@ -4,6 +4,14 @@ import { useAuth } from "../../contexts/AuthContext";
 import CountrySelect from "../../components/CountrySelect";
 import { useTranslation } from "react-i18next";
 
+// Auto-format phone number to 09xx-xxx-xxx
+function formatPhone(value) {
+  const digits = value.replace(/\D/g, "").slice(0, 10);
+  if (digits.length <= 4) return digits;
+  if (digits.length <= 7) return `${digits.slice(0, 4)}-${digits.slice(4)}`;
+  return `${digits.slice(0, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`;
+}
+
 export default function EventRegistrationForm({ event, form }) {
   const { user } = useAuth();
   const { t } = useTranslation();
@@ -44,7 +52,7 @@ export default function EventRegistrationForm({ event, form }) {
         ...prev,
         name: user.name || "",
         email: user.email || "",
-        phone: user.phone || "",
+        phone: formatPhone(user.phone || ""),
       }));
     }
   }, [user]);
@@ -69,7 +77,9 @@ export default function EventRegistrationForm({ event, form }) {
   }, [form]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    const formatted = name === "phone" ? formatPhone(value) : value;
+    setFormData({ ...formData, [name]: formatted });
   };
 
   const handleNationalityChange = (value) => {
@@ -403,7 +413,7 @@ export default function EventRegistrationForm({ event, form }) {
             value={formData.phone}
             onChange={handleChange}
             className="input input-bordered"
-            placeholder={t("event.form.phone_placeholder")}
+            placeholder="09xx-xxx-xxx"
             required
           />
         </div>

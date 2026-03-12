@@ -94,6 +94,41 @@ export default function RegistrationManagement() {
     }
   };
 
+  // Export sign-in sheet
+  const handleExportSignIn = async () => {
+    const API = import.meta.env.VITE_BASE_URL
+      ? import.meta.env.VITE_BASE_URL.replace("/api", "")
+      : "http://localhost:5050";
+
+    const win = window.open("", "_blank");
+    if (!win) {
+      toast.error("請允許瀏覽器彈出視窗後重試");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${API}/api/registrations/event/${eventUid}/signin`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (!response.ok) throw new Error("匯出失敗");
+
+      const html = await response.text();
+      win.document.open();
+      win.document.write(html);
+      win.document.close();
+    } catch (err) {
+      win.close();
+      console.error(err);
+      toast.error("匯出簽到表失敗");
+    }
+  };
+
   // Export CSV
   const handleExportCSV = async () => {
     const API = import.meta.env.VITE_BASE_URL
@@ -267,12 +302,20 @@ export default function RegistrationManagement() {
           </h1>
           <p className="text-gray-500 mt-2">共 {registrations.length} 筆報名</p>
         </div>
-        <AnimatedButton
-          label="匯出 CSV"
-          icon="faFileExport"
-          variant="primary"
-          onClick={handleExportCSV}
-        />
+        <div className="flex gap-2">
+          <AnimatedButton
+            label="匯出簽到表"
+            icon="faFilePdf"
+            variant="secondary"
+            onClick={handleExportSignIn}
+          />
+          <AnimatedButton
+            label="匯出 CSV"
+            icon="faFileExport"
+            variant="primary"
+            onClick={handleExportCSV}
+          />
+        </div>
       </div>
 
       {/* Search & Filter */}
