@@ -144,7 +144,7 @@ export default function FormBuilder({ fields, onChange }) {
                   </div>
                 )}
 
-                {["select", "radio", "checkbox", "priority_ranking"].includes(field.type) && (
+                {["select", "radio", "checkbox", "priority_ranking", "radio_with_other"].includes(field.type) && (
                   <div className="form-control">
                     <label className="label">
                       <span className="label-text">選項</span>
