@@ -1,6 +1,41 @@
 import Event from "../models/Event.js";
+import RegistrationForm from "../models/RegistrationForm.js";
 import User from "../models/User.js";
 import { sendEventRegistrationEmail } from "../utils/emailService.js";
+
+/**
+ * One-time migration: subtract 8 hours from all event dates
+ * (fixes data stored by old code that treated local time as UTC)
+ */
+export async function migrateTimezones(req, res) {
+  try {
+    const OFFSET = 8 * 3600000; // 8 hours in ms
+
+    // Fix Event dates
+    const events = await Event.find({});
+    let eventFixed = 0;
+    for (const e of events) {
+      let changed = false;
+      if (e.date) { e.date = new Date(e.date.getTime() - OFFSET); changed = true; }
+      if (e.endDate) { e.endDate = new Date(e.endDate.getTime() - OFFSET); changed = true; }
+      if (changed) { await e.save(); eventFixed++; }
+    }
+
+    // Fix RegistrationForm dates
+    const forms = await RegistrationForm.find({});
+    let formFixed = 0;
+    for (const f of forms) {
+      let changed = false;
+      if (f.registrationStartDate) { f.registrationStartDate = new Date(f.registrationStartDate.getTime() - OFFSET); changed = true; }
+      if (f.registrationDeadline) { f.registrationDeadline = new Date(f.registrationDeadline.getTime() - OFFSET); changed = true; }
+      if (changed) { await f.save(); formFixed++; }
+    }
+
+    res.json({ success: true, eventsFixed: eventFixed, formsFixed: formFixed });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
+  }
+}
 
 /**
  * Create new event (admin only)

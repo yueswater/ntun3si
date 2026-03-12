@@ -9,6 +9,7 @@ import {
   registerForEvent,
   cancelRegistration,
   getParticipants,
+  migrateTimezones,
 } from "../controllers/eventController.js";
 import { verifyToken, adminOnly } from "../middleware/authMiddleware.js";
 import { validate } from "../middleware/validate.js";
@@ -23,6 +24,7 @@ router.get("/:uid", getEventByUid);
 
 // Admin
 router.post("/", verifyToken, adminOnly, validate(createEventSchema), createEvent);
+router.post("/migrate-tz", verifyToken, adminOnly, migrateTimezones);
 router.put("/:uid", verifyToken, adminOnly, validate(updateEventSchema), updateEvent);
 router.delete("/:uid", verifyToken, adminOnly, deleteEvent);
 router.get("/:uid/participants", verifyToken, adminOnly, getParticipants);

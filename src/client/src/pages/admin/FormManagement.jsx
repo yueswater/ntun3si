@@ -10,12 +10,15 @@ import { useTranslation } from "react-i18next";
 import FormBuilder from "../../components/event/FormBuilder";
 import HelpButton from "../../components/HelpButton";
 
-/** "YYYY-MM-DDTHH:mm" in local timezone — for <input type="datetime-local"> */
-const toLocalDatetime = (d) => {
-  const dt = new Date(d);
+/** Convert UTC ISO string → "YYYY-MM-DDTHH:mm" in Asia/Taipei (UTC+8) */
+const toTaipeiDatetime = (d) => {
+  const utc = new Date(d).getTime();
+  const tp = new Date(utc + 8 * 3600000);
   const pad = (n) => String(n).padStart(2, "0");
-  return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+  return `${tp.getUTCFullYear()}-${pad(tp.getUTCMonth() + 1)}-${pad(tp.getUTCDate())}T${pad(tp.getUTCHours())}:${pad(tp.getUTCMinutes())}`;
 };
+/** Convert datetime-local string → UTC ISO (always interprets as UTC+8) */
+const taipeiToISO = (s) => (s ? new Date(s + "+08:00").toISOString() : undefined);
 
 /**
  * Form Management - Admin interface for managing registration forms
@@ -82,10 +85,10 @@ export default function FormManagement() {
       customFields: form.customFields || [],
       maxRegistrations: form.maxRegistrations || "",
       registrationStartDate: form.registrationStartDate
-        ? toLocalDatetime(form.registrationStartDate)
+        ? toTaipeiDatetime(form.registrationStartDate)
         : "",
       registrationDeadline: form.registrationDeadline
-        ? toLocalDatetime(form.registrationDeadline)
+        ? toTaipeiDatetime(form.registrationDeadline)
         : "",
       confirmationMessage:
         form.confirmationMessage || "感謝您的報名，我們會盡快與您聯繫。",
@@ -111,12 +114,8 @@ export default function FormManagement() {
         eventUid: selectedEventUid,
         ...formConfig,
         maxRegistrations: formConfig.maxRegistrations === "" ? null : Number(formConfig.maxRegistrations),
-        registrationStartDate: formConfig.registrationStartDate
-          ? new Date(formConfig.registrationStartDate).toISOString()
-          : null,
-        registrationDeadline: formConfig.registrationDeadline
-          ? new Date(formConfig.registrationDeadline).toISOString()
-          : null,
+        registrationStartDate: taipeiToISO(formConfig.registrationStartDate) || null,
+        registrationDeadline: taipeiToISO(formConfig.registrationDeadline) || null,
       };
 
       if (selected) {

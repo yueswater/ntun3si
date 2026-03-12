@@ -16,12 +16,15 @@ import AnimatedButton from "../../components/AnimatedButton";
 import TagList from "../../components/TagList";
 import HelpButton from "../../components/HelpButton";
 
-/** "YYYY-MM-DDTHH:mm" in local timezone — for <input type="datetime-local"> */
-const toLocalDatetime = (d) => {
-  const dt = new Date(d);
+/** Convert UTC ISO string → "YYYY-MM-DDTHH:mm" in Asia/Taipei (UTC+8) */
+const toTaipeiDatetime = (d) => {
+  const utc = new Date(d).getTime();
+  const tp = new Date(utc + 8 * 3600000);
   const pad = (n) => String(n).padStart(2, "0");
-  return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+  return `${tp.getUTCFullYear()}-${pad(tp.getUTCMonth() + 1)}-${pad(tp.getUTCDate())}T${pad(tp.getUTCHours())}:${pad(tp.getUTCMinutes())}`;
 };
+/** Convert datetime-local string → UTC ISO (always interprets as UTC+8) */
+const taipeiToISO = (s) => (s ? new Date(s + "+08:00").toISOString() : undefined);
 
 export default function EventManagement() {
   const toast = useToast();
@@ -59,8 +62,8 @@ export default function EventManagement() {
     const f = payload.form;
     await update("/events", selected.uid, {
       ...f,
-      date: f.date ? new Date(f.date).toISOString() : undefined,
-      endDate: f.endDate ? new Date(f.endDate).toISOString() : null,
+      date: taipeiToISO(f.date),
+      endDate: f.endDate ? taipeiToISO(f.endDate) : null,
       previewImg: payload.previewImg,
     });
   }, 5000);
@@ -70,8 +73,8 @@ export default function EventManagement() {
     setForm({
       title: e.title || "",
       description: e.description || "",
-      date: e.date ? toLocalDatetime(e.date) : "",
-      endDate: e.endDate ? toLocalDatetime(e.endDate) : "",
+      date: e.date ? toTaipeiDatetime(e.date) : "",
+      endDate: e.endDate ? toTaipeiDatetime(e.endDate) : "",
       location: e.location || "",
       maxParticipants: e.maxParticipants || "",
       speaker: e.speaker || "",
@@ -90,7 +93,7 @@ export default function EventManagement() {
     setForm({
       title: "新活動",
       description: "",
-      date: toLocalDatetime(d),
+      date: toTaipeiDatetime(d),
       endDate: "",
       location: "",
       maxParticipants: "",
@@ -134,8 +137,8 @@ export default function EventManagement() {
 
       const created = await create("/events", {
         ...form,
-        date: form.date ? new Date(form.date).toISOString() : undefined,
-        endDate: form.endDate ? new Date(form.endDate).toISOString() : null,
+        date: taipeiToISO(form.date),
+        endDate: form.endDate ? taipeiToISO(form.endDate) : null,
         slug: selected.slug,
         previewImg,
         hashtags: form.hashtags.filter((t) => t.trim() !== ""),
@@ -146,8 +149,8 @@ export default function EventManagement() {
     } else {
       await update("/events", selected.uid, {
         ...form,
-        date: form.date ? new Date(form.date).toISOString() : undefined,
-        endDate: form.endDate ? new Date(form.endDate).toISOString() : null,
+        date: taipeiToISO(form.date),
+        endDate: form.endDate ? taipeiToISO(form.endDate) : null,
         previewImg,
       });
     }
