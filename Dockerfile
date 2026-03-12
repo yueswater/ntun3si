@@ -47,8 +47,8 @@ RUN mkdir -p /usr/share/fonts/truetype/cwtex \
 
 # ── Install extra LaTeX packages for CJK/xelatex ──
 ENV PATH="/root/bin:${PATH}"
-RUN tlmgr install ctex xecjk fontspec fancyhdr ulem environ \
-    trimspaces zhnumber tcolorbox pgf etoolbox || true
+RUN tlmgr install ctex xecjk fontspec fancyhdr lastpage ulem environ \
+    trimspaces zhnumber tcolorbox pgf etoolbox tabularx xltabular tools || true
 
 WORKDIR /app
 

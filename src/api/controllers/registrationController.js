@@ -78,71 +78,39 @@ function generateSignInSheetPDF(event, registrations) {
   const template = fs.readFileSync(templatePath, "utf-8");
 
   const title = escapeLatex(event.title);
-  const startTime = formatEventTime(event.date);
-  const endTime = event.endDate ? ` ～ ${formatEventTime(event.endDate)}` : "";
-  const timeStr = escapeLatex(startTime + endTime);
-  const location = event.location ? escapeLatex(event.location) : "—";
-  const totalCount = registrations.length;
-
-  const PAGE_SIZE = 20;
-  const totalPages = Math.max(1, Math.ceil(registrations.length / PAGE_SIZE));
 
   let content = "";
-  for (let pi = 0; pi < totalPages; pi++) {
-    const pageRegs = registrations.slice(pi * PAGE_SIZE, (pi + 1) * PAGE_SIZE);
-    const isLastPage = pi === totalPages - 1;
 
-    if (pi > 0) content += "\\newpage\n\n";
+  // Title
+  content += "\\begin{center}\n";
+  content += `{\\LARGE\\bfseries ${title}}\\\\[0.3em]\n`;
+  content += "{\\large\\bfseries 報到簽名表}\n";
+  content += "\\end{center}\n\n";
+  content += "\\vspace{0.5em}\n\n";
 
-    // Title
-    content += "\\begin{center}\n";
-    content += `{\\LARGE\\bfseries\\cwHei ${title}}\\\\[0.3em]\n`;
-    content += "{\\large\\bfseries 報到簽名表}\n";
-    content += "\\end{center}\n\n";
-    content += "\\vspace{0.3em}\n\n";
+  // Sign-in table — xltabular auto-breaks across pages
+  content += "\\begingroup\\small\n";
+  content += "\\renewcommand{\\arraystretch}{1.8}\n";
+  content += "\\begin{xltabular}{\\textwidth}{|c|C{2cm}|Y|C{2.2cm}|C{2.2cm}|C{2.2cm}|}\n";
+  content += "\\hline\n";
+  content += "\\textbf{編號} & \\textbf{姓名} & \\textbf{電子郵件} & \\textbf{電話} & \\textbf{簽到} & \\textbf{簽退} \\\\\n";
+  content += "\\hline\n";
+  content += "\\endhead\n";
 
-    // Meta info table with borders
-    content += "\\begin{tabularx}{\\textwidth}{|l|X|}\n";
-    content += "\\hline\n";
-    content += `\\textbf{活動時間} & ${timeStr} \\\\\n`;
-    content += "\\hline\n";
-    content += `\\textbf{活動地點} & ${location} \\\\\n`;
-    content += "\\hline\n";
-    content += `\\textbf{報名人數} & ${totalCount} 人 \\\\\n`;
-    content += "\\hline\n";
-    content += "\\end{tabularx}\n\n";
-    content += "\\vspace{0.5em}\n\n";
-
-    // Sign-in table with borders
-    content += "{\\small\n";
-    content += "\\begin{tabularx}{\\textwidth}{|c|p{2.5cm}|X|p{2.8cm}|p{1.8cm}|p{1.8cm}|}\n";
-    content += "\\hline\n";
-    content += "\\textbf{編號} & \\textbf{姓名} & \\textbf{電子郵件} & \\textbf{電話} & \\textbf{簽到} & \\textbf{簽退} \\\\\n";
-    content += "\\hline\n";
-
-    if (pageRegs.length === 0) {
-      content += "— & 目前無已確認的報名者 & & & & \\\\\n\\hline\n";
-    } else {
-      for (let ri = 0; ri < pageRegs.length; ri++) {
-        const reg = pageRegs[ri];
-        const no = pi * PAGE_SIZE + ri + 1;
-        content += `${no} & ${escapeLatex(reg.name)} & ${escapeLatex(maskEmail(reg.email))} & ${escapeLatex(maskPhone(reg.phone))} & & \\\\\n\\hline\n`;
-      }
-      // Pad empty rows to fill the page
-      for (let ri = pageRegs.length; ri < PAGE_SIZE; ri++) {
-        const no = pi * PAGE_SIZE + ri + 1;
-        content += `${no} & & & & & \\\\\n\\hline\n`;
-      }
-    }
-
-    content += "\\end{tabularx}\n}\n";
-
-    // Stamp line on the last page only
-    if (isLastPage) {
-      content += "\n\\vfill\n\n";
-      content += "\\hfill 承辦人簽章：\\underline{\\hspace{4cm}}\n";
+  if (registrations.length === 0) {
+    content += "— & 目前無已確認的報名者 & & & & \\\\\n\\hline\n";
+  } else {
+    for (let i = 0; i < registrations.length; i++) {
+      const reg = registrations[i];
+      content += `${i + 1} & ${escapeLatex(reg.name)} & ${escapeLatex(maskEmail(reg.email))} & ${escapeLatex(maskPhone(reg.phone))} & & \\\\\n\\hline\n`;
     }
   }
+
+  content += "\\end{xltabular}\n\\endgroup\n";
+
+  // Stamp line at the bottom of last page
+  content += "\n\\vfill\n\n";
+  content += "\\hfill 承辦人簽章：\\underline{\\hspace{4cm}}\n";
 
   const qmdContent = template
     .replace(/\{\{FONTS_PATH\}\}/g, fontsPath)

@@ -37,7 +37,8 @@ export PATH="$TINYTEX_DIR/bin/x86_64-linux:$PATH"
 
 echo "=== Installing LaTeX CJK packages... ==="
 tlmgr install ctex xecjk fontspec ulem environ \
-  trimspaces zhnumber tcolorbox pgf etoolbox titlesec titling || true
+  trimspaces zhnumber tcolorbox pgf etoolbox titlesec titling \
+  fancyhdr lastpage tabularx xltabular tools || true
 
 echo "=== Installing cwTeX fonts... ==="
 mkdir -p "$FONTS_DIR"
