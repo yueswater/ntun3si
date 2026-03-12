@@ -6,7 +6,6 @@ import AnimatedButton from "../../components/AnimatedButton";
 import { useToast } from "../../contexts/ToastContext";
 import { useTranslation } from "react-i18next";
 import HelpButton from "../../components/HelpButton";
-import html2pdf from "html2pdf.js";
 
 /**
  * Registration Management - Admin view for event registrations
@@ -96,7 +95,7 @@ export default function RegistrationManagement() {
     }
   };
 
-  // Export sign-in sheet
+  // Export sign-in sheet (PDF download)
   const handleExportSignIn = async () => {
     const API = import.meta.env.VITE_BASE_URL
       ? import.meta.env.VITE_BASE_URL.replace("/api", "")
@@ -116,64 +115,15 @@ export default function RegistrationManagement() {
 
       if (!response.ok) throw new Error("匯出失敗");
 
-      const html = await response.text();
-
-      // Parse the full HTML document so <style> and <link> tags are preserved
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, "text/html");
-
-      // Create offscreen wrapper
-      const wrapper = document.createElement("div");
-      wrapper.style.position = "fixed";
-      wrapper.style.left = "-9999px";
-      wrapper.style.top = "0";
-      wrapper.style.width = "780px";
-
-      // Inject external stylesheets into current document
-      const addedLinks = [];
-      doc.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
-        const el = document.createElement("link");
-        el.rel = "stylesheet";
-        el.href = link.href;
-        document.head.appendChild(el);
-        addedLinks.push(el);
-      });
-
-      // Inject inline styles
-      const styleEl = document.createElement("style");
-      doc.querySelectorAll("style").forEach((s) => {
-        styleEl.textContent += s.textContent;
-      });
-      document.head.appendChild(styleEl);
-
-      // Set body content
-      wrapper.innerHTML = doc.body.innerHTML;
-
-      // Remove print button
-      const printBtn = wrapper.querySelector(".print-btn");
-      if (printBtn) printBtn.remove();
-
-      document.body.appendChild(wrapper);
-
-      // Wait for external fonts to load
-      await document.fonts.ready;
-      await new Promise((r) => setTimeout(r, 800));
-
-      const opt = {
-        margin: 0,
-        filename: `${event?.title || "活動"} - 簽到表.pdf`,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-        pagebreak: { mode: ["css", "legacy"], before: ".page-break" },
-      };
-
-      await html2pdf().from(wrapper).set(opt).save();
-
-      // Cleanup injected elements
-      wrapper.remove();
-      styleEl.remove();
-      addedLinks.forEach((l) => l.remove());
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${event?.title || "活動"} - 簽到表.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
 
       toast.success("成功匯出 PDF");
     } catch (err) {

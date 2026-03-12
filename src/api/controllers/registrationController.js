@@ -1,6 +1,9 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { execSync } from "child_process";
+import os from "os";
+import { v4 as uuidv4 } from "uuid";
 import Registration from "../models/Registration.js";
 import RegistrationForm from "../models/RegistrationForm.js";
 import Event from "../models/Event.js";
@@ -10,28 +13,21 @@ import { sendEventRegistrationEmail } from "../utils/emailService.js";
 // ─── Sign-in sheet helpers ────────────────────────────────────────────────────
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const TMP_DIR = path.resolve("tmp");
+const HOME = os.homedir();
+const VENDOR_DIR = path.resolve("vendor");
+
+const extendedPATH = [
+  `${VENDOR_DIR}/quarto/bin`,
+  `${VENDOR_DIR}/TinyTeX/bin/x86_64-linux`,
+  `${HOME}/quarto/bin`,
+  `${HOME}/bin`,
+  `${HOME}/.TinyTeX/bin/x86_64-linux`,
+  process.env.PATH,
+].join(":");
 
 const signInSheetCache = new Map();
 const SIGNIN_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-
-let _tplCache = null;
-function getSignInAssets() {
-  if (!_tplCache) {
-    _tplCache = {
-      html: fs.readFileSync(path.join(__dirname, "../templates/signin-sheet.html"), "utf-8"),
-    };
-  }
-  return _tplCache;
-}
-
-function escapeHtml(str) {
-  if (!str) return "";
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
 
 function maskEmail(email) {
   const at = email.indexOf("@");
@@ -66,89 +62,133 @@ function formatEventTime(date) {
   return `${y}/${m}/${day} ${h}:${min}`;
 }
 
-function buildSignInSheetHTML(event, registrations) {
-  const { html: template } = getSignInAssets();
+function escapeLatex(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/\\/g, "\\textbackslash{}")
+    .replace(/[&%$#_{}~^]/g, (m) => "\\" + m);
+}
 
-  const title = escapeHtml(event.title);
+function generateSignInSheetPDF(event, registrations) {
+  if (!fs.existsSync(TMP_DIR)) fs.mkdirSync(TMP_DIR, { recursive: true });
+
+  const id = uuidv4().slice(0, 8);
+  const qmdPath = path.join(TMP_DIR, `signin_${id}.qmd`);
+  const pdfPath = path.join(TMP_DIR, `signin_${id}.pdf`);
+
+  const fontsPath = path.join(VENDOR_DIR, "fonts") + "/";
+
+  const title = escapeLatex(event.title);
   const startTime = formatEventTime(event.date);
   const endTime = event.endDate ? ` ～ ${formatEventTime(event.endDate)}` : "";
-  const timeStr = startTime + endTime;
-  const location = event.location ? escapeHtml(event.location) : "—";
+  const timeStr = escapeLatex(startTime + endTime);
+  const location = event.location ? escapeLatex(event.location) : "—";
+  const totalCount = registrations.length;
 
+  // Build markdown table rows
   const PAGE_SIZE = 20;
   const totalPages = Math.max(1, Math.ceil(registrations.length / PAGE_SIZE));
 
-  const pagesHTML = Array.from({ length: totalPages }, (_, pi) => {
+  let pagesContent = "";
+  for (let pi = 0; pi < totalPages; pi++) {
     const pageRegs = registrations.slice(pi * PAGE_SIZE, (pi + 1) * PAGE_SIZE);
-
-    const rowsHTML = pageRegs.length === 0
-      ? `<tr><td colspan="6" style="text-align:center;padding:12pt;color:#9ca3af;">目前無已確認的報名者</td></tr>`
-      : pageRegs.map((reg, ri) => {
-        const no = pi * PAGE_SIZE + ri + 1;
-        return `<tr>
-            <td>${no}</td>
-            <td class="col-name">${escapeHtml(reg.name)}</td>
-            <td class="col-email">${escapeHtml(maskEmail(reg.email))}</td>
-            <td class="col-phone">${escapeHtml(maskPhone(reg.phone))}</td>
-            <td class="sign-cell"></td>
-            <td class="sign-cell"></td>
-          </tr>`;
-      }).join("");
-
     const pageInfo = `第 ${pi + 1} 頁 ／ 共 ${totalPages} 頁`;
 
-    const breakClass = pi > 0 ? " page-break" : "";
-    return `<div class="sheet${breakClass}"> 
-  <div class="header">
-    <div class="event-title">${title}</div>
-    <div class="meta-row">
-      <div class="meta-item">
-        <div class="meta-icon"><i class="fa-regular fa-calendar"></i></div>
-        <div><div class="meta-label">活動時間</div><div class="meta-value">${escapeHtml(timeStr)}</div></div>
-      </div>
-      <div class="meta-item">
-        <div class="meta-icon"><i class="fa-solid fa-location-dot"></i></div>
-        <div><div class="meta-label">活動地點</div><div class="meta-value">${location}</div></div>
-      </div>
-      <div class="meta-item">
-        <div class="meta-icon"><i class="fa-solid fa-users"></i></div>
-        <div><div class="meta-label">報名人數</div><div class="meta-value">${registrations.length} 人</div></div>
-      </div>
-    </div>
-  </div>
-  <div class="divider"></div>
-  <div class="table-section">
-    <div class="section-label"><i class="fa-solid fa-list-check"></i> 簽到名單</div>
-    <table>
-      <thead>
-        <tr>
-          <th class="col-no">#</th>
-          <th class="col-name">姓名</th>
-          <th class="col-email">電子郵件</th>
-          <th class="col-phone">電話</th>
-          <th class="col-sign">簽到</th>
-          <th class="col-sign">簽退</th>
-        </tr>
-      </thead>
-      <tbody>${rowsHTML}</tbody>
-    </table>
-  </div>
-  <div class="footer">
-    <div class="footer-note">
-      <i class="fa-solid fa-shield-halved"></i> 機密文件 — 請妥善保管，活動結束後依規定銷毀
-    </div>
-    <div class="footer-stamp">
-      <div class="label">承辦人簽章</div>
-      <div class="stamp-line"></div>
-    </div>
-  </div>
-  <div class="page-info">${pageInfo}</div>
-</div>`;
-  }).join("\n");
+    let tableRows = "";
+    if (pageRegs.length === 0) {
+      tableRows = "| — | 目前無已確認的報名者 | | | | |\n";
+    } else {
+      for (let ri = 0; ri < pageRegs.length; ri++) {
+        const reg = pageRegs[ri];
+        const no = pi * PAGE_SIZE + ri + 1;
+        tableRows += `| ${no} | ${escapeLatex(reg.name)} | ${escapeLatex(maskEmail(reg.email))} | ${escapeLatex(maskPhone(reg.phone))} | | |\n`;
+      }
+      // Pad empty rows so every page has exactly 20 rows for consistent layout
+      for (let ri = pageRegs.length; ri < PAGE_SIZE; ri++) {
+        const no = pi * PAGE_SIZE + ri + 1;
+        tableRows += `| ${no} | | | | | |\n`;
+      }
+    }
 
-  return template
-    .replace(/\{\{EVENT_TITLE\}\}/g, title)
-    .replace("{{PAGES}}", pagesHTML);
+    if (pi > 0) pagesContent += "\\newpage\n\n";
+
+    pagesContent += `
+\\begin{center}
+{\\LARGE\\bfseries\\cwHei ${title}}
+\\end{center}
+
+\\vspace{0.3em}
+
+| | |
+|:---|:---|
+| **活動時間** | ${timeStr} |
+| **活動地點** | ${location} |
+| **報名人數** | ${totalCount} 人 |
+
+\\vspace{0.5em}
+
+| \\# | 姓名 | 電子郵件 | 電話 | 簽到 | 簽退 |
+|:---:|:-----|:---------|:-----|:----:|:----:|
+${tableRows}
+
+\\vspace{0.3em}
+
+\\begin{small}
+機密文件 — 請妥善保管，活動結束後依規定銷毀 \\hfill 承辦人簽章：\\underline{\\hspace{4cm}}
+\\end{small}
+
+\\begin{center}
+\\small ${escapeLatex(pageInfo)}
+\\end{center}
+`;
+  }
+
+  const qmdContent = `---
+format:
+  pdf:
+    documentclass: article
+    classoption: [a4paper]
+    pdf-engine: xelatex
+    include-in-header:
+      text: |
+        \\usepackage{fontspec}
+        \\usepackage{xeCJK}
+        \\usepackage{geometry}
+        \\usepackage{booktabs}
+        \\usepackage{longtable}
+        \\usepackage{array}
+        \\geometry{top=15mm, bottom=15mm, left=18mm, right=18mm}
+        \\setCJKmainfont[Path=${fontsPath},Extension=.ttf]{cwTeXQMing-Medium}
+        \\setCJKsansfont[Path=${fontsPath},Extension=.ttf]{cwTeXQHei-Bold}
+        \\setCJKmonofont[Path=${fontsPath},Extension=.ttf]{cwTeXQKai-Medium}
+        \\newCJKfontfamily\\cwHei[Path=${fontsPath},Extension=.ttf]{cwTeXQHei-Bold}
+        \\pagestyle{empty}
+---
+
+${pagesContent}
+`;
+
+  fs.writeFileSync(qmdPath, qmdContent, "utf-8");
+
+  try {
+    execSync(`quarto render "${qmdPath}" --to pdf`, {
+      cwd: TMP_DIR,
+      timeout: 60000,
+      stdio: "pipe",
+      env: { ...process.env, PATH: extendedPATH, HOME, OSFONTDIR: path.join(VENDOR_DIR, "fonts") },
+    });
+  } catch (err) {
+    fs.unlink(qmdPath, () => { });
+    throw new Error(`Quarto PDF generation failed: ${err.stderr?.toString() || err.message}`);
+  }
+
+  fs.unlink(qmdPath, () => { });
+
+  if (!fs.existsSync(pdfPath)) {
+    throw new Error("PDF file was not generated");
+  }
+
+  return pdfPath;
 }
 
 /**
@@ -480,8 +520,8 @@ export async function exportRegistrations(req, res) {
 }
 
 /**
- * Export sign-in sheet as HTML (admin only)
- * Returns a print-ready HTML page; cached for 5 minutes per event.
+ * Export sign-in sheet as PDF (admin only)
+ * Returns a PDF file; cached for 5 minutes per event.
  */
 export async function exportSignInSheet(req, res) {
   try {
@@ -489,9 +529,10 @@ export async function exportSignInSheet(req, res) {
 
     // Serve from cache if available and fresh
     const cached = signInSheetCache.get(eventUid);
-    if (cached && Date.now() - cached.ts < SIGNIN_CACHE_TTL) {
-      res.setHeader("Content-Type", "text/html; charset=utf-8");
-      return res.send(cached.html);
+    if (cached && Date.now() - cached.ts < SIGNIN_CACHE_TTL && fs.existsSync(cached.pdfPath)) {
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `attachment; filename="signin-sheet.pdf"`);
+      return res.sendFile(cached.pdfPath);
     }
 
     const [event, registrations] = await Promise.all([
@@ -503,11 +544,19 @@ export async function exportSignInSheet(req, res) {
       return res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Event not found" } });
     }
 
-    const html = buildSignInSheetHTML(event, registrations);
-    signInSheetCache.set(eventUid, { html, ts: Date.now() });
+    const pdfPath = generateSignInSheetPDF(event, registrations);
+    signInSheetCache.set(eventUid, { pdfPath, ts: Date.now() });
 
-    res.setHeader("Content-Type", "text/html; charset=utf-8");
-    res.send(html);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="signin-sheet.pdf"`);
+    res.sendFile(pdfPath, () => {
+      // Clean up PDF after sending (delayed to let cache work)
+      setTimeout(() => {
+        if (!signInSheetCache.has(eventUid) || Date.now() - signInSheetCache.get(eventUid).ts >= SIGNIN_CACHE_TTL) {
+          fs.unlink(pdfPath, () => { });
+        }
+      }, SIGNIN_CACHE_TTL);
+    });
   } catch (error) {
     res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
