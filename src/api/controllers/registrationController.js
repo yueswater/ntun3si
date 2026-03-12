@@ -97,7 +97,7 @@ function buildSignInSheetHTML(event, registrations) {
 
     const pageInfo = `第 ${pi + 1} 頁 ／ 共 ${totalPages} 頁`;
 
-    return `<div class="sheet">
+    return `<div class="sheet"> 
   <div class="header">
     <div class="header-top">
       <div class="logo-mark">簽</div>
