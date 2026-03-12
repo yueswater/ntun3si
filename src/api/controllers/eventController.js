@@ -18,7 +18,7 @@ export async function migrateTimezones(req, res) {
       let changed = false;
       if (e.date) { e.date = new Date(e.date.getTime() - OFFSET); changed = true; }
       if (e.endDate) { e.endDate = new Date(e.endDate.getTime() - OFFSET); changed = true; }
-      if (changed) { await e.save(); eventFixed++; }
+      if (changed) { await e.save({ validateBeforeSave: false }); eventFixed++; }
     }
 
     // Fix RegistrationForm dates
@@ -28,7 +28,7 @@ export async function migrateTimezones(req, res) {
       let changed = false;
       if (f.registrationStartDate) { f.registrationStartDate = new Date(f.registrationStartDate.getTime() - OFFSET); changed = true; }
       if (f.registrationDeadline) { f.registrationDeadline = new Date(f.registrationDeadline.getTime() - OFFSET); changed = true; }
-      if (changed) { await f.save(); formFixed++; }
+      if (changed) { await f.save({ validateBeforeSave: false }); formFixed++; }
     }
 
     res.json({ success: true, eventsFixed: eventFixed, formsFixed: formFixed });
