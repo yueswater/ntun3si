@@ -26,9 +26,6 @@ const extendedPATH = [
   process.env.PATH,
 ].join(":");
 
-const signInSheetCache = new Map();
-const SIGNIN_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-
 function maskEmail(email) {
   const at = email.indexOf("@");
   if (at <= 0) return "***";
@@ -77,6 +74,8 @@ function generateSignInSheetPDF(event, registrations) {
   const pdfPath = path.join(TMP_DIR, `signin_${id}.pdf`);
 
   const fontsPath = path.join(VENDOR_DIR, "fonts") + "/";
+  const templatePath = path.join(__dirname, "..", "templates", "signin-sheet.qmd");
+  const template = fs.readFileSync(templatePath, "utf-8");
 
   const title = escapeLatex(event.title);
   const startTime = formatEventTime(event.date);
@@ -85,88 +84,69 @@ function generateSignInSheetPDF(event, registrations) {
   const location = event.location ? escapeLatex(event.location) : "—";
   const totalCount = registrations.length;
 
-  // Build markdown table rows
   const PAGE_SIZE = 20;
   const totalPages = Math.max(1, Math.ceil(registrations.length / PAGE_SIZE));
 
-  let pagesContent = "";
+  let content = "";
   for (let pi = 0; pi < totalPages; pi++) {
     const pageRegs = registrations.slice(pi * PAGE_SIZE, (pi + 1) * PAGE_SIZE);
-    const pageInfo = `第 ${pi + 1} 頁 ／ 共 ${totalPages} 頁`;
+    const isLastPage = pi === totalPages - 1;
 
-    let tableRows = "";
+    if (pi > 0) content += "\\newpage\n\n";
+
+    // Title
+    content += "\\begin{center}\n";
+    content += `{\\LARGE\\bfseries\\cwHei ${title}}\\\\[0.3em]\n`;
+    content += "{\\large\\bfseries 報到簽名表}\n";
+    content += "\\end{center}\n\n";
+    content += "\\vspace{0.3em}\n\n";
+
+    // Meta info table with borders
+    content += "\\begin{tabularx}{\\textwidth}{|l|X|}\n";
+    content += "\\hline\n";
+    content += `\\textbf{活動時間} & ${timeStr} \\\\\n`;
+    content += "\\hline\n";
+    content += `\\textbf{活動地點} & ${location} \\\\\n`;
+    content += "\\hline\n";
+    content += `\\textbf{報名人數} & ${totalCount} 人 \\\\\n`;
+    content += "\\hline\n";
+    content += "\\end{tabularx}\n\n";
+    content += "\\vspace{0.5em}\n\n";
+
+    // Sign-in table with borders
+    content += "{\\small\n";
+    content += "\\begin{tabularx}{\\textwidth}{|c|p{2.5cm}|X|p{2.8cm}|p{1.8cm}|p{1.8cm}|}\n";
+    content += "\\hline\n";
+    content += "\\textbf{編號} & \\textbf{姓名} & \\textbf{電子郵件} & \\textbf{電話} & \\textbf{簽到} & \\textbf{簽退} \\\\\n";
+    content += "\\hline\n";
+
     if (pageRegs.length === 0) {
-      tableRows = "| — | 目前無已確認的報名者 | | | | |\n";
+      content += "— & 目前無已確認的報名者 & & & & \\\\\n\\hline\n";
     } else {
       for (let ri = 0; ri < pageRegs.length; ri++) {
         const reg = pageRegs[ri];
         const no = pi * PAGE_SIZE + ri + 1;
-        tableRows += `| ${no} | ${escapeLatex(reg.name)} | ${escapeLatex(maskEmail(reg.email))} | ${escapeLatex(maskPhone(reg.phone))} | | |\n`;
+        content += `${no} & ${escapeLatex(reg.name)} & ${escapeLatex(maskEmail(reg.email))} & ${escapeLatex(maskPhone(reg.phone))} & & \\\\\n\\hline\n`;
       }
-      // Pad empty rows so every page has exactly 20 rows for consistent layout
+      // Pad empty rows to fill the page
       for (let ri = pageRegs.length; ri < PAGE_SIZE; ri++) {
         const no = pi * PAGE_SIZE + ri + 1;
-        tableRows += `| ${no} | | | | | |\n`;
+        content += `${no} & & & & & \\\\\n\\hline\n`;
       }
     }
 
-    if (pi > 0) pagesContent += "\\newpage\n\n";
+    content += "\\end{tabularx}\n}\n";
 
-    pagesContent += `
-\\begin{center}
-{\\LARGE\\bfseries\\cwHei ${title}}
-\\end{center}
-
-\\vspace{0.3em}
-
-| | |
-|:---|:---|
-| **活動時間** | ${timeStr} |
-| **活動地點** | ${location} |
-| **報名人數** | ${totalCount} 人 |
-
-\\vspace{0.5em}
-
-| \\# | 姓名 | 電子郵件 | 電話 | 簽到 | 簽退 |
-|:---:|:-----|:---------|:-----|:----:|:----:|
-${tableRows}
-
-\\vspace{0.3em}
-
-\\begin{small}
-機密文件 — 請妥善保管，活動結束後依規定銷毀 \\hfill 承辦人簽章：\\underline{\\hspace{4cm}}
-\\end{small}
-
-\\begin{center}
-\\small ${escapeLatex(pageInfo)}
-\\end{center}
-`;
+    // Stamp line on the last page only
+    if (isLastPage) {
+      content += "\n\\vfill\n\n";
+      content += "\\hfill 承辦人簽章：\\underline{\\hspace{4cm}}\n";
+    }
   }
 
-  const qmdContent = `---
-format:
-  pdf:
-    documentclass: article
-    classoption: [a4paper]
-    pdf-engine: xelatex
-    include-in-header:
-      text: |
-        \\usepackage{fontspec}
-        \\usepackage{xeCJK}
-        \\usepackage{geometry}
-        \\usepackage{booktabs}
-        \\usepackage{longtable}
-        \\usepackage{array}
-        \\geometry{top=15mm, bottom=15mm, left=18mm, right=18mm}
-        \\setCJKmainfont[Path=${fontsPath},Extension=.ttf]{cwTeXQMing-Medium}
-        \\setCJKsansfont[Path=${fontsPath},Extension=.ttf]{cwTeXQHei-Bold}
-        \\setCJKmonofont[Path=${fontsPath},Extension=.ttf]{cwTeXQKai-Medium}
-        \\newCJKfontfamily\\cwHei[Path=${fontsPath},Extension=.ttf]{cwTeXQHei-Bold}
-        \\pagestyle{empty}
----
-
-${pagesContent}
-`;
+  const qmdContent = template
+    .replace(/\{\{FONTS_PATH\}\}/g, fontsPath)
+    .replace("{{CONTENT}}", content);
 
   fs.writeFileSync(qmdPath, qmdContent, "utf-8");
 
@@ -521,19 +501,11 @@ export async function exportRegistrations(req, res) {
 
 /**
  * Export sign-in sheet as PDF (admin only)
- * Returns a PDF file; cached for 5 minutes per event.
+ * Always regenerates the PDF from the latest data.
  */
 export async function exportSignInSheet(req, res) {
   try {
     const { eventUid } = req.params;
-
-    // Serve from cache if available and fresh
-    const cached = signInSheetCache.get(eventUid);
-    if (cached && Date.now() - cached.ts < SIGNIN_CACHE_TTL && fs.existsSync(cached.pdfPath)) {
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", `attachment; filename="signin-sheet.pdf"`);
-      return res.sendFile(cached.pdfPath);
-    }
 
     const [event, registrations] = await Promise.all([
       Event.findOne({ uid: eventUid }),
@@ -545,18 +517,12 @@ export async function exportSignInSheet(req, res) {
     }
 
     const pdfPath = generateSignInSheetPDF(event, registrations);
-    signInSheetCache.set(eventUid, { pdfPath, ts: Date.now() });
+    const pdfBuffer = fs.readFileSync(pdfPath);
+    fs.unlink(pdfPath, () => { });
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename="signin-sheet.pdf"`);
-    res.sendFile(pdfPath, () => {
-      // Clean up PDF after sending (delayed to let cache work)
-      setTimeout(() => {
-        if (!signInSheetCache.has(eventUid) || Date.now() - signInSheetCache.get(eventUid).ts >= SIGNIN_CACHE_TTL) {
-          fs.unlink(pdfPath, () => { });
-        }
-      }, SIGNIN_CACHE_TTL);
-    });
+    res.send(pdfBuffer);
   } catch (error) {
     res.status(500).json({ success: false, error: { code: "INTERNAL_ERROR", message: error.message } });
   }
