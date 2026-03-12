@@ -33,6 +33,7 @@ export default function EventRegistrationForm({ event, form }) {
   const [error, setError] = useState("");
   const [confirmationMsg, setConfirmationMsg] = useState("");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [duplicateModal, setDuplicateModal] = useState(false);
 
   const dragItem = useRef(null);
   const dragOverItem = useRef(null);
@@ -315,7 +316,13 @@ export default function EventRegistrationForm({ event, form }) {
         })),
       });
     } catch (err) {
-      setError(err.response?.data?.error?.message || err.response?.data?.message || t("event.error.submit_failed"));
+      const code = err.response?.data?.error?.code;
+      if (code === "ALREADY_REGISTERED") {
+        setDuplicateModal(true);
+        setTimeout(() => window.location.reload(), 3000);
+      } else {
+        setError(err.response?.data?.error?.message || err.response?.data?.message || t("event.error.submit_failed"));
+      }
     } finally {
       setSubmitting(false);
     }
@@ -785,6 +792,23 @@ export default function EventRegistrationForm({ event, form }) {
           <span className="text-primary text-lg leading-none">☰</span>
           <span className="font-medium text-sm">{ghost.text}</span>
         </div>
+      )}
+
+      {/* Duplicate Registration Modal */}
+      {duplicateModal && (
+        <dialog open className="modal modal-open">
+          <div className="modal-box text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-16 w-16 text-warning mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <h3 className="font-bold text-lg mb-2">您已報名過此活動！</h3>
+            <p className="text-sm text-gray-500">頁面將在 3 秒後自動重新整理</p>
+            <div className="modal-action justify-center">
+              <button className="btn btn-ghost" onClick={() => window.location.reload()}>關閉</button>
+            </div>
+          </div>
+          <div className="modal-backdrop" onClick={() => window.location.reload()} />
+        </dialog>
       )}
 
       {/* Confirmation Modal */}
