@@ -10,17 +10,17 @@
         rel="stylesheet">
     <style>
         :root {
-            --ink: #1a1a2e;
-            --slate: #3a3a5c;
-            --mist: #8888a8;
-            --cloud: #e8e8f0;
-            --snow: #f5f5fa;
-            --paper: #ffffff;
-            --accent: #2563eb;
-            --accent-light: #60a5fa;
-            --accent-glow: rgba(37, 99, 235, 0.06);
-            --border: #d0d0e0;
-            --row-alt: #f8f9fc;
+            --ink: #000;
+            --slate: #333;
+            --mist: #666;
+            --cloud: #eee;
+            --snow: #fff;
+            --paper: #fff;
+            --accent: #000;
+            --accent-light: #555;
+            --accent-glow: transparent;
+            --border: #ccc;
+            --row-alt: #fafafa;
         }
 
         * {
@@ -45,17 +45,9 @@
             max-width: 780px;
             margin: 0 auto;
             background: var(--paper);
-            border-radius: 14px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border);
             overflow: hidden;
             position: relative;
-        }
-
-        .sheet::before {
-            content: '';
-            display: block;
-            height: 5px;
-            background: linear-gradient(90deg, var(--accent), var(--accent-light), #a78bfa, var(--accent));
         }
 
         .sheet+.sheet {
@@ -76,34 +68,31 @@
         .logo-mark {
             width: 38px;
             height: 38px;
-            background: linear-gradient(135deg, var(--accent), var(--accent-light));
-            border-radius: 9px;
+            background: #000;
+            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #fff;
             font-size: 17px;
-            font-weight: 900;
-            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+            font-weight: 700;
         }
 
         .badge {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: var(--accent-glow);
-            border: 1px solid rgba(37, 99, 235, 0.12);
-            color: var(--accent);
-            font-size: 11px;
-            font-weight: 600;
+            border: 1px solid var(--border);
+            color: var(--ink);
+            font-size: 12px;
+            font-weight: 500;
             padding: 4px 12px;
-            border-radius: 100px;
-            letter-spacing: 0.4px;
+            border-radius: 4px;
         }
 
         .event-title {
-            font-size: 22px;
-            font-weight: 900;
+            font-size: 24px;
+            font-weight: 700;
             line-height: 1.35;
             margin-bottom: 14px;
         }
@@ -124,23 +113,17 @@
         }
 
         .meta-icon {
-            width: 30px;
-            height: 30px;
-            background: var(--snow);
-            border: 1px solid var(--cloud);
-            border-radius: 7px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--accent);
-            font-size: 13px;
+            color: var(--ink);
+            font-size: 14px;
         }
 
         .meta-label {
-            font-size: 10px;
+            font-size: 11px;
             color: var(--mist);
             font-weight: 500;
-            letter-spacing: 0.6px;
         }
 
         .meta-value {
@@ -150,7 +133,7 @@
 
         .divider {
             height: 1px;
-            background: linear-gradient(90deg, transparent, var(--border), transparent);
+            background: var(--border);
             margin: 0 36px;
         }
 
@@ -159,36 +142,31 @@
         }
 
         .section-label {
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 700;
-            color: var(--mist);
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
+            color: var(--ink);
             margin-bottom: 12px;
         }
 
         table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
+            border-collapse: collapse;
             border: 1px solid var(--border);
-            border-radius: 10px;
             overflow: hidden;
             font-size: 13px;
         }
 
         thead {
-            background: linear-gradient(180deg, var(--ink) 0%, #252545 100%);
+            background: #eee;
         }
 
         thead th {
-            color: rgba(255, 255, 255, 0.95);
+            color: #000;
             font-weight: 600;
-            font-size: 12px;
-            letter-spacing: 0.4px;
-            padding: 11px 12px;
+            font-size: 13px;
+            padding: 10px;
             text-align: center;
-            border-right: 1px solid rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
             white-space: nowrap;
         }
 
@@ -225,15 +203,10 @@
 
         tbody td {
             padding: 10px 12px;
-            border-top: 1px solid var(--cloud);
-            border-right: 1px solid var(--cloud);
+            border: 1px solid var(--border);
             text-align: center;
             color: var(--slate);
             vertical-align: middle;
-        }
-
-        tbody td:last-child {
-            border-right: none;
         }
 
         tbody td:first-child {
@@ -251,7 +224,7 @@
 
         tbody td.col-email {
             font-size: 11.5px;
-            color: #6b7280;
+            color: var(--mist);
             font-family: 'SFMono-Regular', Consolas, monospace;
             text-align: left;
         }
@@ -263,17 +236,7 @@
 
         tbody td.sign-cell {
             min-width: 90px;
-            position: relative;
-            background: rgba(37, 99, 235, 0.015);
-        }
-
-        tbody td.sign-cell::after {
-            content: '';
-            position: absolute;
-            bottom: 7px;
-            left: 12px;
-            right: 12px;
-            border-bottom: 1px dashed var(--border);
+            background: #fff;
         }
 
         .footer {
@@ -281,7 +244,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            border-top: 1px solid var(--cloud);
+            border-top: 1px solid var(--border);
         }
 
         .footer-note {
@@ -360,25 +323,24 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: var(--accent);
+            background: #000;
             color: #fff;
-            border: none;
+            border: 1px solid #000;
             padding: 10px 20px;
-            border-radius: 9px;
+            border-radius: 4px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
             gap: 7px;
             font-family: 'Noto Sans TC', sans-serif;
-            transition: transform 0.15s, box-shadow 0.15s;
+            transition: opacity 0.15s;
         }
 
         .print-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+            opacity: 0.8;
         }
     </style>
 </head>
