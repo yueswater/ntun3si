@@ -11,6 +11,7 @@ import {
   faFileExport,
   faDownload,
   faFilePdf,
+  faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 
 /**
@@ -25,6 +26,8 @@ export default function AnimatedButton({
   onClick,
   size = "md",
   className = "",
+  disabled = false,
+  loading = false,
 }) {
   const iconMap = {
     faPlus,
@@ -79,10 +82,15 @@ export default function AnimatedButton({
   const iconOnlyLabels = ["編輯", "刪除", "查看", "驗證"];
 
   return (
-    <button onClick={onClick} className={`${variants[variant]} ${className}`}>
+    <button
+      onClick={onClick}
+      disabled={disabled || loading}
+      className={`${variants[variant]} ${className} ${disabled || loading ? "opacity-50 pointer-events-none" : ""}`}
+    >
       <FontAwesomeIcon
-        icon={selectedIcon}
-        className="text-xs relative z-10 transition-transform duration-300 group-hover:rotate-12"
+        icon={loading ? faSpinner : selectedIcon}
+        className={`text-xs relative z-10 transition-transform duration-300 ${loading ? "animate-spin" : "group-hover:rotate-12"
+          }`}
       />
       <span
         className={`relative z-10 ${iconOnlyLabels.includes(label) ? "hidden sm:inline" : ""

@@ -97,12 +97,9 @@ function buildSignInSheetHTML(event, registrations) {
 
     const pageInfo = `第 ${pi + 1} 頁 ／ 共 ${totalPages} 頁`;
 
-    return `<div class="sheet"> 
+    const breakClass = pi > 0 ? " page-break" : "";
+    return `<div class="sheet${breakClass}"> 
   <div class="header">
-    <div class="header-top">
-      <div class="logo-mark">簽</div>
-      <div class="badge"><i class="fa-solid fa-clipboard-check"></i> 出席簽到表</div>
-    </div>
     <div class="event-title">${title}</div>
     <div class="meta-row">
       <div class="meta-item">

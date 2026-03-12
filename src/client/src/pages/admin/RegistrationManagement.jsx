@@ -24,6 +24,7 @@ export default function RegistrationManagement() {
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [selectedUids, setSelectedUids] = useState(new Set());
+  const [signinExporting, setSigninExporting] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -101,7 +102,7 @@ export default function RegistrationManagement() {
       ? import.meta.env.VITE_BASE_URL.replace("/api", "")
       : "http://localhost:5050";
 
-    const fetchId = toast.loading("正在產生 PDF,請稍候...");
+    setSigninExporting(true);
 
     try {
       const response = await fetch(
@@ -117,29 +118,69 @@ export default function RegistrationManagement() {
 
       const html = await response.text();
 
+      // Parse the full HTML document so <style> and <link> tags are preserved
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
+
+      // Create offscreen wrapper
       const wrapper = document.createElement("div");
-      wrapper.innerHTML = html;
+      wrapper.style.position = "fixed";
+      wrapper.style.left = "-9999px";
+      wrapper.style.top = "0";
+      wrapper.style.width = "780px";
+
+      // Inject external stylesheets into current document
+      const addedLinks = [];
+      doc.querySelectorAll('link[rel="stylesheet"]').forEach((link) => {
+        const el = document.createElement("link");
+        el.rel = "stylesheet";
+        el.href = link.href;
+        document.head.appendChild(el);
+        addedLinks.push(el);
+      });
+
+      // Inject inline styles
+      const styleEl = document.createElement("style");
+      doc.querySelectorAll("style").forEach((s) => {
+        styleEl.textContent += s.textContent;
+      });
+      document.head.appendChild(styleEl);
+
+      // Set body content
+      wrapper.innerHTML = doc.body.innerHTML;
 
       // Remove print button
-      const printBtn = wrapper.querySelector('.print-btn');
+      const printBtn = wrapper.querySelector(".print-btn");
       if (printBtn) printBtn.remove();
 
-      // Configure html2pdf to split pages properly based on the template's .sheet class
+      document.body.appendChild(wrapper);
+
+      // Wait for external fonts to load
+      await document.fonts.ready;
+      await new Promise((r) => setTimeout(r, 800));
+
       const opt = {
         margin: 0,
-        filename: `${event?.title || '活動'} - 簽到表.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['css', 'legacy'], before: '.page-break' }
+        filename: `${event?.title || "活動"} - 簽到表.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        pagebreak: { mode: ["css", "legacy"], before: ".page-break" },
       };
 
       await html2pdf().from(wrapper).set(opt).save();
 
-      toast.success("成功匯出 PDF", { id: fetchId });
+      // Cleanup injected elements
+      wrapper.remove();
+      styleEl.remove();
+      addedLinks.forEach((l) => l.remove());
+
+      toast.success("成功匯出 PDF");
     } catch (err) {
       console.error(err);
-      toast.error("匯出 PDF 失敗", { id: fetchId });
+      toast.error("匯出 PDF 失敗");
+    } finally {
+      setSigninExporting(false);
     }
   };
 
@@ -318,10 +359,11 @@ export default function RegistrationManagement() {
         </div>
         <div className="flex gap-2">
           <AnimatedButton
-            label="匯出簽到表"
+            label={signinExporting ? "匯出中..." : "匯出簽到表"}
             icon="faFilePdf"
             variant="secondary"
             onClick={handleExportSignIn}
+            loading={signinExporting}
           />
           <AnimatedButton
             label="匯出 CSV"
