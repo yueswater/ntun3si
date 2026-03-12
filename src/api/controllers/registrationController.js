@@ -1,3 +1,6 @@
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import Registration from "../models/Registration.js";
 import RegistrationForm from "../models/RegistrationForm.js";
 import Event from "../models/Event.js";
@@ -6,8 +9,21 @@ import { sendEventRegistrationEmail } from "../utils/emailService.js";
 
 // ─── Sign-in sheet helpers ────────────────────────────────────────────────────
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 const signInSheetCache = new Map();
 const SIGNIN_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+let _tplCache = null;
+function getSignInAssets() {
+  if (!_tplCache) {
+    _tplCache = {
+      css: fs.readFileSync(path.join(__dirname, "../templates/signin-sheet.css"), "utf-8"),
+      html: fs.readFileSync(path.join(__dirname, "../templates/signin-sheet.html"), "utf-8"),
+    };
+  }
+  return _tplCache;
+}
 
 function escapeHtml(str) {
   if (!str) return "";
@@ -52,130 +68,78 @@ function formatEventTime(date) {
 }
 
 function buildSignInSheetHTML(event, registrations) {
+  const { css, html: template } = getSignInAssets();
+
   const title = escapeHtml(event.title);
   const startTime = formatEventTime(event.date);
   const endTime = event.endDate ? ` ～ ${formatEventTime(event.endDate)}` : "";
   const timeStr = startTime + endTime;
+  const nowStr = formatEventTime(new Date());
 
   const PAGE_SIZE = 20;
-  const pages = [];
-  for (let i = 0; i < Math.max(registrations.length, 1); i += PAGE_SIZE) {
-    pages.push(registrations.slice(i, i + PAGE_SIZE));
-  }
-  const totalPages = pages.length;
+  const totalPages = Math.max(1, Math.ceil(registrations.length / PAGE_SIZE));
 
-  const pagesHTML = pages
-    .map((regs, pi) => {
-      const rows = regs
-        .map((reg, ri) => {
-          const no = pi * PAGE_SIZE + ri + 1;
-          return `<tr>
-          <td style="text-align:center;">${no}</td>
-          <td>${escapeHtml(reg.name)}</td>
-          <td class="masked-cell">${escapeHtml(maskEmail(reg.email))}</td>
-          <td class="masked-cell">${escapeHtml(maskPhone(reg.phone))}</td>
-          <td class="sign-col"></td>
-          <td class="sign-col"></td>
-        </tr>`;
-        })
-        .join("");
+  const pagesHTML = Array.from({ length: totalPages }, (_, pi) => {
+    const pageRegs = registrations.slice(pi * PAGE_SIZE, (pi + 1) * PAGE_SIZE);
 
-      const isLast = pi === pages.length - 1;
-      return `<div class="page${isLast ? "" : " page-break"}">
-      <div class="page-header">
-        <h1>${title}</h1>
-        <p class="event-time">活動時間：${escapeHtml(timeStr)}</p>
-        <p class="sheet-label">簽到表</p>
+    const rowsHTML = pageRegs.length === 0
+      ? `<tr><td colspan="6" style="text-align:center;padding:12pt;color:#9ca3af;">目前無已確認的報名者</td></tr>`
+      : pageRegs.map((reg, ri) => {
+        const no = pi * PAGE_SIZE + ri + 1;
+        return `<tr>
+            <td class="col-no">${no}</td>
+            <td class="col-name">${escapeHtml(reg.name)}</td>
+            <td class="col-email">${escapeHtml(maskEmail(reg.email))}</td>
+            <td class="col-phone">${escapeHtml(maskPhone(reg.phone))}</td>
+            <td class="col-sign"><span class="sign-line"></span></td>
+            <td class="col-sign"><span class="sign-line"></span></td>
+          </tr>`;
+      }).join("");
+
+    const locationMeta = event.location
+      ? `<div class="meta-row"><span class="meta-label">活動地點&nbsp;</span><span class="meta-value">${escapeHtml(event.location)}</span></div>`
+      : "";
+
+    const isLast = pi === totalPages - 1;
+    return `<div class="page${isLast ? "" : " page-break"}">
+  <div class="sheet-header">
+    <div class="header-left">
+      <div class="sheet-badge">出席簽到表</div>
+      <div class="event-title">${title}</div>
+      <div class="event-meta">
+        <div class="meta-row"><span class="meta-label">活動時間&nbsp;</span><span class="meta-value">${escapeHtml(timeStr)}</span></div>
+        ${locationMeta}
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th style="width:30pt;">#</th>
-            <th>姓名</th>
-            <th>電子郵件</th>
-            <th>電話</th>
-            <th class="sign-col">簽到</th>
-            <th class="sign-col">簽退</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
-      <div class="page-footer">第 ${pi + 1} 頁 / 共 ${totalPages} 頁</div>
-    </div>`;
-    })
-    .join("");
+    </div>
+    <div class="header-right">
+      <div class="page-number">第 ${pi + 1} 頁 ／ 共 ${totalPages} 頁</div>
+      <div class="print-time">列印時間：${escapeHtml(nowStr)}</div>
+    </div>
+  </div>
+  <table class="signin-table">
+    <thead>
+      <tr>
+        <th class="col-no">#</th>
+        <th class="col-name">姓名</th>
+        <th class="col-email">電子郵件</th>
+        <th class="col-phone">電話</th>
+        <th class="col-sign">簽到</th>
+        <th class="col-sign">簽退</th>
+      </tr>
+    </thead>
+    <tbody>${rowsHTML}</tbody>
+  </table>
+  <div class="sheet-footer">
+    <span class="footer-left">機密文件 — 請妥善保管，活動結束後依規定銷毀</span>
+    <span class="footer-right">第 ${pi + 1} 頁 ／ 共 ${totalPages} 頁</span>
+  </div>
+</div>`;
+  }).join("");
 
-  return `<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-<meta charset="UTF-8">
-<title>${title} - 簽到表</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", "Arial", sans-serif;
-    font-size: 11pt;
-    color: #000;
-    background: #fff;
-  }
-  @page {
-    size: A4 portrait;
-    margin: 18mm 15mm 22mm 15mm;
-  }
-  .page {
-    position: relative;
-    min-height: calc(297mm - 40mm);
-    padding-bottom: 14mm;
-  }
-  .page-break { page-break-after: always; }
-  .page-header {
-    text-align: center;
-    margin-bottom: 6mm;
-    padding-bottom: 4mm;
-    border-bottom: 2px solid #000;
-  }
-  .page-header h1 { font-size: 17pt; font-weight: 700; margin-bottom: 2mm; }
-  .event-time { font-size: 10.5pt; margin-bottom: 1.5mm; }
-  .sheet-label { font-size: 13pt; font-weight: 700; margin-top: 1.5mm; }
-  table { width: 100%; border-collapse: collapse; }
-  th {
-    background: #e5e7eb;
-    border: 1px solid #374151;
-    padding: 4pt 6pt;
-    text-align: center;
-    font-weight: 700;
-    font-size: 10.5pt;
-  }
-  td {
-    border: 1px solid #374151;
-    padding: 3pt 6pt;
-    height: 22pt;
-    vertical-align: middle;
-  }
-  .masked-cell { font-size: 9.5pt; }
-  .sign-col { width: 68pt; text-align: center; }
-  .page-footer {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 100%;
-    text-align: right;
-    font-size: 9pt;
-    color: #555;
-    padding-top: 3mm;
-    border-top: 1px solid #d1d5db;
-  }
-  @media print {
-    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .page-footer { position: fixed; bottom: 8mm; right: 15mm; border-top: none; width: auto; }
-  }
-</style>
-</head>
-<body>
-${pagesHTML}
-<script>window.onload = function() { setTimeout(function() { window.print(); }, 400); };</script>
-</body>
-</html>`;
+  return template
+    .replace("{{CSS}}", css)
+    .replace("{{TITLE}}", title)
+    .replace("{{PAGES}}", pagesHTML);
 }
 
 /**
