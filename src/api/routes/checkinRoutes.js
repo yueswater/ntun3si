@@ -3,6 +3,7 @@ import {
     verifyDashboardPassword,
     getCheckinEvents,
     checkinAttendee,
+    checkoutAttendee,
     getEventAttendees,
     exportCheckinSignInSheet,
 } from "../controllers/checkinController.js";
@@ -17,6 +18,9 @@ router.get("/events", getCheckinEvents);
 
 // Attendee check-in
 router.post("/event/:eventUid", checkinAttendee);
+
+// Attendee check-out
+router.post("/event/:eventUid/checkout", checkoutAttendee);
 
 // Dashboard: get attendee list (password-protected via header)
 router.get("/event/:eventUid/attendees", getEventAttendees);

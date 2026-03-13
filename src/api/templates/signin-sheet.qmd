@@ -14,6 +14,7 @@ format:
         \usepackage{xltabular}
         \usepackage{fancyhdr}
         \usepackage{lastpage}
+        \usepackage{amssymb}
         \newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
         \newcolumntype{Y}{>{\centering\arraybackslash}X}
         \geometry{top=15mm, bottom=22mm, left=25mm, right=25mm}

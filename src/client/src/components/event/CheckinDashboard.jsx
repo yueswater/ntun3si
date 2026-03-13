@@ -16,7 +16,7 @@ export default function CheckinDashboard() {
     const [events, setEvents] = useState([]);
     const [selectedEventUid, setSelectedEventUid] = useState("");
     const [attendees, setAttendees] = useState([]);
-    const [stats, setStats] = useState({ total: 0, checkedIn: 0 });
+    const [stats, setStats] = useState({ total: 0, checkedIn: 0, checkedOut: 0 });
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [pdfLoading, setPdfLoading] = useState(false);
@@ -72,7 +72,7 @@ export default function CheckinDashboard() {
             );
             const data = res.data.data;
             setAttendees(data.attendees || []);
-            setStats({ total: data.total, checkedIn: data.checkedIn });
+            setStats({ total: data.total, checkedIn: data.checkedIn, checkedOut: data.checkedOut || 0 });
         } catch {
             // If unauthorized, force re-auth
             setAuthenticated(false);
@@ -197,7 +197,7 @@ export default function CheckinDashboard() {
                     onChange={(e) => {
                         setSelectedEventUid(e.target.value);
                         setAttendees([]);
-                        setStats({ total: 0, checkedIn: 0 });
+                        setStats({ total: 0, checkedIn: 0, checkedOut: 0 });
                         setCurrentPage(1);
                     }}
                     className="select select-bordered w-full"
@@ -225,6 +225,10 @@ export default function CheckinDashboard() {
                                 <div className="stat">
                                     <div className="stat-title">已簽到</div>
                                     <div className="stat-value text-success">{stats.checkedIn}</div>
+                                </div>
+                                <div className="stat">
+                                    <div className="stat-title">已簽退</div>
+                                    <div className="stat-value text-warning">{stats.checkedOut}</div>
                                 </div>
                                 <div className="stat">
                                     <div className="stat-title">已確認報名人數</div>
@@ -271,7 +275,10 @@ export default function CheckinDashboard() {
                                         <tr>
                                             <th className="w-16">編號</th>
                                             <th>姓名</th>
-                                            <th className="w-32 text-center">簽到狀態</th>
+                                            <th>電子郵件</th>
+                                            <th>電話</th>
+                                            <th className="w-28 text-center">簽到</th>
+                                            <th className="w-28 text-center">簽退</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -279,6 +286,8 @@ export default function CheckinDashboard() {
                                             <tr key={a.uid}>
                                                 <td>{(currentPage - 1) * PAGE_SIZE + idx + 1}</td>
                                                 <td>{a.name}</td>
+                                                <td className="text-sm">{a.email}</td>
+                                                <td className="text-sm">{a.phone}</td>
                                                 <td className="text-center">
                                                     {a.isCheckedIn ? (
                                                         <span className="badge badge-success gap-1">
@@ -291,6 +300,22 @@ export default function CheckinDashboard() {
                                                         <span className="badge badge-ghost gap-1">
                                                             未簽到
                                                         </span>
+                                                    )}
+                                                </td>
+                                                <td className="text-center">
+                                                    {a.isCheckedOut ? (
+                                                        <span className="badge badge-warning gap-1">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                            </svg>
+                                                            已簽退
+                                                        </span>
+                                                    ) : a.isCheckedIn ? (
+                                                        <span className="badge badge-ghost gap-1">
+                                                            未簽退
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-base-300">—</span>
                                                     )}
                                                 </td>
                                             </tr>

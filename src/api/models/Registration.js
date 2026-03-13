@@ -92,6 +92,13 @@ const registrationSchema = new mongoose.Schema(
     checkedInAt: {
       type: Date,
     },
+    isCheckedOut: {
+      type: Boolean,
+      default: false,
+    },
+    checkedOutAt: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );

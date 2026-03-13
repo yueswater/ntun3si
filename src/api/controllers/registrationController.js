@@ -102,7 +102,9 @@ function generateSignInSheetPDF(event, registrations) {
   } else {
     for (let i = 0; i < registrations.length; i++) {
       const reg = registrations[i];
-      content += `${i + 1} & ${escapeLatex(reg.name)} & ${escapeLatex(maskEmail(reg.email))} & ${escapeLatex(maskPhone(reg.phone))} & & \\\\\n\\hline\n`;
+      const checkinMark = reg.isCheckedIn ? "$\\checkmark$" : "";
+      const checkoutMark = reg.isCheckedOut ? "$\\checkmark$" : "";
+      content += `${i + 1} & ${escapeLatex(reg.name)} & ${escapeLatex(maskEmail(reg.email))} & ${escapeLatex(maskPhone(reg.phone))} & ${checkinMark} & ${checkoutMark} \\\\\n\\hline\n`;
     }
   }
 

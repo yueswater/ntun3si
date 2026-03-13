@@ -120,6 +120,42 @@ export async function sendEventCancelledEmail(user, event) {
 }
 
 /**
+ * Event check-in confirmation (簽到通知)
+ */
+export async function sendEventCheckinEmail(user, event, checkinTime) {
+  const markdown = loadTemplate("event_checkin", {
+    name: user.name,
+    event_title: event.title,
+    event_date: new Date(event.date).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }),
+    event_location: event.location || "待通知",
+    checkin_time: checkinTime,
+  });
+  await sendMail({
+    to: user.email,
+    subject: `【臺大國安社】${event.title} 簽到成功 | Check-in Confirmed`,
+    markdown,
+  });
+}
+
+/**
+ * Event check-out confirmation (簽退通知)
+ */
+export async function sendEventCheckoutEmail(user, event, checkoutTime) {
+  const markdown = loadTemplate("event_checkout", {
+    name: user.name,
+    event_title: event.title,
+    event_date: new Date(event.date).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }),
+    event_location: event.location || "待通知",
+    checkout_time: checkoutTime,
+  });
+  await sendMail({
+    to: user.email,
+    subject: `【臺大國安社】${event.title} 簽退成功 | Check-out Confirmed`,
+    markdown,
+  });
+}
+
+/**
  * Newsletter (Markdown template)
  */
 export async function sendNewsletterEmail(email) {
