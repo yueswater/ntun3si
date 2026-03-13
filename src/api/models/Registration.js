@@ -85,6 +85,13 @@ const registrationSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    isCheckedIn: {
+      type: Boolean,
+      default: false,
+    },
+    checkedInAt: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );

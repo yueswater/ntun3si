@@ -18,6 +18,8 @@ import EventsList from "./pages/EventsList";
 import ISearch from "./pages/ISearch";
 import Unsubscribe from "./pages/Unsubscribe";
 import Terms from "./pages/policy/terms";
+import EventCheckinPage from "./pages/EventCheckinPage";
+import CheckinDashboardPage from "./pages/CheckinDashboardPage";
 
 // Admin layout and pages
 import AdminLayout from "./layout/AdminLayout";
@@ -69,6 +71,8 @@ export default function App() {
                 <Route path="events/:slug" element={<EventPage />} />
                 <Route path="unsubscribe" element={<Unsubscribe />} />
                 <Route path="/terms" element={<Terms />} />
+                <Route path="events/:slug/checkin" element={<EventCheckinPage />} />
+                <Route path="checkin/dashboard" element={<CheckinDashboardPage />} />
               </Route>
 
               {/* Admin Routes (protected by AdminRoute) */}
