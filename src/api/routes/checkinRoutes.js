@@ -4,6 +4,7 @@ import {
     getCheckinEvents,
     checkinAttendee,
     getEventAttendees,
+    exportCheckinSignInSheet,
 } from "../controllers/checkinController.js";
 
 const router = Router();
@@ -19,5 +20,8 @@ router.post("/event/:eventUid", checkinAttendee);
 
 // Dashboard: get attendee list (password-protected via header)
 router.get("/event/:eventUid/attendees", getEventAttendees);
+
+// Dashboard: export sign-in sheet PDF (password-protected via header)
+router.get("/event/:eventUid/signin-pdf", exportCheckinSignInSheet);
 
 export default router;

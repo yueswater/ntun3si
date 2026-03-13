@@ -1,5 +1,6 @@
 import Registration from "../models/Registration.js";
 import Event from "../models/Event.js";
+import { exportSignInSheet as _adminExportSignInSheet } from "./registrationController.js";
 
 /**
  * POST /api/checkin/verify-password
@@ -93,7 +94,7 @@ export const checkinAttendee = async (req, res, next) => {
         const registrations = await Registration.find({
             eventUid,
             name: trimmedName,
-            status: { $ne: "cancelled" },
+            status: "confirmed",
         });
 
         const matched = registrations.find((reg) => {
@@ -146,7 +147,7 @@ export const getEventAttendees = async (req, res, next) => {
         }
 
         const registrations = await Registration.find(
-            { eventUid, status: { $ne: "cancelled" } },
+            { eventUid, status: "confirmed" },
             { uid: 1, name: 1, isCheckedIn: 1, checkedInAt: 1, _id: 0 }
         )
             .sort({ name: 1 })
@@ -163,6 +164,29 @@ export const getEventAttendees = async (req, res, next) => {
                 attendees: registrations,
             },
         });
+    } catch (err) {
+        next(err);
+    }
+};
+
+/**
+ * GET /api/checkin/event/:eventUid/signin-pdf
+ * Export sign-in sheet PDF (password-protected via header)
+ * Reuses the existing Quarto-based exportSignInSheet logic
+ */
+export const exportCheckinSignInSheet = async (req, res, next) => {
+    try {
+        const password = req.headers["x-dashboard-password"];
+
+        if (!password || password !== process.env.DASHBOARD_PASSWORD) {
+            return res.status(401).json({
+                success: false,
+                error: { code: "UNAUTHORIZED", message: "未授權存取" },
+            });
+        }
+
+        // Delegate to the admin export handler
+        return _adminExportSignInSheet(req, res);
     } catch (err) {
         next(err);
     }

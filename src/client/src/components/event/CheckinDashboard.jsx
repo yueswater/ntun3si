@@ -2,6 +2,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { post, get } from "../../utils/api";
 import axiosClient from "../../api/axiosClient";
 
+const PAGE_SIZE = 10;
+
 export default function CheckinDashboard() {
     const [password, setPassword] = useState("");
     const [authenticated, setAuthenticated] = useState(false);
@@ -16,6 +18,8 @@ export default function CheckinDashboard() {
     const [attendees, setAttendees] = useState([]);
     const [stats, setStats] = useState({ total: 0, checkedIn: 0 });
     const [loading, setLoading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pdfLoading, setPdfLoading] = useState(false);
 
     const pollingRef = useRef(null);
 
@@ -149,6 +153,36 @@ export default function CheckinDashboard() {
     }
 
     // --- Render: Dashboard ---
+    const totalPages = Math.max(1, Math.ceil(attendees.length / PAGE_SIZE));
+    const paginatedAttendees = attendees.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE
+    );
+
+    const handleExportPDF = async () => {
+        if (!selectedEventUid || !verifiedPassword.current) return;
+        setPdfLoading(true);
+        try {
+            const res = await axiosClient.get(
+                `/checkin/event/${selectedEventUid}/signin-pdf`,
+                {
+                    headers: { "x-dashboard-password": verifiedPassword.current },
+                    responseType: "blob",
+                }
+            );
+            const url = window.URL.createObjectURL(new Blob([res.data], { type: "application/pdf" }));
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "signin-sheet.pdf";
+            link.click();
+            window.URL.revokeObjectURL(url);
+        } catch {
+            alert("PDF 產生失敗，請稍後再試");
+        } finally {
+            setPdfLoading(false);
+        }
+    };
+
     return (
         <div className="space-y-6">
             <h2 className="text-3xl font-bold">簽到儀表板</h2>
@@ -164,6 +198,7 @@ export default function CheckinDashboard() {
                         setSelectedEventUid(e.target.value);
                         setAttendees([]);
                         setStats({ total: 0, checkedIn: 0 });
+                        setCurrentPage(1);
                     }}
                     className="select select-bordered w-full"
                 >
@@ -192,7 +227,7 @@ export default function CheckinDashboard() {
                                     <div className="stat-value text-success">{stats.checkedIn}</div>
                                 </div>
                                 <div className="stat">
-                                    <div className="stat-title">總報名人數</div>
+                                    <div className="stat-title">已確認報名人數</div>
                                     <div className="stat-value">{stats.total}</div>
                                 </div>
                                 <div className="stat">
@@ -206,51 +241,98 @@ export default function CheckinDashboard() {
                                 </div>
                             </div>
 
-                            {/* Attendee grid */}
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                                {attendees.map((a) => (
-                                    <div
-                                        key={a.uid}
-                                        className={`flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium transition-all ${a.isCheckedIn
-                                                ? "bg-success/20 text-success-content border border-success"
-                                                : "bg-base-200 text-base-content border border-base-300"
-                                            }`}
-                                    >
-                                        {a.isCheckedIn ? (
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                className="h-5 w-5 text-success shrink-0"
-                                                viewBox="0 0 20 20"
-                                                fill="currentColor"
-                                            >
-                                                <path
-                                                    fillRule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                    clipRule="evenodd"
-                                                />
+                            {/* PDF Export button */}
+                            <div className="flex justify-end">
+                                <button
+                                    className="btn btn-outline btn-sm gap-2"
+                                    onClick={handleExportPDF}
+                                    disabled={pdfLoading || attendees.length === 0}
+                                >
+                                    {pdfLoading ? (
+                                        <>
+                                            <span className="loading loading-spinner loading-xs"></span>
+                                            產生中...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                             </svg>
-                                        ) : (
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                className="h-5 w-5 text-gray-400 shrink-0"
-                                                viewBox="0 0 20 20"
-                                                fill="currentColor"
-                                            >
-                                                <path
-                                                    fillRule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                                                    clipRule="evenodd"
-                                                />
-                                            </svg>
-                                        )}
-                                        <span className="truncate">{a.name}</span>
-                                    </div>
-                                ))}
+                                            匯出簽到表 PDF
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+
+                            {/* Attendee table */}
+                            <div className="overflow-x-auto">
+                                <table className="table table-zebra w-full">
+                                    <thead>
+                                        <tr>
+                                            <th className="w-16">編號</th>
+                                            <th>姓名</th>
+                                            <th className="w-32 text-center">簽到狀態</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {paginatedAttendees.map((a, idx) => (
+                                            <tr key={a.uid}>
+                                                <td>{(currentPage - 1) * PAGE_SIZE + idx + 1}</td>
+                                                <td>{a.name}</td>
+                                                <td className="text-center">
+                                                    {a.isCheckedIn ? (
+                                                        <span className="badge badge-success gap-1">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                            </svg>
+                                                            已簽到
+                                                        </span>
+                                                    ) : (
+                                                        <span className="badge badge-ghost gap-1">
+                                                            未簽到
+                                                        </span>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </div>
 
                             {attendees.length === 0 && (
                                 <div className="text-center text-gray-500 py-8">
-                                    此活動尚無報名者
+                                    此活動尚無已確認的報名者
+                                </div>
+                            )}
+
+                            {/* Pagination */}
+                            {totalPages > 1 && (
+                                <div className="flex justify-center">
+                                    <div className="join">
+                                        <button
+                                            className="join-item btn btn-sm"
+                                            disabled={currentPage === 1}
+                                            onClick={() => setCurrentPage((p) => p - 1)}
+                                        >
+                                            «
+                                        </button>
+                                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                            <button
+                                                key={page}
+                                                className={`join-item btn btn-sm ${currentPage === page ? "btn-active" : ""}`}
+                                                onClick={() => setCurrentPage(page)}
+                                            >
+                                                {page}
+                                            </button>
+                                        ))}
+                                        <button
+                                            className="join-item btn btn-sm"
+                                            disabled={currentPage === totalPages}
+                                            onClick={() => setCurrentPage((p) => p + 1)}
+                                        >
+                                            »
+                                        </button>
+                                    </div>
                                 </div>
                             )}
                         </>
