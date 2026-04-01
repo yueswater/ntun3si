@@ -198,7 +198,7 @@ export default function OfficerManagement() {
                 <span className="label-text">簡介</span>
               </div>
               <textarea
-                className="textarea textarea-bordered rounded-xs min-h-[140px]"
+                className="textarea textarea-bordered !rounded-sm min-h-[140px]"
                 value={form.bio}
                 onChange={(e) =>
                   setForm((prev) => ({ ...prev, bio: e.target.value }))
