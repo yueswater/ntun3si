@@ -11,7 +11,7 @@ const upload = multer({ dest: "uploads/" });
 
 /**
  * Map file type to corresponding folder in R2 bucket
- * Supported types: avatar, article, event
+ * Supported types: avatar, article, event, officer
  * Default: misc
  */
 const getFolderPath = (type) => {
@@ -19,6 +19,7 @@ const getFolderPath = (type) => {
     avatar: "avatar",
     article: "article",
     event: "event",
+    officer: "officer",
     "change-request": "change-request",
   };
 

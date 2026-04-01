@@ -30,6 +30,7 @@ import MemberManagement from "./pages/admin/MemberManagement";
 import FormManagement from "./pages/admin/FormManagement";
 import RegistrationManagement from "./pages/admin/RegistrationManagement";
 import ChangeRequestManagement from "./pages/admin/ChangeRequestManagement";
+import OfficerManagement from "./pages/admin/OfficerManagement";
 
 // Error pages
 import Error404 from "./pages/Error404";
@@ -90,6 +91,7 @@ export default function App() {
                 <Route path="articles" element={<ArticleManagement />} />
                 <Route path="events" element={<EventManagement />} />
                 <Route path="forms" element={<FormManagement />} />
+                <Route path="officers" element={<OfficerManagement />} />
                 <Route path="change-requests" element={<ChangeRequestManagement />} />
                 <Route
                   path="registrations/:eventUid"

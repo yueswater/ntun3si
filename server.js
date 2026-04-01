@@ -19,6 +19,7 @@ import formRoutes from "./src/api/routes/formRoutes.js";
 import registrationRoutes from "./src/api/routes/registrationRoutes.js";
 import changeRequestRoutes from "./src/api/routes/changeRequestRoutes.js";
 import checkinRoutes from "./src/api/routes/checkinRoutes.js";
+import officerRoutes from "./src/api/routes/officerRoutes.js";
 import errorHandler from "./src/api/middleware/errorHandler.js";
 import { apiLimiter } from "./src/api/middleware/rateLimiter.js";
 
@@ -94,6 +95,7 @@ app.use("/api/registrations", registrationRoutes);
 app.use("/api/mail", mailRoutes);
 app.use("/api/change-requests", changeRequestRoutes);
 app.use("/api/checkin", checkinRoutes);
+app.use("/api/officers", officerRoutes);
 
 // ------------------------------------------------------------
 // Global error handler (must be AFTER all routes)

@@ -1,8 +1,28 @@
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import axiosClient from "../api/axiosClient";
 import members from "../assets/members.json";
 
 export default function About() {
   const { t } = useTranslation();
+  const [officers, setOfficers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchOfficers = async () => {
+      try {
+        const res = await axiosClient.get("/officers");
+        const list = Array.isArray(res.data) ? res.data : [];
+        setOfficers(list.length > 0 ? list : members);
+      } catch {
+        setOfficers(members);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOfficers();
+  }, []);
 
   return (
     <section className="max-w-5xl mx-auto px-4 py-12">
@@ -18,7 +38,12 @@ export default function About() {
 
       {/* Member Cards */}
       <div className="grid gap-8">
-        {members.map((m, i) => (
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <span className="loading loading-spinner loading-lg" />
+          </div>
+        ) : (
+          officers.map((m, i) => (
           <div
             key={i}
             className="flex flex-col sm:flex-row items-center sm:items-start gap-6 p-6"
@@ -34,7 +59,8 @@ export default function About() {
               <p className="text-gray-600 leading-relaxed">{m.bio}</p>
             </div>
           </div>
-        ))}
+          ))
+        )}
       </div>
     </section>
   );

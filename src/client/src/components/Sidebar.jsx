@@ -8,6 +8,7 @@ import {
   faClipboardList,
   faBars,
   faCodePullRequest,
+  faIdBadge,
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function Sidebar({ children }) {
@@ -58,6 +59,7 @@ export default function Sidebar({ children }) {
               { to: "/admin/articles", icon: faFileAlt, label: "文章管理" },
               { to: "/admin/events", icon: faCalendarDays, label: "活動管理" },
               { to: "/admin/forms", icon: faClipboardList, label: "表單管理" },
+              { to: "/admin/officers", icon: faIdBadge, label: "幹部管理" },
               { to: "/admin/change-requests", icon: faCodePullRequest, label: "修改需求" },
             ].map((item) => (
               <Link

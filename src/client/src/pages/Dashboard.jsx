@@ -6,6 +6,7 @@ import {
   faFileAlt,
   faCalendarDays,
   faClipboardList,
+  faIdBadge,
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function Dashboard() {
@@ -66,6 +67,20 @@ export default function Dashboard() {
             <h2 className="text-xl font-semibold">報名表單管理</h2>
             <p className="text-sm text-gray-500 mt-2">
               建立、編輯活動報名表單。
+            </p>
+          </div>
+        </Link>
+
+        {/* 幹部管理 */}
+        <Link to="/admin/officers">
+          <div className="card bg-base-100 shadow-md hover:shadow-lg transition p-6 cursor-pointer hover:scale-105 transform">
+            <FontAwesomeIcon
+              icon={faIdBadge}
+              className="text-3xl text-primary mb-3"
+            />
+            <h2 className="text-xl font-semibold">幹部管理</h2>
+            <p className="text-sm text-gray-500 mt-2">
+              上傳照片並編輯姓名、職稱與簡介。
             </p>
           </div>
         </Link>
